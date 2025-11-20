@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Http\Helpers\Payscribe\CardIssusing\WithdrawFromCardHelper;
+use App\Http\Helpers\Payscribe\PayscribeBalanceHelper;
+use App\Models\BasicControl;
+use App\Models\PayscribeVirtualCardDetails;
+use App\Models\PayscribeVirtualCardTransaction;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
+class PayscribeWithdrawFromCardController extends Controller
+{
+    private $modelPath = 'PayscribeWithdrawFromCard';
+
+    public function __construct(private WithdrawFromCardHelper $withdrawFromCardHelper, private PayscribeBalanceHelper $payscribeBalanceHelper){}
+    public function withdraw(Request $request){
+        $request->validate(
+            [
+                'card_id' => 'required | string',
+                'amount' => 'required | numeric | min:0.1',
+            ]
+        );
+
+        $cardDepositRate = (int) BasicControl::first()->card_withdrawal_rate;
+        $depositAmount = $request['amount'] * $cardDepositRate;
+        
+        $referenceId = Str::uuid();
+        $referenceIdString = (string) $referenceId;
+        $data = [
+            'amount' => $request->amount,
+            'ref' => $referenceIdString,
+        ];
+        $response = json_decode($this->withdrawFromCardHelper->withdrawFromCard($data, $request->card_id), true);
+
+        if($response['status'] === true){
+            // Create a transaction record for the card issuing
+            $this->createTransaction($data, $response, $depositAmount);
+            
+            $this->cardWithdrawalTransaction($data, $response);
+
+            $this->virtualCardDetails($response, $data);
+
+        }
+        return $response;
+    }
+
+    private function createTransaction($request, $response, $depositAmount) {
+        $balance = auth()->user()->account_balance + $depositAmount;
+        $transId = $response['message']['details']['trans_id'];
+        Transaction::create([
+            'transactional_type' => $this->modelPath,
+            'user_id' => auth()->user()->id,
+            'amount' => $depositAmount,
+            'currency' => 'NGN',
+            // 'charge' => $request['amount'],
+            'trx_type' => '+',
+            'remarks' => 'You have successfully cedited your allet with ' . $request['amount'] . ' USD',
+            'trx_id' => $transId,
+            'transaction_status' => 'success',
+        ]);
+
+        $this->payscribeBalanceHelper->updateUserBalance($balance);
+    } 
+
+
+    private function cardWithdrawalTransaction($request, $response) {
+        $balance = $response['message']['details']['card']['balance'];
+        $transId = $response['message']['details']['trans_id'];
+        $refId = $response['message']['details']['ref_id'];
+        $cardId = $response['message']['details']['card']['id'];
+        PayscribeVirtualCardTransaction::create([
+            'transactional_type' => $this->modelPath,
+            'user_id' => auth()->user()->id,
+            'card_id' => $cardId,
+            'amount' => $request['amount'],
+            'currency' => 'USD',
+            'balance' => $balance,
+            'charge' => 0.0,
+            'trx_type' => '-',
+            'remarks' => $response['description'],
+            'trx_id' => $transId,
+            'ref' => $refId,
+            'event_id' => $response['message']['details']['event_id'],
+            'action' => $response['message']['details']['action'],
+        ]);
+
+    }
+
+
+    public function virtualCardDetails($response, $request) {
+        $cardId = $response['message']['details']['card']['id'];
+        $card = PayscribeVirtualCardDetails::where('card_id', $cardId)->first();
+        $card->update([
+            'balance' => $response['message']['details']['card']['balance'],
+            'prev_balance' => $response['message']['details']['card']['prev_balance'],
+            'updated_at' => $response['message']['details']['created_at'],
+        ]);
+    }
+}
