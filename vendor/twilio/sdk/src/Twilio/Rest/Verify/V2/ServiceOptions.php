@@ -28,7 +28,7 @@ abstract class ServiceOptions
      * @param string $ttsName The name of an alternative text-to-speech service to use in phone calls. Applies only to TTS languages.
      * @param bool $psd2Enabled Whether to pass PSD2 transaction parameters when starting a verification.
      * @param bool $doNotShareWarningEnabled Whether to add a security warning at the end of an SMS verification body. Disabled by default and applies only to SMS. Example SMS body: `Your AppName verification code is: 1234. Don’t share this code with anyone; our employees will never ask for the code`
-     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one. Not available for all customers.
+     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one.
      * @param bool $pushIncludeDate Optional configuration for the Push factors. If true, include the date in the Challenge's response. Otherwise, the date is omitted from the response. See [Challenge](https://www.twilio.com/docs/verify/api/challenge) resource’s details parameter for more info. Default: false. **Deprecated** do not use this parameter. This timestamp value is the same one as the one found in `date_created`, please use that one instead.
      * @param string $pushApnCredentialSid Optional configuration for the Push factors. Set the APN Credential for this service. This will allow to send push notifications to iOS devices. See [Credential Resource](https://www.twilio.com/docs/notify/api/credential-resource)
      * @param string $pushFcmCredentialSid Optional configuration for the Push factors. Set the FCM Credential for this service. This will allow to send push notifications to Android devices. See [Credential Resource](https://www.twilio.com/docs/notify/api/credential-resource)
@@ -37,6 +37,14 @@ abstract class ServiceOptions
      * @param int $totpCodeLength Optional configuration for the TOTP factors. Number of digits for generated TOTP codes. Must be between 3 and 8, inclusive. Defaults to 6
      * @param int $totpSkew Optional configuration for the TOTP factors. The number of time-steps, past and future, that are valid for validation of TOTP codes. Must be between 0 and 2, inclusive. Defaults to 1
      * @param string $defaultTemplateSid The default message [template](https://www.twilio.com/docs/verify/api/templates). Will be used for all SMS verifications unless explicitly overriden. SMS channel only.
+     * @param string $whatsappMsgServiceSid The SID of the Messaging Service containing WhatsApp Sender(s) that Verify will use to send WhatsApp messages to your users.
+     * @param string $whatsappFrom The number to use as the WhatsApp Sender that Verify will use to send WhatsApp messages to your users.This WhatsApp Sender must be associated with a Messaging Service SID.
+     * @param string $passkeysRelyingPartyId The Relying Party ID for Passkeys. This is the domain of your application, e.g. `example.com`. It is used to identify your application when creating Passkeys.
+     * @param string $passkeysRelyingPartyName The Relying Party Name for Passkeys. This is the name of your application, e.g. `Example App`. It is used to identify your application when creating Passkeys.
+     * @param string $passkeysRelyingPartyOrigins The Relying Party Origins for Passkeys. This is the origin of your application, e.g. `login.example.com,www.example.com`. It is used to identify your application when creating Passkeys, it can have multiple origins split by `,`.
+     * @param string $passkeysAuthenticatorAttachment The Authenticator Attachment for Passkeys. This is the type of authenticator that will be used to create Passkeys. It can be empty or it can have the values `platform`, `cross-platform` or `any`.
+     * @param string $passkeysDiscoverableCredentials Indicates whether credentials must be discoverable by the authenticator. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     * @param string $passkeysUserVerification The User Verification for Passkeys. This is the type of user verification that will be used to create Passkeys. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
      * @param bool $verifyEventSubscriptionEnabled Whether to allow verifications from the service to reach the stream-events sinks if configured
      * @return CreateServiceOptions Options builder
      */
@@ -58,6 +66,14 @@ abstract class ServiceOptions
         int $totpCodeLength = Values::INT_NONE,
         int $totpSkew = Values::INT_NONE,
         string $defaultTemplateSid = Values::NONE,
+        string $whatsappMsgServiceSid = Values::NONE,
+        string $whatsappFrom = Values::NONE,
+        string $passkeysRelyingPartyId = Values::NONE,
+        string $passkeysRelyingPartyName = Values::NONE,
+        string $passkeysRelyingPartyOrigins = Values::NONE,
+        string $passkeysAuthenticatorAttachment = Values::NONE,
+        string $passkeysDiscoverableCredentials = Values::NONE,
+        string $passkeysUserVerification = Values::NONE,
         bool $verifyEventSubscriptionEnabled = Values::BOOL_NONE
 
     ): CreateServiceOptions
@@ -79,6 +95,14 @@ abstract class ServiceOptions
             $totpCodeLength,
             $totpSkew,
             $defaultTemplateSid,
+            $whatsappMsgServiceSid,
+            $whatsappFrom,
+            $passkeysRelyingPartyId,
+            $passkeysRelyingPartyName,
+            $passkeysRelyingPartyOrigins,
+            $passkeysAuthenticatorAttachment,
+            $passkeysDiscoverableCredentials,
+            $passkeysUserVerification,
             $verifyEventSubscriptionEnabled
         );
     }
@@ -95,7 +119,7 @@ abstract class ServiceOptions
      * @param string $ttsName The name of an alternative text-to-speech service to use in phone calls. Applies only to TTS languages.
      * @param bool $psd2Enabled Whether to pass PSD2 transaction parameters when starting a verification.
      * @param bool $doNotShareWarningEnabled Whether to add a privacy warning at the end of an SMS. **Disabled by default and applies only for SMS.**
-     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one. Not available for all customers.
+     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one.
      * @param bool $pushIncludeDate Optional configuration for the Push factors. If true, include the date in the Challenge's response. Otherwise, the date is omitted from the response. See [Challenge](https://www.twilio.com/docs/verify/api/challenge) resource’s details parameter for more info. Default: false. **Deprecated** do not use this parameter.
      * @param string $pushApnCredentialSid Optional configuration for the Push factors. Set the APN Credential for this service. This will allow to send push notifications to iOS devices. See [Credential Resource](https://www.twilio.com/docs/notify/api/credential-resource)
      * @param string $pushFcmCredentialSid Optional configuration for the Push factors. Set the FCM Credential for this service. This will allow to send push notifications to Android devices. See [Credential Resource](https://www.twilio.com/docs/notify/api/credential-resource)
@@ -104,6 +128,14 @@ abstract class ServiceOptions
      * @param int $totpCodeLength Optional configuration for the TOTP factors. Number of digits for generated TOTP codes. Must be between 3 and 8, inclusive. Defaults to 6
      * @param int $totpSkew Optional configuration for the TOTP factors. The number of time-steps, past and future, that are valid for validation of TOTP codes. Must be between 0 and 2, inclusive. Defaults to 1
      * @param string $defaultTemplateSid The default message [template](https://www.twilio.com/docs/verify/api/templates). Will be used for all SMS verifications unless explicitly overriden. SMS channel only.
+     * @param string $whatsappMsgServiceSid The SID of the [Messaging Service](https://www.twilio.com/docs/messaging/services) to associate with the Verification Service.
+     * @param string $whatsappFrom The WhatsApp number to use as the sender of the verification messages. This number must be associated with the WhatsApp Message Service.
+     * @param string $passkeysRelyingPartyId The Relying Party ID for Passkeys. This is the domain of your application, e.g. `example.com`. It is used to identify your application when creating Passkeys.
+     * @param string $passkeysRelyingPartyName The Relying Party Name for Passkeys. This is the name of your application, e.g. `Example App`. It is used to identify your application when creating Passkeys.
+     * @param string $passkeysRelyingPartyOrigins The Relying Party Origins for Passkeys. This is the origin of your application, e.g. `login.example.com,www.example.com`. It is used to identify your application when creating Passkeys, it can have multiple origins split by `,`.
+     * @param string $passkeysAuthenticatorAttachment The Authenticator Attachment for Passkeys. This is the type of authenticator that will be used to create Passkeys. It can be empty or it can have the values `platform`, `cross-platform` or `any`.
+     * @param string $passkeysDiscoverableCredentials Indicates whether credentials must be discoverable by the authenticator. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     * @param string $passkeysUserVerification The User Verification for Passkeys. This is the type of user verification that will be used to create Passkeys. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
      * @param bool $verifyEventSubscriptionEnabled Whether to allow verifications from the service to reach the stream-events sinks if configured
      * @return UpdateServiceOptions Options builder
      */
@@ -126,6 +158,14 @@ abstract class ServiceOptions
         int $totpCodeLength = Values::INT_NONE,
         int $totpSkew = Values::INT_NONE,
         string $defaultTemplateSid = Values::NONE,
+        string $whatsappMsgServiceSid = Values::NONE,
+        string $whatsappFrom = Values::NONE,
+        string $passkeysRelyingPartyId = Values::NONE,
+        string $passkeysRelyingPartyName = Values::NONE,
+        string $passkeysRelyingPartyOrigins = Values::NONE,
+        string $passkeysAuthenticatorAttachment = Values::NONE,
+        string $passkeysDiscoverableCredentials = Values::NONE,
+        string $passkeysUserVerification = Values::NONE,
         bool $verifyEventSubscriptionEnabled = Values::BOOL_NONE
 
     ): UpdateServiceOptions
@@ -148,6 +188,14 @@ abstract class ServiceOptions
             $totpCodeLength,
             $totpSkew,
             $defaultTemplateSid,
+            $whatsappMsgServiceSid,
+            $whatsappFrom,
+            $passkeysRelyingPartyId,
+            $passkeysRelyingPartyName,
+            $passkeysRelyingPartyOrigins,
+            $passkeysAuthenticatorAttachment,
+            $passkeysDiscoverableCredentials,
+            $passkeysUserVerification,
             $verifyEventSubscriptionEnabled
         );
     }
@@ -164,7 +212,7 @@ class CreateServiceOptions extends Options
      * @param string $ttsName The name of an alternative text-to-speech service to use in phone calls. Applies only to TTS languages.
      * @param bool $psd2Enabled Whether to pass PSD2 transaction parameters when starting a verification.
      * @param bool $doNotShareWarningEnabled Whether to add a security warning at the end of an SMS verification body. Disabled by default and applies only to SMS. Example SMS body: `Your AppName verification code is: 1234. Don’t share this code with anyone; our employees will never ask for the code`
-     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one. Not available for all customers.
+     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one.
      * @param bool $pushIncludeDate Optional configuration for the Push factors. If true, include the date in the Challenge's response. Otherwise, the date is omitted from the response. See [Challenge](https://www.twilio.com/docs/verify/api/challenge) resource’s details parameter for more info. Default: false. **Deprecated** do not use this parameter. This timestamp value is the same one as the one found in `date_created`, please use that one instead.
      * @param string $pushApnCredentialSid Optional configuration for the Push factors. Set the APN Credential for this service. This will allow to send push notifications to iOS devices. See [Credential Resource](https://www.twilio.com/docs/notify/api/credential-resource)
      * @param string $pushFcmCredentialSid Optional configuration for the Push factors. Set the FCM Credential for this service. This will allow to send push notifications to Android devices. See [Credential Resource](https://www.twilio.com/docs/notify/api/credential-resource)
@@ -173,6 +221,14 @@ class CreateServiceOptions extends Options
      * @param int $totpCodeLength Optional configuration for the TOTP factors. Number of digits for generated TOTP codes. Must be between 3 and 8, inclusive. Defaults to 6
      * @param int $totpSkew Optional configuration for the TOTP factors. The number of time-steps, past and future, that are valid for validation of TOTP codes. Must be between 0 and 2, inclusive. Defaults to 1
      * @param string $defaultTemplateSid The default message [template](https://www.twilio.com/docs/verify/api/templates). Will be used for all SMS verifications unless explicitly overriden. SMS channel only.
+     * @param string $whatsappMsgServiceSid The SID of the Messaging Service containing WhatsApp Sender(s) that Verify will use to send WhatsApp messages to your users.
+     * @param string $whatsappFrom The number to use as the WhatsApp Sender that Verify will use to send WhatsApp messages to your users.This WhatsApp Sender must be associated with a Messaging Service SID.
+     * @param string $passkeysRelyingPartyId The Relying Party ID for Passkeys. This is the domain of your application, e.g. `example.com`. It is used to identify your application when creating Passkeys.
+     * @param string $passkeysRelyingPartyName The Relying Party Name for Passkeys. This is the name of your application, e.g. `Example App`. It is used to identify your application when creating Passkeys.
+     * @param string $passkeysRelyingPartyOrigins The Relying Party Origins for Passkeys. This is the origin of your application, e.g. `login.example.com,www.example.com`. It is used to identify your application when creating Passkeys, it can have multiple origins split by `,`.
+     * @param string $passkeysAuthenticatorAttachment The Authenticator Attachment for Passkeys. This is the type of authenticator that will be used to create Passkeys. It can be empty or it can have the values `platform`, `cross-platform` or `any`.
+     * @param string $passkeysDiscoverableCredentials Indicates whether credentials must be discoverable by the authenticator. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     * @param string $passkeysUserVerification The User Verification for Passkeys. This is the type of user verification that will be used to create Passkeys. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
      * @param bool $verifyEventSubscriptionEnabled Whether to allow verifications from the service to reach the stream-events sinks if configured
      */
     public function __construct(
@@ -193,6 +249,14 @@ class CreateServiceOptions extends Options
         int $totpCodeLength = Values::INT_NONE,
         int $totpSkew = Values::INT_NONE,
         string $defaultTemplateSid = Values::NONE,
+        string $whatsappMsgServiceSid = Values::NONE,
+        string $whatsappFrom = Values::NONE,
+        string $passkeysRelyingPartyId = Values::NONE,
+        string $passkeysRelyingPartyName = Values::NONE,
+        string $passkeysRelyingPartyOrigins = Values::NONE,
+        string $passkeysAuthenticatorAttachment = Values::NONE,
+        string $passkeysDiscoverableCredentials = Values::NONE,
+        string $passkeysUserVerification = Values::NONE,
         bool $verifyEventSubscriptionEnabled = Values::BOOL_NONE
 
     ) {
@@ -212,6 +276,14 @@ class CreateServiceOptions extends Options
         $this->options['totpCodeLength'] = $totpCodeLength;
         $this->options['totpSkew'] = $totpSkew;
         $this->options['defaultTemplateSid'] = $defaultTemplateSid;
+        $this->options['whatsappMsgServiceSid'] = $whatsappMsgServiceSid;
+        $this->options['whatsappFrom'] = $whatsappFrom;
+        $this->options['passkeysRelyingPartyId'] = $passkeysRelyingPartyId;
+        $this->options['passkeysRelyingPartyName'] = $passkeysRelyingPartyName;
+        $this->options['passkeysRelyingPartyOrigins'] = $passkeysRelyingPartyOrigins;
+        $this->options['passkeysAuthenticatorAttachment'] = $passkeysAuthenticatorAttachment;
+        $this->options['passkeysDiscoverableCredentials'] = $passkeysDiscoverableCredentials;
+        $this->options['passkeysUserVerification'] = $passkeysUserVerification;
         $this->options['verifyEventSubscriptionEnabled'] = $verifyEventSubscriptionEnabled;
     }
 
@@ -300,9 +372,9 @@ class CreateServiceOptions extends Options
     }
 
     /**
-     * Whether to allow sending verifications with a custom code instead of a randomly generated one. Not available for all customers.
+     * Whether to allow sending verifications with a custom code instead of a randomly generated one.
      *
-     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one. Not available for all customers.
+     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one.
      * @return $this Fluent Builder
      */
     public function setCustomCodeEnabled(bool $customCodeEnabled): self
@@ -408,6 +480,102 @@ class CreateServiceOptions extends Options
     }
 
     /**
+     * The SID of the Messaging Service containing WhatsApp Sender(s) that Verify will use to send WhatsApp messages to your users.
+     *
+     * @param string $whatsappMsgServiceSid The SID of the Messaging Service containing WhatsApp Sender(s) that Verify will use to send WhatsApp messages to your users.
+     * @return $this Fluent Builder
+     */
+    public function setWhatsappMsgServiceSid(string $whatsappMsgServiceSid): self
+    {
+        $this->options['whatsappMsgServiceSid'] = $whatsappMsgServiceSid;
+        return $this;
+    }
+
+    /**
+     * The number to use as the WhatsApp Sender that Verify will use to send WhatsApp messages to your users.This WhatsApp Sender must be associated with a Messaging Service SID.
+     *
+     * @param string $whatsappFrom The number to use as the WhatsApp Sender that Verify will use to send WhatsApp messages to your users.This WhatsApp Sender must be associated with a Messaging Service SID.
+     * @return $this Fluent Builder
+     */
+    public function setWhatsappFrom(string $whatsappFrom): self
+    {
+        $this->options['whatsappFrom'] = $whatsappFrom;
+        return $this;
+    }
+
+    /**
+     * The Relying Party ID for Passkeys. This is the domain of your application, e.g. `example.com`. It is used to identify your application when creating Passkeys.
+     *
+     * @param string $passkeysRelyingPartyId The Relying Party ID for Passkeys. This is the domain of your application, e.g. `example.com`. It is used to identify your application when creating Passkeys.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysRelyingPartyId(string $passkeysRelyingPartyId): self
+    {
+        $this->options['passkeysRelyingPartyId'] = $passkeysRelyingPartyId;
+        return $this;
+    }
+
+    /**
+     * The Relying Party Name for Passkeys. This is the name of your application, e.g. `Example App`. It is used to identify your application when creating Passkeys.
+     *
+     * @param string $passkeysRelyingPartyName The Relying Party Name for Passkeys. This is the name of your application, e.g. `Example App`. It is used to identify your application when creating Passkeys.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysRelyingPartyName(string $passkeysRelyingPartyName): self
+    {
+        $this->options['passkeysRelyingPartyName'] = $passkeysRelyingPartyName;
+        return $this;
+    }
+
+    /**
+     * The Relying Party Origins for Passkeys. This is the origin of your application, e.g. `login.example.com,www.example.com`. It is used to identify your application when creating Passkeys, it can have multiple origins split by `,`.
+     *
+     * @param string $passkeysRelyingPartyOrigins The Relying Party Origins for Passkeys. This is the origin of your application, e.g. `login.example.com,www.example.com`. It is used to identify your application when creating Passkeys, it can have multiple origins split by `,`.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysRelyingPartyOrigins(string $passkeysRelyingPartyOrigins): self
+    {
+        $this->options['passkeysRelyingPartyOrigins'] = $passkeysRelyingPartyOrigins;
+        return $this;
+    }
+
+    /**
+     * The Authenticator Attachment for Passkeys. This is the type of authenticator that will be used to create Passkeys. It can be empty or it can have the values `platform`, `cross-platform` or `any`.
+     *
+     * @param string $passkeysAuthenticatorAttachment The Authenticator Attachment for Passkeys. This is the type of authenticator that will be used to create Passkeys. It can be empty or it can have the values `platform`, `cross-platform` or `any`.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysAuthenticatorAttachment(string $passkeysAuthenticatorAttachment): self
+    {
+        $this->options['passkeysAuthenticatorAttachment'] = $passkeysAuthenticatorAttachment;
+        return $this;
+    }
+
+    /**
+     * Indicates whether credentials must be discoverable by the authenticator. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     *
+     * @param string $passkeysDiscoverableCredentials Indicates whether credentials must be discoverable by the authenticator. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysDiscoverableCredentials(string $passkeysDiscoverableCredentials): self
+    {
+        $this->options['passkeysDiscoverableCredentials'] = $passkeysDiscoverableCredentials;
+        return $this;
+    }
+
+    /**
+     * The User Verification for Passkeys. This is the type of user verification that will be used to create Passkeys. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     *
+     * @param string $passkeysUserVerification The User Verification for Passkeys. This is the type of user verification that will be used to create Passkeys. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysUserVerification(string $passkeysUserVerification): self
+    {
+        $this->options['passkeysUserVerification'] = $passkeysUserVerification;
+        return $this;
+    }
+
+    /**
      * Whether to allow verifications from the service to reach the stream-events sinks if configured
      *
      * @param bool $verifyEventSubscriptionEnabled Whether to allow verifications from the service to reach the stream-events sinks if configured
@@ -445,7 +613,7 @@ class UpdateServiceOptions extends Options
      * @param string $ttsName The name of an alternative text-to-speech service to use in phone calls. Applies only to TTS languages.
      * @param bool $psd2Enabled Whether to pass PSD2 transaction parameters when starting a verification.
      * @param bool $doNotShareWarningEnabled Whether to add a privacy warning at the end of an SMS. **Disabled by default and applies only for SMS.**
-     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one. Not available for all customers.
+     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one.
      * @param bool $pushIncludeDate Optional configuration for the Push factors. If true, include the date in the Challenge's response. Otherwise, the date is omitted from the response. See [Challenge](https://www.twilio.com/docs/verify/api/challenge) resource’s details parameter for more info. Default: false. **Deprecated** do not use this parameter.
      * @param string $pushApnCredentialSid Optional configuration for the Push factors. Set the APN Credential for this service. This will allow to send push notifications to iOS devices. See [Credential Resource](https://www.twilio.com/docs/notify/api/credential-resource)
      * @param string $pushFcmCredentialSid Optional configuration for the Push factors. Set the FCM Credential for this service. This will allow to send push notifications to Android devices. See [Credential Resource](https://www.twilio.com/docs/notify/api/credential-resource)
@@ -454,6 +622,14 @@ class UpdateServiceOptions extends Options
      * @param int $totpCodeLength Optional configuration for the TOTP factors. Number of digits for generated TOTP codes. Must be between 3 and 8, inclusive. Defaults to 6
      * @param int $totpSkew Optional configuration for the TOTP factors. The number of time-steps, past and future, that are valid for validation of TOTP codes. Must be between 0 and 2, inclusive. Defaults to 1
      * @param string $defaultTemplateSid The default message [template](https://www.twilio.com/docs/verify/api/templates). Will be used for all SMS verifications unless explicitly overriden. SMS channel only.
+     * @param string $whatsappMsgServiceSid The SID of the [Messaging Service](https://www.twilio.com/docs/messaging/services) to associate with the Verification Service.
+     * @param string $whatsappFrom The WhatsApp number to use as the sender of the verification messages. This number must be associated with the WhatsApp Message Service.
+     * @param string $passkeysRelyingPartyId The Relying Party ID for Passkeys. This is the domain of your application, e.g. `example.com`. It is used to identify your application when creating Passkeys.
+     * @param string $passkeysRelyingPartyName The Relying Party Name for Passkeys. This is the name of your application, e.g. `Example App`. It is used to identify your application when creating Passkeys.
+     * @param string $passkeysRelyingPartyOrigins The Relying Party Origins for Passkeys. This is the origin of your application, e.g. `login.example.com,www.example.com`. It is used to identify your application when creating Passkeys, it can have multiple origins split by `,`.
+     * @param string $passkeysAuthenticatorAttachment The Authenticator Attachment for Passkeys. This is the type of authenticator that will be used to create Passkeys. It can be empty or it can have the values `platform`, `cross-platform` or `any`.
+     * @param string $passkeysDiscoverableCredentials Indicates whether credentials must be discoverable by the authenticator. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     * @param string $passkeysUserVerification The User Verification for Passkeys. This is the type of user verification that will be used to create Passkeys. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
      * @param bool $verifyEventSubscriptionEnabled Whether to allow verifications from the service to reach the stream-events sinks if configured
      */
     public function __construct(
@@ -475,6 +651,14 @@ class UpdateServiceOptions extends Options
         int $totpCodeLength = Values::INT_NONE,
         int $totpSkew = Values::INT_NONE,
         string $defaultTemplateSid = Values::NONE,
+        string $whatsappMsgServiceSid = Values::NONE,
+        string $whatsappFrom = Values::NONE,
+        string $passkeysRelyingPartyId = Values::NONE,
+        string $passkeysRelyingPartyName = Values::NONE,
+        string $passkeysRelyingPartyOrigins = Values::NONE,
+        string $passkeysAuthenticatorAttachment = Values::NONE,
+        string $passkeysDiscoverableCredentials = Values::NONE,
+        string $passkeysUserVerification = Values::NONE,
         bool $verifyEventSubscriptionEnabled = Values::BOOL_NONE
 
     ) {
@@ -495,6 +679,14 @@ class UpdateServiceOptions extends Options
         $this->options['totpCodeLength'] = $totpCodeLength;
         $this->options['totpSkew'] = $totpSkew;
         $this->options['defaultTemplateSid'] = $defaultTemplateSid;
+        $this->options['whatsappMsgServiceSid'] = $whatsappMsgServiceSid;
+        $this->options['whatsappFrom'] = $whatsappFrom;
+        $this->options['passkeysRelyingPartyId'] = $passkeysRelyingPartyId;
+        $this->options['passkeysRelyingPartyName'] = $passkeysRelyingPartyName;
+        $this->options['passkeysRelyingPartyOrigins'] = $passkeysRelyingPartyOrigins;
+        $this->options['passkeysAuthenticatorAttachment'] = $passkeysAuthenticatorAttachment;
+        $this->options['passkeysDiscoverableCredentials'] = $passkeysDiscoverableCredentials;
+        $this->options['passkeysUserVerification'] = $passkeysUserVerification;
         $this->options['verifyEventSubscriptionEnabled'] = $verifyEventSubscriptionEnabled;
     }
 
@@ -595,9 +787,9 @@ class UpdateServiceOptions extends Options
     }
 
     /**
-     * Whether to allow sending verifications with a custom code instead of a randomly generated one. Not available for all customers.
+     * Whether to allow sending verifications with a custom code instead of a randomly generated one.
      *
-     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one. Not available for all customers.
+     * @param bool $customCodeEnabled Whether to allow sending verifications with a custom code instead of a randomly generated one.
      * @return $this Fluent Builder
      */
     public function setCustomCodeEnabled(bool $customCodeEnabled): self
@@ -699,6 +891,102 @@ class UpdateServiceOptions extends Options
     public function setDefaultTemplateSid(string $defaultTemplateSid): self
     {
         $this->options['defaultTemplateSid'] = $defaultTemplateSid;
+        return $this;
+    }
+
+    /**
+     * The SID of the [Messaging Service](https://www.twilio.com/docs/messaging/services) to associate with the Verification Service.
+     *
+     * @param string $whatsappMsgServiceSid The SID of the [Messaging Service](https://www.twilio.com/docs/messaging/services) to associate with the Verification Service.
+     * @return $this Fluent Builder
+     */
+    public function setWhatsappMsgServiceSid(string $whatsappMsgServiceSid): self
+    {
+        $this->options['whatsappMsgServiceSid'] = $whatsappMsgServiceSid;
+        return $this;
+    }
+
+    /**
+     * The WhatsApp number to use as the sender of the verification messages. This number must be associated with the WhatsApp Message Service.
+     *
+     * @param string $whatsappFrom The WhatsApp number to use as the sender of the verification messages. This number must be associated with the WhatsApp Message Service.
+     * @return $this Fluent Builder
+     */
+    public function setWhatsappFrom(string $whatsappFrom): self
+    {
+        $this->options['whatsappFrom'] = $whatsappFrom;
+        return $this;
+    }
+
+    /**
+     * The Relying Party ID for Passkeys. This is the domain of your application, e.g. `example.com`. It is used to identify your application when creating Passkeys.
+     *
+     * @param string $passkeysRelyingPartyId The Relying Party ID for Passkeys. This is the domain of your application, e.g. `example.com`. It is used to identify your application when creating Passkeys.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysRelyingPartyId(string $passkeysRelyingPartyId): self
+    {
+        $this->options['passkeysRelyingPartyId'] = $passkeysRelyingPartyId;
+        return $this;
+    }
+
+    /**
+     * The Relying Party Name for Passkeys. This is the name of your application, e.g. `Example App`. It is used to identify your application when creating Passkeys.
+     *
+     * @param string $passkeysRelyingPartyName The Relying Party Name for Passkeys. This is the name of your application, e.g. `Example App`. It is used to identify your application when creating Passkeys.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysRelyingPartyName(string $passkeysRelyingPartyName): self
+    {
+        $this->options['passkeysRelyingPartyName'] = $passkeysRelyingPartyName;
+        return $this;
+    }
+
+    /**
+     * The Relying Party Origins for Passkeys. This is the origin of your application, e.g. `login.example.com,www.example.com`. It is used to identify your application when creating Passkeys, it can have multiple origins split by `,`.
+     *
+     * @param string $passkeysRelyingPartyOrigins The Relying Party Origins for Passkeys. This is the origin of your application, e.g. `login.example.com,www.example.com`. It is used to identify your application when creating Passkeys, it can have multiple origins split by `,`.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysRelyingPartyOrigins(string $passkeysRelyingPartyOrigins): self
+    {
+        $this->options['passkeysRelyingPartyOrigins'] = $passkeysRelyingPartyOrigins;
+        return $this;
+    }
+
+    /**
+     * The Authenticator Attachment for Passkeys. This is the type of authenticator that will be used to create Passkeys. It can be empty or it can have the values `platform`, `cross-platform` or `any`.
+     *
+     * @param string $passkeysAuthenticatorAttachment The Authenticator Attachment for Passkeys. This is the type of authenticator that will be used to create Passkeys. It can be empty or it can have the values `platform`, `cross-platform` or `any`.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysAuthenticatorAttachment(string $passkeysAuthenticatorAttachment): self
+    {
+        $this->options['passkeysAuthenticatorAttachment'] = $passkeysAuthenticatorAttachment;
+        return $this;
+    }
+
+    /**
+     * Indicates whether credentials must be discoverable by the authenticator. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     *
+     * @param string $passkeysDiscoverableCredentials Indicates whether credentials must be discoverable by the authenticator. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysDiscoverableCredentials(string $passkeysDiscoverableCredentials): self
+    {
+        $this->options['passkeysDiscoverableCredentials'] = $passkeysDiscoverableCredentials;
+        return $this;
+    }
+
+    /**
+     * The User Verification for Passkeys. This is the type of user verification that will be used to create Passkeys. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     *
+     * @param string $passkeysUserVerification The User Verification for Passkeys. This is the type of user verification that will be used to create Passkeys. It can be empty or it can have the values `required`, `preferred` or `discouraged`.
+     * @return $this Fluent Builder
+     */
+    public function setPasskeysUserVerification(string $passkeysUserVerification): self
+    {
+        $this->options['passkeysUserVerification'] = $passkeysUserVerification;
         return $this;
     }
 

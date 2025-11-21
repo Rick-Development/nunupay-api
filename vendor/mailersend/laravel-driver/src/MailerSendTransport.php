@@ -42,7 +42,7 @@ class MailerSendTransport implements TransportInterface
      * @throws TransportExceptionInterface
      * @throws \MailerSend\Exceptions\MailerSendAssertException
      */
-    public function send(RawMessage $message, Envelope $envelope = null): ?SentMessage
+    public function send(RawMessage $message, ?Envelope $envelope = null): ?SentMessage
     {
         try{
             ['email' => $fromEmail, 'name' => $fromName] = $this->getFrom($message);
@@ -84,6 +84,12 @@ class MailerSendTransport implements TransportInterface
                 ->setTags($tags)
                 ->setPrecedenceBulkHeader($precedenceBulkHeader)
                 ->setSendAt($sendAt);
+
+            $listUnsubscribeHeader = $message->getHeaders()->get('List-Unsubscribe');
+            $listUnsubscribe = $listUnsubscribeHeader ? $listUnsubscribeHeader->getBodyAsString() : null;
+            if (!empty($listUnsubscribe)) {
+                $emailParams->setListUnsubscribe($listUnsubscribe);
+            }
 
             $response = $this->mailersend->email->send($emailParams);
 

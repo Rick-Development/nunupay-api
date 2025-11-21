@@ -1,7 +1,5 @@
 <?php
 
-// phpcs:ignorefile
-
 declare(strict_types=1);
 
 /**
@@ -18,59 +16,42 @@ declare(strict_types=1);
 
 namespace Infobip\Model;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Serializer\Annotation\Ignore;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Validator\Constraints as Assert;
 
-class WhatsAppTemplateApiResponse implements ModelInterface
+#[DiscriminatorMap(typeProperty: "category", mapping: [
+    "AUTHENTICATION" => "\Infobip\Model\WhatsAppAuthenticationTemplateApiResponse",
+    "MARKETING" => "\Infobip\Model\WhatsAppDefaultMarketingTemplateApiResponse",
+    "UTILITY" => "\Infobip\Model\WhatsAppDefaultUtilityTemplateApiResponse",
+])]
+
+class WhatsAppTemplateApiResponse
 {
-    public const DISCRIMINATOR = '';
-    public const OPENAPI_MODEL_NAME = 'WhatsAppTemplateApiResponse';
-
-    public const OPENAPI_FORMATS = [
-        'id' => null,
-        'businessAccountId' => 'int64',
-        'name' => null,
-        'language' => null,
-        'status' => null,
-        'category' => null,
-        'structure' => null
-    ];
-
     /**
      */
     public function __construct(
+        #[Assert\Valid]
+        #[Assert\NotBlank]
+        protected \Infobip\Model\WhatsAppDefaultTemplateStructureApiData $structure,
         protected ?string $id = null,
         protected ?int $businessAccountId = null,
         protected ?string $name = null,
-        #[Assert\Choice(['af','sq','ar','az','bn','bg','ca','zh_CN','zh_HK','zh_TW','hr','cs','da','nl','en','en_GB','en_US','et','fil','fi','fr','ka','de','el','gu','ha','he','hi','hu','id','ga','it','ja','kn','kk','rw_RW','ko','ky_KG','lo','lv','lt','mk','ms','ml','mr','nb','fa','pl','pt_BR','pt_PT','pa','ro','ru','sr','sk','sl','es','es_AR','es_ES','es_MX','sw','sv','ta','te','th','tr','uk','ur','uz','vi','zu','unknown',])]
-
-    protected ?string $language = null,
-        #[Assert\Choice(['APPROVED','IN_APPEAL','PENDING','REJECTED','PENDING_DELETION','DELETED','REINSTATED','FLAGGED','FIRST_PAUSED','SECOND_PAUSED','DISABLED',])]
-
-    protected ?string $status = null,
-        #[Assert\Choice(['ACCOUNT_UPDATE','PAYMENT_UPDATE','PERSONAL_FINANCE_UPDATE','SHIPPING_UPDATE','RESERVATION_UPDATE','ISSUE_RESOLUTION','APPOINTMENT_UPDATE','TRANSPORTATION_UPDATE','TICKET_UPDATE','ALERT_UPDATE','AUTO_REPLY','MARKETING','TRANSACTIONAL','OTP',])]
-
-    protected ?string $category = null,
+        protected ?string $language = null,
+        protected ?string $status = null,
+        protected ?string $category = null,
+        protected ?string $quality = null,
         #[Assert\Valid]
-
-    protected ?\Infobip\Model\WhatsAppTemplateStructureApiData $structure = null,
+        protected ?\Infobip\Model\Platform $platform = null,
+        #[Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d\TH:i:s.vP'])]
+        protected ?\DateTime $createdAt = null,
+        #[Serializer\Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d\TH:i:s.vP'])]
+        protected ?\DateTime $lastUpdatedAt = null,
     ) {
+
     }
 
-    #[Ignore]
-    public function getModelName(): string
-    {
-        return self::OPENAPI_MODEL_NAME;
-    }
-
-    #[Ignore]
-    public static function getDiscriminator(): ?string
-    {
-        return self::DISCRIMINATOR;
-    }
 
     public function getId(): string|null
     {
@@ -138,14 +119,58 @@ class WhatsAppTemplateApiResponse implements ModelInterface
         return $this;
     }
 
-    public function getStructure(): \Infobip\Model\WhatsAppTemplateStructureApiData|null
+    public function getStructure(): \Infobip\Model\WhatsAppDefaultTemplateStructureApiData
     {
         return $this->structure;
     }
 
-    public function setStructure(?\Infobip\Model\WhatsAppTemplateStructureApiData $structure): self
+    public function setStructure(\Infobip\Model\WhatsAppDefaultTemplateStructureApiData $structure): self
     {
         $this->structure = $structure;
+        return $this;
+    }
+
+    public function getQuality(): mixed
+    {
+        return $this->quality;
+    }
+
+    public function setQuality($quality): self
+    {
+        $this->quality = $quality;
+        return $this;
+    }
+
+    public function getPlatform(): \Infobip\Model\Platform|null
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform(?\Infobip\Model\Platform $platform): self
+    {
+        $this->platform = $platform;
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTime|null
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getLastUpdatedAt(): \DateTime|null
+    {
+        return $this->lastUpdatedAt;
+    }
+
+    public function setLastUpdatedAt(?\DateTime $lastUpdatedAt): self
+    {
+        $this->lastUpdatedAt = $lastUpdatedAt;
         return $this;
     }
 }

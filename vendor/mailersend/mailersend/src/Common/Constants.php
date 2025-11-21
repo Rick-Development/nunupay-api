@@ -4,11 +4,11 @@ namespace MailerSend\Common;
 
 class Constants
 {
-    public const SDK_VERSION = 'v0.24.0';
+    public const SDK_VERSION = 'v0.34.0';
     public const DEFAULT_LIMIT = 25;
     public const MIN_LIMIT = 10;
     public const MAX_LIMIT = 100;
-    public const POSSIBLE_EVENT_TYPES = ['queued', 'sent', 'delivered', 'soft_bounced', 'hard_bounced', 'junk', 'opened', 'clicked', 'unsubscribed', 'spam_complaints'];
+    public const POSSIBLE_EVENT_TYPES = ['queued', 'sent', 'delivered', 'soft_bounced', 'hard_bounced', 'junk', 'opened', 'clicked', 'unsubscribed', 'spam_complaints', 'opened_unique', 'clicked_unique'];
     public const POSSIBLE_SMS_STATUSES = ['queued', 'sent', 'delivered', 'failed'];
     public const POSSIBLE_SMS_RECIPIENT_STATUSES = ['active', 'opt_out'];
     public const POSSIBLE_GROUP_BY_OPTIONS = ['days', 'weeks', 'months', 'years'];

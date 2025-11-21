@@ -2,12 +2,11 @@
 
 namespace MailerSend\Helpers;
 
-use Assert\Assertion;
 use Assert\AssertionFailedException;
-use Illuminate\Support\Collection;
 use MailerSend\Exceptions\MailerSendAssertException;
 use MailerSend\Helpers\Builder\EmailParams;
 use MailerSend\Helpers\Builder\SmsParams;
+use MailerSend\Helpers\MailerSendAssertion as Assertion;
 
 class GeneralHelpers
 {
@@ -87,9 +86,9 @@ class GeneralHelpers
 
     public static function mapToArray(array $data, string $object): array
     {
-        return (new Collection($data))->map(fn ($v) => is_object($v) && is_a(
-            $v,
-            $object
-        ) ? $v->toArray() : $v)->toArray();
+        return array_map(
+            fn ($v) => is_object($v) && is_a($v, $object) ? $v->toArray() : $v,
+            $data
+        );
     }
 }

@@ -24,11 +24,12 @@ abstract class ServiceOptions
      * @param bool $autoTranscribe Instructs the Speech Recognition service to automatically transcribe all recordings made on the account.
      * @param bool $dataLogging Data logging allows Twilio to improve the quality of the speech recognition & language understanding services through using customer data to refine, fine tune and evaluate machine learning models. Note: Data logging cannot be activated via API, only via www.twilio.com, as it requires additional consent.
      * @param string $friendlyName A human readable description of this resource, up to 64 characters.
-     * @param string $languageCode The default language code of the audio.
+     * @param string $languageCode The language code set during Service creation determines the Transcription language for all call recordings processed by that Service. The default is en-US if no language code is set. A Service can only support one language code, and it cannot be updated once it's set.
      * @param bool $autoRedaction Instructs the Speech Recognition service to automatically redact PII from all transcripts made on this service.
      * @param bool $mediaRedaction Instructs the Speech Recognition service to automatically redact PII from all transcripts media made on this service. The auto_redaction flag must be enabled, results in error otherwise.
      * @param string $webhookUrl The URL Twilio will request when executing the Webhook.
      * @param string $webhookHttpMethod
+     * @param string $encryptionCredentialSid The unique SID identifier of the Public Key resource used to encrypt the sentences and operator results.
      * @return CreateServiceOptions Options builder
      */
     public static function create(
@@ -40,7 +41,8 @@ abstract class ServiceOptions
         bool $autoRedaction = Values::BOOL_NONE,
         bool $mediaRedaction = Values::BOOL_NONE,
         string $webhookUrl = Values::NONE,
-        string $webhookHttpMethod = Values::NONE
+        string $webhookHttpMethod = Values::NONE,
+        string $encryptionCredentialSid = Values::NONE
 
     ): CreateServiceOptions
     {
@@ -52,7 +54,8 @@ abstract class ServiceOptions
             $autoRedaction,
             $mediaRedaction,
             $webhookUrl,
-            $webhookHttpMethod
+            $webhookHttpMethod,
+            $encryptionCredentialSid
         );
     }
 
@@ -63,12 +66,12 @@ abstract class ServiceOptions
      * @param bool $autoTranscribe Instructs the Speech Recognition service to automatically transcribe all recordings made on the account.
      * @param bool $dataLogging Data logging allows Twilio to improve the quality of the speech recognition & language understanding services through using customer data to refine, fine tune and evaluate machine learning models. Note: Data logging cannot be activated via API, only via www.twilio.com, as it requires additional consent.
      * @param string $friendlyName A human readable description of this resource, up to 64 characters.
-     * @param string $languageCode The default language code of the audio.
      * @param string $uniqueName Provides a unique and addressable name to be assigned to this Service, assigned by the developer, to be optionally used in addition to SID.
      * @param bool $autoRedaction Instructs the Speech Recognition service to automatically redact PII from all transcripts made on this service.
      * @param bool $mediaRedaction Instructs the Speech Recognition service to automatically redact PII from all transcripts media made on this service. The auto_redaction flag must be enabled, results in error otherwise.
      * @param string $webhookUrl The URL Twilio will request when executing the Webhook.
      * @param string $webhookHttpMethod
+     * @param string $encryptionCredentialSid The unique SID identifier of the Public Key resource used to encrypt the sentences and operator results.
      * @param string $ifMatch The If-Match HTTP request header
      * @return UpdateServiceOptions Options builder
      */
@@ -77,12 +80,12 @@ abstract class ServiceOptions
         bool $autoTranscribe = Values::BOOL_NONE,
         bool $dataLogging = Values::BOOL_NONE,
         string $friendlyName = Values::NONE,
-        string $languageCode = Values::NONE,
         string $uniqueName = Values::NONE,
         bool $autoRedaction = Values::BOOL_NONE,
         bool $mediaRedaction = Values::BOOL_NONE,
         string $webhookUrl = Values::NONE,
         string $webhookHttpMethod = Values::NONE,
+        string $encryptionCredentialSid = Values::NONE,
         string $ifMatch = Values::NONE
 
     ): UpdateServiceOptions
@@ -91,12 +94,12 @@ abstract class ServiceOptions
             $autoTranscribe,
             $dataLogging,
             $friendlyName,
-            $languageCode,
             $uniqueName,
             $autoRedaction,
             $mediaRedaction,
             $webhookUrl,
             $webhookHttpMethod,
+            $encryptionCredentialSid,
             $ifMatch
         );
     }
@@ -109,11 +112,12 @@ class CreateServiceOptions extends Options
      * @param bool $autoTranscribe Instructs the Speech Recognition service to automatically transcribe all recordings made on the account.
      * @param bool $dataLogging Data logging allows Twilio to improve the quality of the speech recognition & language understanding services through using customer data to refine, fine tune and evaluate machine learning models. Note: Data logging cannot be activated via API, only via www.twilio.com, as it requires additional consent.
      * @param string $friendlyName A human readable description of this resource, up to 64 characters.
-     * @param string $languageCode The default language code of the audio.
+     * @param string $languageCode The language code set during Service creation determines the Transcription language for all call recordings processed by that Service. The default is en-US if no language code is set. A Service can only support one language code, and it cannot be updated once it's set.
      * @param bool $autoRedaction Instructs the Speech Recognition service to automatically redact PII from all transcripts made on this service.
      * @param bool $mediaRedaction Instructs the Speech Recognition service to automatically redact PII from all transcripts media made on this service. The auto_redaction flag must be enabled, results in error otherwise.
      * @param string $webhookUrl The URL Twilio will request when executing the Webhook.
      * @param string $webhookHttpMethod
+     * @param string $encryptionCredentialSid The unique SID identifier of the Public Key resource used to encrypt the sentences and operator results.
      */
     public function __construct(
         
@@ -124,7 +128,8 @@ class CreateServiceOptions extends Options
         bool $autoRedaction = Values::BOOL_NONE,
         bool $mediaRedaction = Values::BOOL_NONE,
         string $webhookUrl = Values::NONE,
-        string $webhookHttpMethod = Values::NONE
+        string $webhookHttpMethod = Values::NONE,
+        string $encryptionCredentialSid = Values::NONE
 
     ) {
         $this->options['autoTranscribe'] = $autoTranscribe;
@@ -135,6 +140,7 @@ class CreateServiceOptions extends Options
         $this->options['mediaRedaction'] = $mediaRedaction;
         $this->options['webhookUrl'] = $webhookUrl;
         $this->options['webhookHttpMethod'] = $webhookHttpMethod;
+        $this->options['encryptionCredentialSid'] = $encryptionCredentialSid;
     }
 
     /**
@@ -174,9 +180,9 @@ class CreateServiceOptions extends Options
     }
 
     /**
-     * The default language code of the audio.
+     * The language code set during Service creation determines the Transcription language for all call recordings processed by that Service. The default is en-US if no language code is set. A Service can only support one language code, and it cannot be updated once it's set.
      *
-     * @param string $languageCode The default language code of the audio.
+     * @param string $languageCode The language code set during Service creation determines the Transcription language for all call recordings processed by that Service. The default is en-US if no language code is set. A Service can only support one language code, and it cannot be updated once it's set.
      * @return $this Fluent Builder
      */
     public function setLanguageCode(string $languageCode): self
@@ -232,6 +238,18 @@ class CreateServiceOptions extends Options
     }
 
     /**
+     * The unique SID identifier of the Public Key resource used to encrypt the sentences and operator results.
+     *
+     * @param string $encryptionCredentialSid The unique SID identifier of the Public Key resource used to encrypt the sentences and operator results.
+     * @return $this Fluent Builder
+     */
+    public function setEncryptionCredentialSid(string $encryptionCredentialSid): self
+    {
+        $this->options['encryptionCredentialSid'] = $encryptionCredentialSid;
+        return $this;
+    }
+
+    /**
      * Provide a friendly representation
      *
      * @return string Machine friendly representation
@@ -252,12 +270,12 @@ class UpdateServiceOptions extends Options
      * @param bool $autoTranscribe Instructs the Speech Recognition service to automatically transcribe all recordings made on the account.
      * @param bool $dataLogging Data logging allows Twilio to improve the quality of the speech recognition & language understanding services through using customer data to refine, fine tune and evaluate machine learning models. Note: Data logging cannot be activated via API, only via www.twilio.com, as it requires additional consent.
      * @param string $friendlyName A human readable description of this resource, up to 64 characters.
-     * @param string $languageCode The default language code of the audio.
      * @param string $uniqueName Provides a unique and addressable name to be assigned to this Service, assigned by the developer, to be optionally used in addition to SID.
      * @param bool $autoRedaction Instructs the Speech Recognition service to automatically redact PII from all transcripts made on this service.
      * @param bool $mediaRedaction Instructs the Speech Recognition service to automatically redact PII from all transcripts media made on this service. The auto_redaction flag must be enabled, results in error otherwise.
      * @param string $webhookUrl The URL Twilio will request when executing the Webhook.
      * @param string $webhookHttpMethod
+     * @param string $encryptionCredentialSid The unique SID identifier of the Public Key resource used to encrypt the sentences and operator results.
      * @param string $ifMatch The If-Match HTTP request header
      */
     public function __construct(
@@ -265,24 +283,24 @@ class UpdateServiceOptions extends Options
         bool $autoTranscribe = Values::BOOL_NONE,
         bool $dataLogging = Values::BOOL_NONE,
         string $friendlyName = Values::NONE,
-        string $languageCode = Values::NONE,
         string $uniqueName = Values::NONE,
         bool $autoRedaction = Values::BOOL_NONE,
         bool $mediaRedaction = Values::BOOL_NONE,
         string $webhookUrl = Values::NONE,
         string $webhookHttpMethod = Values::NONE,
+        string $encryptionCredentialSid = Values::NONE,
         string $ifMatch = Values::NONE
 
     ) {
         $this->options['autoTranscribe'] = $autoTranscribe;
         $this->options['dataLogging'] = $dataLogging;
         $this->options['friendlyName'] = $friendlyName;
-        $this->options['languageCode'] = $languageCode;
         $this->options['uniqueName'] = $uniqueName;
         $this->options['autoRedaction'] = $autoRedaction;
         $this->options['mediaRedaction'] = $mediaRedaction;
         $this->options['webhookUrl'] = $webhookUrl;
         $this->options['webhookHttpMethod'] = $webhookHttpMethod;
+        $this->options['encryptionCredentialSid'] = $encryptionCredentialSid;
         $this->options['ifMatch'] = $ifMatch;
     }
 
@@ -319,18 +337,6 @@ class UpdateServiceOptions extends Options
     public function setFriendlyName(string $friendlyName): self
     {
         $this->options['friendlyName'] = $friendlyName;
-        return $this;
-    }
-
-    /**
-     * The default language code of the audio.
-     *
-     * @param string $languageCode The default language code of the audio.
-     * @return $this Fluent Builder
-     */
-    public function setLanguageCode(string $languageCode): self
-    {
-        $this->options['languageCode'] = $languageCode;
         return $this;
     }
 
@@ -389,6 +395,18 @@ class UpdateServiceOptions extends Options
     public function setWebhookHttpMethod(string $webhookHttpMethod): self
     {
         $this->options['webhookHttpMethod'] = $webhookHttpMethod;
+        return $this;
+    }
+
+    /**
+     * The unique SID identifier of the Public Key resource used to encrypt the sentences and operator results.
+     *
+     * @param string $encryptionCredentialSid The unique SID identifier of the Public Key resource used to encrypt the sentences and operator results.
+     * @return $this Fluent Builder
+     */
+    public function setEncryptionCredentialSid(string $encryptionCredentialSid): self
+    {
+        $this->options['encryptionCredentialSid'] = $encryptionCredentialSid;
         return $this;
     }
 

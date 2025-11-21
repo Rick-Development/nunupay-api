@@ -13,6 +13,7 @@ namespace Symfony\Component\Serializer\Normalizer;
 
 use Symfony\Component\PropertyAccess\Exception\UninitializedPropertyException;
 use Symfony\Component\PropertyInfo\PropertyTypeExtractorInterface;
+use Symfony\Component\Serializer\Exception\LogicException;
 use Symfony\Component\Serializer\Mapping\ClassDiscriminatorResolverInterface;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
@@ -33,10 +34,8 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
  *
  * @author Matthieu Napoli <matthieu@mnapoli.fr>
  * @author Kévin Dunglas <dunglas@gmail.com>
- *
- * @final since Symfony 6.3
  */
-class PropertyNormalizer extends AbstractObjectNormalizer
+final class PropertyNormalizer extends AbstractObjectNormalizer
 {
     public const NORMALIZE_PUBLIC = 1;
     public const NORMALIZE_PROTECTED = 2;
@@ -58,33 +57,17 @@ class PropertyNormalizer extends AbstractObjectNormalizer
 
     public function getSupportedTypes(?string $format): array
     {
-        return ['object' => __CLASS__ === static::class || $this->hasCacheableSupportsMethod()];
+        return ['object' => true];
     }
 
-    /**
-     * @param array $context
-     */
-    public function supportsNormalization(mixed $data, ?string $format = null /* , array $context = [] */): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return parent::supportsNormalization($data, $format) && $this->supports($data::class);
     }
 
-    /**
-     * @param array $context
-     */
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null /* , array $context = [] */): bool
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return parent::supportsDenormalization($data, $type, $format) && $this->supports($type);
-    }
-
-    /**
-     * @deprecated since Symfony 6.3, use "getSupportedTypes()" instead
-     */
-    public function hasCacheableSupportsMethod(): bool
-    {
-        trigger_deprecation('symfony/serializer', '6.3', 'The "%s()" method is deprecated, implement "%s::getSupportedTypes()" instead.', __METHOD__, get_debug_type($this));
-
-        return __CLASS__ === static::class;
     }
 
     /**
@@ -114,6 +97,10 @@ class PropertyNormalizer extends AbstractObjectNormalizer
     {
         if (!parent::isAllowedAttribute($classOrObject, $attribute, $format, $context)) {
             return false;
+        }
+
+        if ($this->classDiscriminatorResolver?->getMappingForMappedObject($classOrObject)?->getTypeProperty() === $attribute) {
+            return true;
         }
 
         try {
@@ -180,17 +167,14 @@ class PropertyNormalizer extends AbstractObjectNormalizer
                 || ($reflectionProperty->isProtected() && !\array_key_exists("\0*\0{$reflectionProperty->name}", $propertyValues))
                 || ($reflectionProperty->isPrivate() && !\array_key_exists("\0{$reflectionProperty->class}\0{$reflectionProperty->name}", $propertyValues))
             ) {
-                throw new UninitializedPropertyException(sprintf('The property "%s::$%s" is not initialized.', $object::class, $reflectionProperty->name));
+                throw new UninitializedPropertyException(\sprintf('The property "%s::$%s" is not initialized.', $object::class, $reflectionProperty->name));
             }
         }
 
         return $reflectionProperty->getValue($object);
     }
 
-    /**
-     * @return void
-     */
-    protected function setAttributeValue(object $object, string $attribute, mixed $value, ?string $format = null, array $context = [])
+    protected function setAttributeValue(object $object, string $attribute, mixed $value, ?string $format = null, array $context = []): void
     {
         try {
             $reflectionProperty = $this->getReflectionProperty($object, $attribute);
@@ -202,7 +186,22 @@ class PropertyNormalizer extends AbstractObjectNormalizer
             return;
         }
 
-        $reflectionProperty->setValue($object, $value);
+        if (!$reflectionProperty->isReadOnly()) {
+            $reflectionProperty->setValue($object, $value);
+
+            return;
+        }
+
+        if (!$reflectionProperty->isInitialized($object)) {
+            $declaringClass = $reflectionProperty->getDeclaringClass();
+            $declaringClass->getProperty($reflectionProperty->getName())->setValue($object, $value);
+
+            return;
+        }
+
+        if ($reflectionProperty->getValue($object) !== $value) {
+            throw new LogicException(\sprintf('Attempting to change readonly property "%s"::$%s.', $object::class, $reflectionProperty->getName()));
+        }
     }
 
     /**

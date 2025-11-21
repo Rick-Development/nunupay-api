@@ -2,7 +2,7 @@
 
 namespace MailerSend\Helpers\Builder;
 
-use Illuminate\Contracts\Support\Arrayable;
+use MailerSend\Contracts\Arrayable;
 
 class EmailVerificationParams implements Arrayable, \JsonSerializable
 {
@@ -75,7 +75,7 @@ class EmailVerificationParams implements Arrayable, \JsonSerializable
     {
         return [
             'name' => $this->getName(),
-            'emailAddresses' => $this->emailAddresses,
+            'emails' => $this->emailAddresses,
         ];
     }
 

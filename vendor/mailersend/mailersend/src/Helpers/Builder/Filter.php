@@ -2,8 +2,8 @@
 
 namespace MailerSend\Helpers\Builder;
 
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Arr;
+use MailerSend\Contracts\Arrayable;
+use MailerSend\Helpers\Arr;
 
 class Filter implements Arrayable, \JsonSerializable
 {
@@ -11,7 +11,7 @@ class Filter implements Arrayable, \JsonSerializable
     protected string $value;
     protected ?string $key;
 
-    public function __construct(string $comparer, string $value, string $key = null)
+    public function __construct(string $comparer, string $value, ?string $key = null)
     {
         $this->comparer = $comparer;
         $this->value = $value;

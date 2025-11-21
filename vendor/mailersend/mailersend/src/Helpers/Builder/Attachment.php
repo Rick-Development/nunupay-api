@@ -2,7 +2,7 @@
 
 namespace MailerSend\Helpers\Builder;
 
-use Illuminate\Contracts\Support\Arrayable;
+use MailerSend\Contracts\Arrayable;
 
 class Attachment implements Arrayable, \JsonSerializable
 {
@@ -12,10 +12,10 @@ class Attachment implements Arrayable, \JsonSerializable
     protected ?string $id = null;
 
     public function __construct(
-        string $content = null,
-        string $filename = null,
-        string $disposition = null,
-        string $id = null
+        ?string $content = null,
+        ?string $filename = null,
+        ?string $disposition = null,
+        ?string $id = null
     ) {
         if ($content) {
             $this->setContent($content);

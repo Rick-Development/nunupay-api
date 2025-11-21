@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Infobip\Test;
 
-use Infobip\Model\ModelInterface;
-use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Validator\Constraints\Choice;
 
-class SimpleModelWithValidations implements ModelInterface
+class SimpleModelWithValidations
 {
     public function __construct(
         #[Choice(['correct-a'])]
@@ -17,18 +15,6 @@ class SimpleModelWithValidations implements ModelInterface
         private string $propertyB,
         private ?SimpleModelWithValidations $nestedModel = null,
     ) {
-    }
-
-    #[Ignore]
-    public function getModelName(): string
-    {
-        return 'model-name';
-    }
-
-    #[Ignore]
-    public static function getDiscriminator(): ?string
-    {
-        return null;
     }
 
     public function getPropertyA(): string

@@ -15,6 +15,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.34.0] - 2025 06 04
+
+### Changed
+
+- php version 8.4 support
+- PHPUnit 12 support
+
+## [0.33.0] - 2025 06 04
+
+### Added
+
+- Inbound priority support
+
+### Fixed
+
+- Email verification parameters
+
+## [0.32.0] - 2025 04 03
+
+### Changed
+
+- php version 8.3 support
+
+## [0.31.0] - 2025 04 03
+
+### Added
+
+- `list_unsubscribe` support
+
+## [0.28.0] - 2024 11 25
+
+### Added
+
+- Add opened_unique, clicked_unique to analytics event list
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.27.0] - 2024 08 28
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+- Remove simple personalization
+
+## [0.26.0] - 2024 08 26
+
+### Added
+
+- Add email thread references header support
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.25.0] - 2024 05 27
+
+### Added
+
+- Add show all tokens, show single token, and change token name api endpoints
+
+### Changed
+
+### Fixed
+
+### Removed
+
+
 ## [0.24.0] - 2024 05 09
 
 ### Added

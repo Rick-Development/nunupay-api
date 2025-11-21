@@ -1,49 +1,111 @@
 <p style="text-align: center; padding: 3rem;"><img src="./logo.jpg" width="150" alt="Laravel world"/></p>
 
-The World is a Laravel package which provides a list of the countries, states, cities, timezones, currencies and languages.
+<p align="center">
+<a href="https://packagist.org/packages/nnjeim/world"><img src="https://poser.pugx.org/nnjeim/world/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/nnjeim/world"><img src="https://poser.pugx.org/nnjeim/world/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/nnjeim/world"><img src="https://poser.pugx.org/nnjeim/world/license.svg" alt="License"></a>
+</p>
 
-It can be consumed with the World Facade or the defined API routes.
+The World is a Laravel package that provides a comprehensive list of countries, states, cities, timezones, currencies, and languages. You can access the data using the **World Facade** or through defined API routes.
 
+## Table of Contents
+
+- [Installation](#installation)
+  - [Automated Installation](#automated-installation)
+  - [Manual Installation](#manual-installation)
+- [What's New in v1.1.35](#whats-new-in-v1136-)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [Examples](#examples)
+- [Usage](#usage)
+  - [List All Countries](#list-all-countries)
+  - [Fetch Country with States & Cities](#fetch-country-with-states--cities)
+  - [List All Cities by Country ID](#list-all-cities-by-country-id)
+- [Available Actions](#available-actions)
+- [Available API Routes](#available-api-routes)
+  - [Countries](#countries)
+  - [States](#states)
+  - [Cities](#cities)
+  - [Timezones](#timezones)
+  - [Currencies](#currencies)
+  - [Languages](#languages)
+- [Localization](#localization)
+- [Schema](#schema)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- 
 ### Installation
+
+First, set your application environment to local:
 
 ```bash
 set APP_ENV=local
+```
+
+Then, install the package via composer:
+
+```
 composer require nnjeim/world
 ```
 
-set the ENV variable WORLD_DB_CONNECTION to the desired database connection (optional)  
+Optionally, set the WORLD_DB_CONNECTION environment variable to your desired database connection.
 
-The `world:install` command is a helper to automate the installation process
+#### Automated Installation
+
+Run the following Artisan command to automate the installation process:
 
 ```
 php artisan world:install
 ```
+#### Manual Installation
+If you prefer to install the package manually, follow these steps:
 
-Optionally you can manually install the package by following the below steps:
+1. Publish the package configuration file:
+
 ```bash
-php artisan vendor:publish --tag=world
+php artisan vendor:publish --tag=world --force
+```
+2. Run the migrations:
 
-php artisan migrate
+```bash
+php artisan migrate 
+```
+3. Seed the database:
 
-php artisan db:seed --class=WorldSeeder # (requires ~15min)
+```bash
+php artisan db:seed --class=WorldSeeder
+````
+
+### Upgrading
+If you're upgrading from a previous version, you may want to re-publish the config file:
+```bash
+php artisan vendor:publish --tag=world --force
 ```
 
-### What's new in v1.1.32?  
-- Tested with Laravel 11 and php 8.4
-- Minor code improvements
+### What's new in v1.1.36?  
+- added Armenian locale support by @vahan
+- added Nepali locale support by @sagautam5
+- added Sawahili locale support by @ludanadeodatus
+- Available php memory check by @sorrowflufloyd
 
 ### Changelog
 
-Please read [CHANGELOG](CHANGELOG.md) for more information of what was changed recently. 
+For detailed information on recent changes, please see the [CHANGELOG](CHANGELOG.md).
 
 ### Contributing
 
-Please read [CONTRIBUTING](CONTRIBUTING.md) for more details.
+We welcome contributions! For details on how to get started, please review our [CONTRIBUTING](CONTRIBUTING.md) guidlines.
   
 Examples  
-https://laravel-world.com/api/countries  
-https://laravel-world.com/api/countries?search=rom  
-https://laravel-world.com/api/states?filters[country_code]=RO&fields=cities  
+--------
+Explore the API examples on our live site:
+
+List all countries:  
+https://world.bmbc.cloud/api/countries  
+Search for a country:   
+https://world.bmbc.cloud/api/countries?search=rom  
+Get states by country code:  
+https://world.bmbc.cloud/api/states?filters[country_code]=RO&fields=cities  
 
 ### Usage
 
@@ -299,10 +361,13 @@ All routes can be prefixed by any string. Ex.: `admin`, `api`...
 
 ### Localization
 
-The available locales are ar, bn, br, de, en, es, fr, it, ja, kr, nl, pl, pt, ro, ru, tr and zh.  
+The available locales are 
+```
+ar, az, bn, br, de, en, es, fr, hy, it, ja, kr, ne, nl, pl, pt, ro, ru, sw, tr and zh.
+```
 The default locale is en.
 
-Include in the request header:
+Header option
 
 ```
 accept-language=locale
@@ -319,8 +384,8 @@ World::setLocale('zh')->countries();
 <p><img src="./schema.jpg" width="800px" /></p>
 
 ### Configuration  
-The configuration of the world package is in the [`world.php` config file](/config/world.php).  
-If you are upgrading from a previous version, you should consider re-publishing the file by issuing:
+The configuration for the World package is located in the world.php file.  
+If you're upgrading from a previous version, you may want to re-publish the config file:
 
 ```bash
 php artisan vendor:publish --tag=world --force

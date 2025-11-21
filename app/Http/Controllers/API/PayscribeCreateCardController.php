@@ -11,6 +11,7 @@ use App\Models\PayscribeVirtualCardTransaction;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Http\Helpers\Payscribe\PayscribeCustomersHelper;
 
 class PayscribeCreateCardController extends Controller
 {
@@ -19,15 +20,11 @@ class PayscribeCreateCardController extends Controller
     public function __construct(private CreateCardHelper $createCardHelper, private PayscribeBalanceHelper $payscribeBalanceHelper){}
 
     public function createCard(Request $request){
-        $data = $request->validate(
-            [
-                "customer_id"=> 'required | string',
-                "currency"=> 'required | string',
-                "brand"=> 'required | string | in:VISA,MASTERCARD',
-                "amount"=> 'required | integer | min:1',
-                "type"=> 'required | string | in:virtual,physical',
-            ]
-        );
+        $data = $request->validate([
+            'brand'  => 'required|string|in:VISA,MASTERCARD',
+            'amount' => 'required|integer|min:1',
+        ]);
+        $user  = auth() -> user();
 
         // Validate the user's balance before proceeding
         $cardIssuingRate = (int) BasicControl::first()->card_issuing_rate;
@@ -42,13 +39,15 @@ class PayscribeCreateCardController extends Controller
         if(!!$validateBalance){
             return $validateBalance;
         }
-        //Modified amount ...Payscribe topup 1 USD by default 
-        // $amount = $data['amount'] - 1;
-        // Generate a UUID
         $referenceId = Str::uuid();
         // Convert to string if needed
         $referenceIdString = (string) $referenceId;
-        $data = array_merge($data, ['ref' => $referenceIdString]);
+        $data = array_merge($data, [
+            'customer_id' => '6a1bef8d-87f6-4742-8a3b-0a276544dbc6',// $user -> payscribe_id,
+            'ref' => $referenceIdString,
+            "type" => "virtual"
+    
+    ]);
 
         $response = json_decode($this->createCardHelper->createCard($data), true);
         
@@ -61,6 +60,7 @@ class PayscribeCreateCardController extends Controller
             //update balance
             $this->updateBalance($totalCharged);
             /// Store card details
+            // $user->updateBalance();
 
         }
 

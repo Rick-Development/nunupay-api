@@ -75,9 +75,16 @@ class TaskList extends ListResource
                 $options['attributes'],
             'VirtualStartTime' =>
                 Serialize::iso8601DateTime($options['virtualStartTime']),
+            'RoutingTarget' =>
+                $options['routingTarget'],
+            'IgnoreCapacity' =>
+                $options['ignoreCapacity'],
+            'TaskQueueSid' =>
+                $options['taskQueueSid'],
         ]);
 
-        $payload = $this->version->create('POST', $this->uri, [], $data);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json' ]);
+        $payload = $this->version->create('POST', $this->uri, [], $data, $headers);
 
         return new TaskInstance(
             $this->version,
@@ -103,7 +110,7 @@ class TaskList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return TaskInstance[] Array of results
      */
-    public function read(array $options = [], int $limit = null, $pageSize = null): array
+    public function read(array $options = [], ?int $limit = null, $pageSize = null): array
     {
         return \iterator_to_array($this->stream($options, $limit, $pageSize), false);
     }
@@ -127,7 +134,7 @@ class TaskList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return Stream stream of results
      */
-    public function stream(array $options = [], int $limit = null, $pageSize = null): Stream
+    public function stream(array $options = [], ?int $limit = null, $pageSize = null): Stream
     {
         $limits = $this->version->readLimits($limit, $pageSize);
 
@@ -169,6 +176,8 @@ class TaskList extends ListResource
                 $options['taskQueueName'],
             'EvaluateTaskAttributes' =>
                 $options['evaluateTaskAttributes'],
+            'RoutingTarget' =>
+                $options['routingTarget'],
             'Ordering' =>
                 $options['ordering'],
             'HasAddons' =>
@@ -178,7 +187,8 @@ class TaskList extends ListResource
             'PageSize' => $pageSize,
         ]);
 
-        $response = $this->version->page('GET', $this->uri, $params);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json']);
+        $response = $this->version->page('GET', $this->uri, $params, [], $headers);
 
         return new TaskPage($this->version, $response, $this->solution);
     }

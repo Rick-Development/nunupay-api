@@ -4,14 +4,13 @@
 
 /**
  * CallsApi
- * PHP version 8.0
+ * PHP version 8.3
  *
  * @category Class
  * @package  Infobip
  * @author   Infobip Support
  * @link     https://www.infobip.com
  */
-
 declare(strict_types=1);
 
 /**
@@ -25,7 +24,6 @@ declare(strict_types=1);
  *
  * Do not edit manually. To learn how to raise an issue, see the CONTRIBUTING guide or contact us @ support@infobip.com.
  */
-
 namespace Infobip\Api;
 
 use GuzzleHttp\Client;
@@ -90,7 +88,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function addExistingConferenceCall(string $conferenceId, string $callId, \Infobip\Model\CallsAddExistingCallRequest $callsAddExistingCallRequest)
     {
@@ -173,11 +171,8 @@ final class CallsApi
              'callsAddExistingCallRequest' => $callsAddExistingCallRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
@@ -187,14 +182,11 @@ final class CallsApi
                     'callsAddExistingCallRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/call/{callId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -222,38 +214,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsAddExistingCallRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsAddExistingCallRequest)
                 : $callsAddExistingCallRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -295,7 +259,7 @@ final class CallsApi
     /**
      * Create response for operation 'addExistingConferenceCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function addExistingConferenceCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -339,6 +303,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -396,7 +371,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConferenceAndCall|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConferenceAndCall|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function addNewConferenceCall(string $conferenceId, \Infobip\Model\CallsAddNewCallRequest $callsAddNewCallRequest)
     {
@@ -476,25 +451,19 @@ final class CallsApi
              'callsAddNewCallRequest' => $callsAddNewCallRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsAddNewCallRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/call';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -513,38 +482,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsAddNewCallRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsAddNewCallRequest)
                 : $callsAddNewCallRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -586,7 +527,7 @@ final class CallsApi
     /**
      * Create response for operation 'addNewConferenceCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConferenceAndCall|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConferenceAndCall|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function addNewConferenceCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -630,6 +571,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -687,7 +639,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function answerCall(string $callId, \Infobip\Model\CallsAnswerRequest $callsAnswerRequest)
     {
@@ -767,25 +719,19 @@ final class CallsApi
              'callsAnswerRequest' => $callsAnswerRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsAnswerRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/answer';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -804,38 +750,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsAnswerRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsAnswerRequest)
                 : $callsAnswerRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -877,7 +795,7 @@ final class CallsApi
     /**
      * Create response for operation 'answerCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function answerCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -921,6 +839,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -978,7 +907,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function applicationTransfer(string $callId, \Infobip\Model\CallsApplicationTransferRequest $callsApplicationTransferRequest)
     {
@@ -1058,25 +987,19 @@ final class CallsApi
              'callsApplicationTransferRequest' => $callsApplicationTransferRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsApplicationTransferRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/application-transfer';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -1095,38 +1018,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsApplicationTransferRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsApplicationTransferRequest)
                 : $callsApplicationTransferRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -1168,7 +1063,7 @@ final class CallsApi
     /**
      * Create response for operation 'applicationTransfer'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function applicationTransferResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -1212,6 +1107,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -1269,7 +1175,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function applicationTransferAccept(string $callId, string $transferId)
     {
@@ -1349,25 +1255,19 @@ final class CallsApi
              'transferId' => $transferId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'transferId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/application-transfer/{transferId}/accept';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -1392,38 +1292,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -1464,7 +1334,7 @@ final class CallsApi
     /**
      * Create response for operation 'applicationTransferAccept'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function applicationTransferAcceptResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -1508,6 +1378,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -1565,7 +1446,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function applicationTransferReject(string $callId, string $transferId)
     {
@@ -1645,25 +1526,19 @@ final class CallsApi
              'transferId' => $transferId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'transferId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/application-transfer/{transferId}/reject';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -1688,38 +1563,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -1760,7 +1605,7 @@ final class CallsApi
     /**
      * Create response for operation 'applicationTransferReject'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function applicationTransferRejectResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -1804,6 +1649,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -1861,7 +1717,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function callCaptureDtmf(string $callId, \Infobip\Model\CallsDtmfCaptureRequest $callsDtmfCaptureRequest)
     {
@@ -1941,25 +1797,19 @@ final class CallsApi
              'callsDtmfCaptureRequest' => $callsDtmfCaptureRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsDtmfCaptureRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/capture/dtmf';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -1978,38 +1828,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsDtmfCaptureRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsDtmfCaptureRequest)
                 : $callsDtmfCaptureRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -2051,7 +1873,7 @@ final class CallsApi
     /**
      * Create response for operation 'callCaptureDtmf'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function callCaptureDtmfResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -2095,6 +1917,285 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation callCaptureSpeech
+     *
+     * Capture Speech
+     *
+     * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsSpeechCaptureRequest $callsSpeechCaptureRequest callsSpeechCaptureRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function callCaptureSpeech(string $callId, \Infobip\Model\CallsSpeechCaptureRequest $callsSpeechCaptureRequest)
+    {
+        $request = $this->callCaptureSpeechRequest($callId, $callsSpeechCaptureRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->callCaptureSpeechResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->callCaptureSpeechApiException($exception);
+        }
+    }
+
+    /**
+     * Operation callCaptureSpeechAsync
+     *
+     * Capture Speech
+     *
+     * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsSpeechCaptureRequest $callsSpeechCaptureRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function callCaptureSpeechAsync(string $callId, \Infobip\Model\CallsSpeechCaptureRequest $callsSpeechCaptureRequest): PromiseInterface
+    {
+        $request = $this->callCaptureSpeechRequest($callId, $callsSpeechCaptureRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->callCaptureSpeechResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->callCaptureSpeechApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'callCaptureSpeech'
+     *
+     * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsSpeechCaptureRequest $callsSpeechCaptureRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function callCaptureSpeechRequest(string $callId, \Infobip\Model\CallsSpeechCaptureRequest $callsSpeechCaptureRequest): Request
+    {
+        $allData = [
+             'callId' => $callId,
+             'callsSpeechCaptureRequest' => $callsSpeechCaptureRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsSpeechCaptureRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/calls/{callId}/capture/speech';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($callId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'callId' . '}',
+                $this->objectSerializer->toPathValue($callId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsSpeechCaptureRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsSpeechCaptureRequest)
+                : $callsSpeechCaptureRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'callCaptureSpeech'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function callCaptureSpeechResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsActionResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'callCaptureSpeech'
+     */
+    private function callCaptureSpeechApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -2152,7 +2253,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function callPlayFile(string $callId, \Infobip\Model\CallsPlayRequest $callsPlayRequest)
     {
@@ -2232,25 +2333,19 @@ final class CallsApi
              'callsPlayRequest' => $callsPlayRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsPlayRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/play';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -2269,38 +2364,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsPlayRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsPlayRequest)
                 : $callsPlayRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -2342,7 +2409,7 @@ final class CallsApi
     /**
      * Create response for operation 'callPlayFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function callPlayFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -2386,6 +2453,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -2443,7 +2521,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function callSayText(string $callId, \Infobip\Model\CallsSayRequest $callsSayRequest)
     {
@@ -2523,25 +2601,19 @@ final class CallsApi
              'callsSayRequest' => $callsSayRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsSayRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/say';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -2560,38 +2632,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsSayRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsSayRequest)
                 : $callsSayRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -2633,7 +2677,7 @@ final class CallsApi
     /**
      * Create response for operation 'callSayText'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function callSayTextResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -2677,6 +2721,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -2734,7 +2789,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function callSendDtmf(string $callId, \Infobip\Model\CallsDtmfSendRequest $callsDtmfSendRequest)
     {
@@ -2814,25 +2869,19 @@ final class CallsApi
              'callsDtmfSendRequest' => $callsDtmfSendRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsDtmfSendRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/send-dtmf';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -2851,38 +2900,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsDtmfSendRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsDtmfSendRequest)
                 : $callsDtmfSendRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -2924,7 +2945,7 @@ final class CallsApi
     /**
      * Create response for operation 'callSendDtmf'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function callSendDtmfResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -2968,6 +2989,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -3025,7 +3057,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function callStartRecording(string $callId, \Infobip\Model\CallsRecordingStartRequest $callsRecordingStartRequest)
     {
@@ -3105,25 +3137,19 @@ final class CallsApi
              'callsRecordingStartRequest' => $callsRecordingStartRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsRecordingStartRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/start-recording';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -3142,38 +3168,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsRecordingStartRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsRecordingStartRequest)
                 : $callsRecordingStartRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -3215,7 +3213,7 @@ final class CallsApi
     /**
      * Create response for operation 'callStartRecording'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function callStartRecordingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -3269,6 +3267,285 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation callStartTranscription
+     *
+     * Start transcription
+     *
+     * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsStartTranscriptionRequest $callsStartTranscriptionRequest callsStartTranscriptionRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function callStartTranscription(string $callId, \Infobip\Model\CallsStartTranscriptionRequest $callsStartTranscriptionRequest)
+    {
+        $request = $this->callStartTranscriptionRequest($callId, $callsStartTranscriptionRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->callStartTranscriptionResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->callStartTranscriptionApiException($exception);
+        }
+    }
+
+    /**
+     * Operation callStartTranscriptionAsync
+     *
+     * Start transcription
+     *
+     * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsStartTranscriptionRequest $callsStartTranscriptionRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function callStartTranscriptionAsync(string $callId, \Infobip\Model\CallsStartTranscriptionRequest $callsStartTranscriptionRequest): PromiseInterface
+    {
+        $request = $this->callStartTranscriptionRequest($callId, $callsStartTranscriptionRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->callStartTranscriptionResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->callStartTranscriptionApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'callStartTranscription'
+     *
+     * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsStartTranscriptionRequest $callsStartTranscriptionRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function callStartTranscriptionRequest(string $callId, \Infobip\Model\CallsStartTranscriptionRequest $callsStartTranscriptionRequest): Request
+    {
+        $allData = [
+             'callId' => $callId,
+             'callsStartTranscriptionRequest' => $callsStartTranscriptionRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsStartTranscriptionRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/calls/{callId}/start-transcription';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($callId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'callId' . '}',
+                $this->objectSerializer->toPathValue($callId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsStartTranscriptionRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsStartTranscriptionRequest)
+                : $callsStartTranscriptionRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'callStartTranscription'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function callStartTranscriptionResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsActionResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'callStartTranscription'
+     */
+    private function callStartTranscriptionApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 404) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -3312,14 +3589,15 @@ final class CallsApi
      * Stop playing file
      *
      * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsStopPlayRequest $callsStopPlayRequest callsStopPlayRequest (required)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function callStopPlayingFile(string $callId)
+    public function callStopPlayingFile(string $callId, \Infobip\Model\CallsStopPlayRequest $callsStopPlayRequest)
     {
-        $request = $this->callStopPlayingFileRequest($callId);
+        $request = $this->callStopPlayingFileRequest($callId, $callsStopPlayRequest);
 
         try {
             try {
@@ -3347,12 +3625,13 @@ final class CallsApi
      * Stop playing file
      *
      * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsStopPlayRequest $callsStopPlayRequest (required)
      *
      * @throws InvalidArgumentException
      */
-    public function callStopPlayingFileAsync(string $callId): PromiseInterface
+    public function callStopPlayingFileAsync(string $callId, \Infobip\Model\CallsStopPlayRequest $callsStopPlayRequest): PromiseInterface
     {
-        $request = $this->callStopPlayingFileRequest($callId);
+        $request = $this->callStopPlayingFileRequest($callId, $callsStopPlayRequest);
 
         return $this
             ->client
@@ -3383,31 +3662,30 @@ final class CallsApi
      * Create request for operation 'callStopPlayingFile'
      *
      * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsStopPlayRequest $callsStopPlayRequest (required)
      *
      * @throws InvalidArgumentException
      */
-    private function callStopPlayingFileRequest(string $callId): Request
+    private function callStopPlayingFileRequest(string $callId, \Infobip\Model\CallsStopPlayRequest $callsStopPlayRequest): Request
     {
         $allData = [
              'callId' => $callId,
+             'callsStopPlayRequest' => $callsStopPlayRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'callsStopPlayRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/stop-play';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -3423,37 +3701,13 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
+            'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
+        if (isset($callsStopPlayRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsStopPlayRequest)
+                : $callsStopPlayRequest;
         }
 
         $apiKey = $this->config->getApiKey();
@@ -3495,7 +3749,7 @@ final class CallsApi
     /**
      * Create response for operation 'callStopPlayingFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function callStopPlayingFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -3527,7 +3781,29 @@ final class CallsApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -3584,7 +3860,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function callStopRecording(string $callId)
     {
@@ -3661,22 +3937,16 @@ final class CallsApi
              'callId' => $callId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/stop-recording';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -3692,38 +3962,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -3764,7 +4004,7 @@ final class CallsApi
     /**
      * Create response for operation 'callStopRecording'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function callStopRecordingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -3808,6 +4048,261 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation callStopTranscription
+     *
+     * Stop transcription
+     *
+     * @param string $callId Call ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function callStopTranscription(string $callId)
+    {
+        $request = $this->callStopTranscriptionRequest($callId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->callStopTranscriptionResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->callStopTranscriptionApiException($exception);
+        }
+    }
+
+    /**
+     * Operation callStopTranscriptionAsync
+     *
+     * Stop transcription
+     *
+     * @param string $callId Call ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function callStopTranscriptionAsync(string $callId): PromiseInterface
+    {
+        $request = $this->callStopTranscriptionRequest($callId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->callStopTranscriptionResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->callStopTranscriptionApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'callStopTranscription'
+     *
+     * @param string $callId Call ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function callStopTranscriptionRequest(string $callId): Request
+    {
+        $allData = [
+             'callId' => $callId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/calls/{callId}/stop-transcription';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($callId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'callId' . '}',
+                $this->objectSerializer->toPathValue($callId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'callStopTranscription'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function callStopTranscriptionResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsActionResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'callStopTranscription'
+     */
+    private function callStopTranscriptionApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -3864,7 +4359,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function cancelBulk(string $bulkId)
     {
@@ -3941,22 +4436,16 @@ final class CallsApi
              'bulkId' => $bulkId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/bulks/{bulkId}/cancel';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -3972,38 +4461,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -4044,7 +4503,7 @@ final class CallsApi
     /**
      * Create response for operation 'cancelBulk'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function cancelBulkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -4077,6 +4536,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -4131,14 +4601,15 @@ final class CallsApi
      *
      * @param string $conferenceId Conference ID. (required)
      * @param \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition callsOnDemandComposition (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function composeConferenceRecording(string $conferenceId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition)
+    public function composeConferenceRecording(string $conferenceId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->composeConferenceRecordingRequest($conferenceId, $callsOnDemandComposition);
+        $request = $this->composeConferenceRecordingRequest($conferenceId, $callsOnDemandComposition, $location);
 
         try {
             try {
@@ -4167,12 +4638,13 @@ final class CallsApi
      *
      * @param string $conferenceId Conference ID. (required)
      * @param \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function composeConferenceRecordingAsync(string $conferenceId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition): PromiseInterface
+    public function composeConferenceRecordingAsync(string $conferenceId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->composeConferenceRecordingRequest($conferenceId, $callsOnDemandComposition);
+        $request = $this->composeConferenceRecordingRequest($conferenceId, $callsOnDemandComposition, $location);
 
         return $this
             ->client
@@ -4204,38 +4676,41 @@ final class CallsApi
      *
      * @param string $conferenceId Conference ID. (required)
      * @param \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function composeConferenceRecordingRequest(string $conferenceId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition): Request
+    private function composeConferenceRecordingRequest(string $conferenceId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'conferenceId' => $conferenceId,
              'callsOnDemandComposition' => $callsOnDemandComposition,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsOnDemandComposition' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/conferences/{conferenceId}/compose';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($conferenceId !== null) {
@@ -4251,38 +4726,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsOnDemandComposition)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsOnDemandComposition)
                 : $callsOnDemandComposition;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -4324,7 +4771,7 @@ final class CallsApi
     /**
      * Create response for operation 'composeConferenceRecording'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function composeConferenceRecordingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -4356,7 +4803,29 @@ final class CallsApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -4411,14 +4880,15 @@ final class CallsApi
      *
      * @param string $dialogId Dialog ID. (required)
      * @param \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition callsOnDemandComposition (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function composeDialogRecording(string $dialogId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition)
+    public function composeDialogRecording(string $dialogId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->composeDialogRecordingRequest($dialogId, $callsOnDemandComposition);
+        $request = $this->composeDialogRecordingRequest($dialogId, $callsOnDemandComposition, $location);
 
         try {
             try {
@@ -4447,12 +4917,13 @@ final class CallsApi
      *
      * @param string $dialogId Dialog ID. (required)
      * @param \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function composeDialogRecordingAsync(string $dialogId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition): PromiseInterface
+    public function composeDialogRecordingAsync(string $dialogId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->composeDialogRecordingRequest($dialogId, $callsOnDemandComposition);
+        $request = $this->composeDialogRecordingRequest($dialogId, $callsOnDemandComposition, $location);
 
         return $this
             ->client
@@ -4484,38 +4955,41 @@ final class CallsApi
      *
      * @param string $dialogId Dialog ID. (required)
      * @param \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function composeDialogRecordingRequest(string $dialogId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition): Request
+    private function composeDialogRecordingRequest(string $dialogId, \Infobip\Model\CallsOnDemandComposition $callsOnDemandComposition, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'dialogId' => $dialogId,
              'callsOnDemandComposition' => $callsOnDemandComposition,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsOnDemandComposition' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/dialogs/{dialogId}/compose';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($dialogId !== null) {
@@ -4531,38 +5005,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsOnDemandComposition)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsOnDemandComposition)
                 : $callsOnDemandComposition;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -4604,7 +5050,7 @@ final class CallsApi
     /**
      * Create response for operation 'composeDialogRecording'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function composeDialogRecordingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -4636,7 +5082,297 @@ final class CallsApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation conferenceBroadcastWebrtcText
+     *
+     * Broadcast text
+     *
+     * @param string $conferenceId Conference ID. (required)
+     * @param \Infobip\Model\CallsConferenceBroadcastWebrtcTextRequest $callsConferenceBroadcastWebrtcTextRequest callsConferenceBroadcastWebrtcTextRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function conferenceBroadcastWebrtcText(string $conferenceId, \Infobip\Model\CallsConferenceBroadcastWebrtcTextRequest $callsConferenceBroadcastWebrtcTextRequest)
+    {
+        $request = $this->conferenceBroadcastWebrtcTextRequest($conferenceId, $callsConferenceBroadcastWebrtcTextRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->conferenceBroadcastWebrtcTextResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->conferenceBroadcastWebrtcTextApiException($exception);
+        }
+    }
+
+    /**
+     * Operation conferenceBroadcastWebrtcTextAsync
+     *
+     * Broadcast text
+     *
+     * @param string $conferenceId Conference ID. (required)
+     * @param \Infobip\Model\CallsConferenceBroadcastWebrtcTextRequest $callsConferenceBroadcastWebrtcTextRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function conferenceBroadcastWebrtcTextAsync(string $conferenceId, \Infobip\Model\CallsConferenceBroadcastWebrtcTextRequest $callsConferenceBroadcastWebrtcTextRequest): PromiseInterface
+    {
+        $request = $this->conferenceBroadcastWebrtcTextRequest($conferenceId, $callsConferenceBroadcastWebrtcTextRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->conferenceBroadcastWebrtcTextResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->conferenceBroadcastWebrtcTextApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'conferenceBroadcastWebrtcText'
+     *
+     * @param string $conferenceId Conference ID. (required)
+     * @param \Infobip\Model\CallsConferenceBroadcastWebrtcTextRequest $callsConferenceBroadcastWebrtcTextRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function conferenceBroadcastWebrtcTextRequest(string $conferenceId, \Infobip\Model\CallsConferenceBroadcastWebrtcTextRequest $callsConferenceBroadcastWebrtcTextRequest): Request
+    {
+        $allData = [
+             'conferenceId' => $conferenceId,
+             'callsConferenceBroadcastWebrtcTextRequest' => $callsConferenceBroadcastWebrtcTextRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'conferenceId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsConferenceBroadcastWebrtcTextRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/conferences/{conferenceId}/broadcast-webrtc-text';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($conferenceId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'conferenceId' . '}',
+                $this->objectSerializer->toPathValue($conferenceId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsConferenceBroadcastWebrtcTextRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsConferenceBroadcastWebrtcTextRequest)
+                : $callsConferenceBroadcastWebrtcTextRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'conferenceBroadcastWebrtcText'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function conferenceBroadcastWebrtcTextResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsActionResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'conferenceBroadcastWebrtcText'
+     */
+    private function conferenceBroadcastWebrtcTextApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -4690,15 +5426,15 @@ final class CallsApi
      * Play file
      *
      * @param string $conferenceId Conference ID. (required)
-     * @param \Infobip\Model\CallsPlayRequest $callsPlayRequest callsPlayRequest (required)
+     * @param \Infobip\Model\CallsConferencePlayRequest $callsConferencePlayRequest callsConferencePlayRequest (required)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function conferencePlayFile(string $conferenceId, \Infobip\Model\CallsPlayRequest $callsPlayRequest)
+    public function conferencePlayFile(string $conferenceId, \Infobip\Model\CallsConferencePlayRequest $callsConferencePlayRequest)
     {
-        $request = $this->conferencePlayFileRequest($conferenceId, $callsPlayRequest);
+        $request = $this->conferencePlayFileRequest($conferenceId, $callsConferencePlayRequest);
 
         try {
             try {
@@ -4726,13 +5462,13 @@ final class CallsApi
      * Play file
      *
      * @param string $conferenceId Conference ID. (required)
-     * @param \Infobip\Model\CallsPlayRequest $callsPlayRequest (required)
+     * @param \Infobip\Model\CallsConferencePlayRequest $callsConferencePlayRequest (required)
      *
      * @throws InvalidArgumentException
      */
-    public function conferencePlayFileAsync(string $conferenceId, \Infobip\Model\CallsPlayRequest $callsPlayRequest): PromiseInterface
+    public function conferencePlayFileAsync(string $conferenceId, \Infobip\Model\CallsConferencePlayRequest $callsConferencePlayRequest): PromiseInterface
     {
-        $request = $this->conferencePlayFileRequest($conferenceId, $callsPlayRequest);
+        $request = $this->conferencePlayFileRequest($conferenceId, $callsConferencePlayRequest);
 
         return $this
             ->client
@@ -4763,36 +5499,30 @@ final class CallsApi
      * Create request for operation 'conferencePlayFile'
      *
      * @param string $conferenceId Conference ID. (required)
-     * @param \Infobip\Model\CallsPlayRequest $callsPlayRequest (required)
+     * @param \Infobip\Model\CallsConferencePlayRequest $callsConferencePlayRequest (required)
      *
      * @throws InvalidArgumentException
      */
-    private function conferencePlayFileRequest(string $conferenceId, \Infobip\Model\CallsPlayRequest $callsPlayRequest): Request
+    private function conferencePlayFileRequest(string $conferenceId, \Infobip\Model\CallsConferencePlayRequest $callsConferencePlayRequest): Request
     {
         $allData = [
              'conferenceId' => $conferenceId,
-             'callsPlayRequest' => $callsPlayRequest,
+             'callsConferencePlayRequest' => $callsConferencePlayRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                    'callsPlayRequest' => [
+                    'callsConferencePlayRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/play';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -4811,38 +5541,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
-        if (isset($callsPlayRequest)) {
+        if (isset($callsConferencePlayRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
-                ? $this->objectSerializer->serialize($callsPlayRequest)
-                : $callsPlayRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
+                ? $this->objectSerializer->serialize($callsConferencePlayRequest)
+                : $callsConferencePlayRequest;
         }
 
         $apiKey = $this->config->getApiKey();
@@ -4884,7 +5586,7 @@ final class CallsApi
     /**
      * Create response for operation 'conferencePlayFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function conferencePlayFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -4928,6 +5630,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -4985,7 +5698,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function conferenceSayText(string $conferenceId, \Infobip\Model\CallsSayRequest $callsSayRequest)
     {
@@ -5065,25 +5778,19 @@ final class CallsApi
              'callsSayRequest' => $callsSayRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsSayRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/say';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -5102,38 +5809,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsSayRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsSayRequest)
                 : $callsSayRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -5175,7 +5854,7 @@ final class CallsApi
     /**
      * Create response for operation 'conferenceSayText'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function conferenceSayTextResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -5229,6 +5908,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 404) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -5272,15 +5962,15 @@ final class CallsApi
      * Start recording
      *
      * @param string $conferenceId Conference ID. (required)
-     * @param \Infobip\Model\CallsStartRecordingRequest $callsStartRecordingRequest callsStartRecordingRequest (required)
+     * @param \Infobip\Model\CallsConferenceRecordingRequest $callsConferenceRecordingRequest callsConferenceRecordingRequest (required)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function conferenceStartRecording(string $conferenceId, \Infobip\Model\CallsStartRecordingRequest $callsStartRecordingRequest)
+    public function conferenceStartRecording(string $conferenceId, \Infobip\Model\CallsConferenceRecordingRequest $callsConferenceRecordingRequest)
     {
-        $request = $this->conferenceStartRecordingRequest($conferenceId, $callsStartRecordingRequest);
+        $request = $this->conferenceStartRecordingRequest($conferenceId, $callsConferenceRecordingRequest);
 
         try {
             try {
@@ -5308,13 +5998,13 @@ final class CallsApi
      * Start recording
      *
      * @param string $conferenceId Conference ID. (required)
-     * @param \Infobip\Model\CallsStartRecordingRequest $callsStartRecordingRequest (required)
+     * @param \Infobip\Model\CallsConferenceRecordingRequest $callsConferenceRecordingRequest (required)
      *
      * @throws InvalidArgumentException
      */
-    public function conferenceStartRecordingAsync(string $conferenceId, \Infobip\Model\CallsStartRecordingRequest $callsStartRecordingRequest): PromiseInterface
+    public function conferenceStartRecordingAsync(string $conferenceId, \Infobip\Model\CallsConferenceRecordingRequest $callsConferenceRecordingRequest): PromiseInterface
     {
-        $request = $this->conferenceStartRecordingRequest($conferenceId, $callsStartRecordingRequest);
+        $request = $this->conferenceStartRecordingRequest($conferenceId, $callsConferenceRecordingRequest);
 
         return $this
             ->client
@@ -5345,36 +6035,30 @@ final class CallsApi
      * Create request for operation 'conferenceStartRecording'
      *
      * @param string $conferenceId Conference ID. (required)
-     * @param \Infobip\Model\CallsStartRecordingRequest $callsStartRecordingRequest (required)
+     * @param \Infobip\Model\CallsConferenceRecordingRequest $callsConferenceRecordingRequest (required)
      *
      * @throws InvalidArgumentException
      */
-    private function conferenceStartRecordingRequest(string $conferenceId, \Infobip\Model\CallsStartRecordingRequest $callsStartRecordingRequest): Request
+    private function conferenceStartRecordingRequest(string $conferenceId, \Infobip\Model\CallsConferenceRecordingRequest $callsConferenceRecordingRequest): Request
     {
         $allData = [
              'conferenceId' => $conferenceId,
-             'callsStartRecordingRequest' => $callsStartRecordingRequest,
+             'callsConferenceRecordingRequest' => $callsConferenceRecordingRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                    'callsStartRecordingRequest' => [
+                    'callsConferenceRecordingRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/start-recording';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -5393,38 +6077,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
-        if (isset($callsStartRecordingRequest)) {
+        if (isset($callsConferenceRecordingRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
-                ? $this->objectSerializer->serialize($callsStartRecordingRequest)
-                : $callsStartRecordingRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
+                ? $this->objectSerializer->serialize($callsConferenceRecordingRequest)
+                : $callsConferenceRecordingRequest;
         }
 
         $apiKey = $this->config->getApiKey();
@@ -5466,7 +6122,7 @@ final class CallsApi
     /**
      * Create response for operation 'conferenceStartRecording'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function conferenceStartRecordingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -5510,6 +6166,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -5566,7 +6233,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function conferenceStopPlayingFile(string $conferenceId)
     {
@@ -5643,22 +6310,16 @@ final class CallsApi
              'conferenceId' => $conferenceId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/stop-play';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -5674,38 +6335,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -5746,7 +6377,7 @@ final class CallsApi
     /**
      * Create response for operation 'conferenceStopPlayingFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function conferenceStopPlayingFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -5779,6 +6410,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -5835,7 +6477,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function conferenceStopRecording(string $conferenceId)
     {
@@ -5912,22 +6554,16 @@ final class CallsApi
              'conferenceId' => $conferenceId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/stop-recording';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -5943,38 +6579,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -6015,7 +6621,7 @@ final class CallsApi
     /**
      * Create response for operation 'conferenceStopRecording'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function conferenceStopRecordingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -6059,6 +6665,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -6115,7 +6732,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function connectCalls(\Infobip\Model\CallsConnectRequest $callsConnectRequest)
     {
@@ -6192,22 +6809,16 @@ final class CallsApi
              'callsConnectRequest' => $callsConnectRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callsConnectRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/connect';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -6217,38 +6828,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsConnectRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsConnectRequest)
                 : $callsConnectRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -6290,7 +6873,7 @@ final class CallsApi
     /**
      * Create response for operation 'connectCalls'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function connectCallsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -6334,6 +6917,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -6391,7 +6985,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConferenceAndCall|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConferenceAndCall|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function connectWithNewCall(string $callId, \Infobip\Model\CallsConnectWithNewCallRequest $callsConnectWithNewCallRequest)
     {
@@ -6471,25 +7065,19 @@ final class CallsApi
              'callsConnectWithNewCallRequest' => $callsConnectWithNewCallRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsConnectWithNewCallRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/connect';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -6508,38 +7096,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsConnectWithNewCallRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsConnectWithNewCallRequest)
                 : $callsConnectWithNewCallRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -6581,7 +7141,7 @@ final class CallsApi
     /**
      * Create response for operation 'connectWithNewCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConferenceAndCall|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConferenceAndCall|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function connectWithNewCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -6625,6 +7185,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -6681,7 +7252,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallBulkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallBulkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function createBulk(\Infobip\Model\CallBulkRequest $callBulkRequest)
     {
@@ -6758,22 +7329,16 @@ final class CallsApi
              'callBulkRequest' => $callBulkRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callBulkRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/bulks';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -6783,38 +7348,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callBulkRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callBulkRequest)
                 : $callBulkRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -6856,7 +7393,7 @@ final class CallsApi
     /**
      * Create response for operation 'createBulk'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallBulkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallBulkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function createBulkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -6900,6 +7437,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -6956,7 +7504,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function createCall(\Infobip\Model\CallRequest $callRequest)
     {
@@ -7033,22 +7581,16 @@ final class CallsApi
              'callRequest' => $callRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -7058,38 +7600,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callRequest)
                 : $callRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -7131,7 +7645,7 @@ final class CallsApi
     /**
      * Create response for operation 'createCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function createCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -7185,7 +7699,259 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation createCallsConfiguration
+     *
+     * Create calls configuration
+     *
+     * @param \Infobip\Model\CallsConfigurationCreateRequest $callsConfigurationCreateRequest callsConfigurationCreateRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsConfigurationResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function createCallsConfiguration(\Infobip\Model\CallsConfigurationCreateRequest $callsConfigurationCreateRequest)
+    {
+        $request = $this->createCallsConfigurationRequest($callsConfigurationCreateRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->createCallsConfigurationResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->createCallsConfigurationApiException($exception);
+        }
+    }
+
+    /**
+     * Operation createCallsConfigurationAsync
+     *
+     * Create calls configuration
+     *
+     * @param \Infobip\Model\CallsConfigurationCreateRequest $callsConfigurationCreateRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function createCallsConfigurationAsync(\Infobip\Model\CallsConfigurationCreateRequest $callsConfigurationCreateRequest): PromiseInterface
+    {
+        $request = $this->createCallsConfigurationRequest($callsConfigurationCreateRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->createCallsConfigurationResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->createCallsConfigurationApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'createCallsConfiguration'
+     *
+     * @param \Infobip\Model\CallsConfigurationCreateRequest $callsConfigurationCreateRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function createCallsConfigurationRequest(\Infobip\Model\CallsConfigurationCreateRequest $callsConfigurationCreateRequest): Request
+    {
+        $allData = [
+             'callsConfigurationCreateRequest' => $callsConfigurationCreateRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsConfigurationCreateRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/configurations';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsConfigurationCreateRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsConfigurationCreateRequest)
+                : $callsConfigurationCreateRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'createCallsConfiguration'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsConfigurationResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function createCallsConfigurationResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 201) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsConfigurationResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'createCallsConfiguration'
+     */
+    private function createCallsConfigurationApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -7231,7 +7997,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function createConference(\Infobip\Model\CallsConferenceRequest $callsConferenceRequest)
     {
@@ -7308,22 +8074,16 @@ final class CallsApi
              'callsConferenceRequest' => $callsConferenceRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callsConferenceRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -7333,38 +8093,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsConferenceRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsConferenceRequest)
                 : $callsConferenceRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -7406,7 +8138,7 @@ final class CallsApi
     /**
      * Create response for operation 'createConference'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function createConferenceResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -7450,6 +8182,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -7506,7 +8249,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function createDialog(\Infobip\Model\CallsDialogRequest $callsDialogRequest)
     {
@@ -7583,22 +8326,16 @@ final class CallsApi
              'callsDialogRequest' => $callsDialogRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callsDialogRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -7608,38 +8345,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsDialogRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsDialogRequest)
                 : $callsDialogRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -7681,7 +8390,7 @@ final class CallsApi
     /**
      * Create response for operation 'createDialog'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function createDialogResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -7725,6 +8434,301 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation createDialogWithExistingCalls
+     *
+     * Create dialog with existing calls
+     *
+     * @param string $parentCallId Call ID of the parent call to be connected in a dialog. (required)
+     * @param string $childCallId Call ID of the child call to be connected in a dialog. Needs to have been created using [create method](#create-call) with &#x60;parentCallId&#x60; parameter equal to the parent call ID above. (required)
+     * @param \Infobip\Model\CallsDialogWithExistingCallRequest $callsDialogWithExistingCallRequest callsDialogWithExistingCallRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function createDialogWithExistingCalls(string $parentCallId, string $childCallId, \Infobip\Model\CallsDialogWithExistingCallRequest $callsDialogWithExistingCallRequest)
+    {
+        $request = $this->createDialogWithExistingCallsRequest($parentCallId, $childCallId, $callsDialogWithExistingCallRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->createDialogWithExistingCallsResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->createDialogWithExistingCallsApiException($exception);
+        }
+    }
+
+    /**
+     * Operation createDialogWithExistingCallsAsync
+     *
+     * Create dialog with existing calls
+     *
+     * @param string $parentCallId Call ID of the parent call to be connected in a dialog. (required)
+     * @param string $childCallId Call ID of the child call to be connected in a dialog. Needs to have been created using [create method](#create-call) with &#x60;parentCallId&#x60; parameter equal to the parent call ID above. (required)
+     * @param \Infobip\Model\CallsDialogWithExistingCallRequest $callsDialogWithExistingCallRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function createDialogWithExistingCallsAsync(string $parentCallId, string $childCallId, \Infobip\Model\CallsDialogWithExistingCallRequest $callsDialogWithExistingCallRequest): PromiseInterface
+    {
+        $request = $this->createDialogWithExistingCallsRequest($parentCallId, $childCallId, $callsDialogWithExistingCallRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->createDialogWithExistingCallsResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->createDialogWithExistingCallsApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'createDialogWithExistingCalls'
+     *
+     * @param string $parentCallId Call ID of the parent call to be connected in a dialog. (required)
+     * @param string $childCallId Call ID of the child call to be connected in a dialog. Needs to have been created using [create method](#create-call) with &#x60;parentCallId&#x60; parameter equal to the parent call ID above. (required)
+     * @param \Infobip\Model\CallsDialogWithExistingCallRequest $callsDialogWithExistingCallRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function createDialogWithExistingCallsRequest(string $parentCallId, string $childCallId, \Infobip\Model\CallsDialogWithExistingCallRequest $callsDialogWithExistingCallRequest): Request
+    {
+        $allData = [
+             'parentCallId' => $parentCallId,
+             'childCallId' => $childCallId,
+             'callsDialogWithExistingCallRequest' => $callsDialogWithExistingCallRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'parentCallId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'childCallId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsDialogWithExistingCallRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/dialogs/parent-call/{parentCallId}/child-call/{childCallId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($parentCallId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'parentCallId' . '}',
+                $this->objectSerializer->toPathValue($parentCallId),
+                $resourcePath
+            );
+        }
+
+        // path params
+        if ($childCallId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'childCallId' . '}',
+                $this->objectSerializer->toPathValue($childCallId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsDialogWithExistingCallRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsDialogWithExistingCallRequest)
+                : $callsDialogWithExistingCallRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'createDialogWithExistingCalls'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function createDialogWithExistingCallsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 201) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsDialogResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'createDialogWithExistingCalls'
+     */
+    private function createDialogWithExistingCallsApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -7781,7 +8785,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function createMediaStreamConfig(\Infobip\Model\CallsMediaStreamConfigRequest $callsMediaStreamConfigRequest)
     {
@@ -7858,22 +8862,16 @@ final class CallsApi
              'callsMediaStreamConfigRequest' => $callsMediaStreamConfigRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callsMediaStreamConfigRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/media-stream-configs';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -7883,38 +8881,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsMediaStreamConfigRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsMediaStreamConfigRequest)
                 : $callsMediaStreamConfigRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -7956,7 +8926,7 @@ final class CallsApi
     /**
      * Create response for operation 'createMediaStreamConfig'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function createMediaStreamConfigResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -8010,6 +8980,499 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation createSipTrunk
+     *
+     * Create SIP trunk
+     *
+     * @param \Infobip\Model\CallsSipTrunkRequest $callsSipTrunkRequest callsSipTrunkRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsCreateSipTrunkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function createSipTrunk(\Infobip\Model\CallsSipTrunkRequest $callsSipTrunkRequest)
+    {
+        $request = $this->createSipTrunkRequest($callsSipTrunkRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->createSipTrunkResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->createSipTrunkApiException($exception);
+        }
+    }
+
+    /**
+     * Operation createSipTrunkAsync
+     *
+     * Create SIP trunk
+     *
+     * @param \Infobip\Model\CallsSipTrunkRequest $callsSipTrunkRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function createSipTrunkAsync(\Infobip\Model\CallsSipTrunkRequest $callsSipTrunkRequest): PromiseInterface
+    {
+        $request = $this->createSipTrunkRequest($callsSipTrunkRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->createSipTrunkResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->createSipTrunkApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'createSipTrunk'
+     *
+     * @param \Infobip\Model\CallsSipTrunkRequest $callsSipTrunkRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function createSipTrunkRequest(\Infobip\Model\CallsSipTrunkRequest $callsSipTrunkRequest): Request
+    {
+        $allData = [
+             'callsSipTrunkRequest' => $callsSipTrunkRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsSipTrunkRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsSipTrunkRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsSipTrunkRequest)
+                : $callsSipTrunkRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'createSipTrunk'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsCreateSipTrunkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function createSipTrunkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 202) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsCreateSipTrunkResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'createSipTrunk'
+     */
+    private function createSipTrunkApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation createSipTrunkServiceAddress
+     *
+     * Create SIP trunk service address
+     *
+     * @param \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest callsPublicSipTrunkServiceAddressRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsPublicSipTrunkServiceAddress|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function createSipTrunkServiceAddress(\Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest)
+    {
+        $request = $this->createSipTrunkServiceAddressRequest($callsPublicSipTrunkServiceAddressRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->createSipTrunkServiceAddressResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->createSipTrunkServiceAddressApiException($exception);
+        }
+    }
+
+    /**
+     * Operation createSipTrunkServiceAddressAsync
+     *
+     * Create SIP trunk service address
+     *
+     * @param \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function createSipTrunkServiceAddressAsync(\Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest): PromiseInterface
+    {
+        $request = $this->createSipTrunkServiceAddressRequest($callsPublicSipTrunkServiceAddressRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->createSipTrunkServiceAddressResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->createSipTrunkServiceAddressApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'createSipTrunkServiceAddress'
+     *
+     * @param \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function createSipTrunkServiceAddressRequest(\Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest): Request
+    {
+        $allData = [
+             'callsPublicSipTrunkServiceAddressRequest' => $callsPublicSipTrunkServiceAddressRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsPublicSipTrunkServiceAddressRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/service-addresses';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsPublicSipTrunkServiceAddressRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsPublicSipTrunkServiceAddressRequest)
+                : $callsPublicSipTrunkServiceAddressRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'createSipTrunkServiceAddress'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsPublicSipTrunkServiceAddress|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function createSipTrunkServiceAddressResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 201) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsPublicSipTrunkServiceAddress', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'createSipTrunkServiceAddress'
+     */
+    private function createSipTrunkServiceAddressApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -8042,14 +9505,15 @@ final class CallsApi
      * Delete call recordings
      *
      * @param string $callId Call ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function deleteCallRecordings(string $callId)
+    public function deleteCallRecordings(string $callId, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->deleteCallRecordingsRequest($callId);
+        $request = $this->deleteCallRecordingsRequest($callId, $location);
 
         try {
             try {
@@ -8077,12 +9541,13 @@ final class CallsApi
      * Delete call recordings
      *
      * @param string $callId Call ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function deleteCallRecordingsAsync(string $callId): PromiseInterface
+    public function deleteCallRecordingsAsync(string $callId, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->deleteCallRecordingsRequest($callId);
+        $request = $this->deleteCallRecordingsRequest($callId, $location);
 
         return $this
             ->client
@@ -8113,34 +9578,37 @@ final class CallsApi
      * Create request for operation 'deleteCallRecordings'
      *
      * @param string $callId Call ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function deleteCallRecordingsRequest(string $callId): Request
+    private function deleteCallRecordingsRequest(string $callId, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'callId' => $callId,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/calls/{callId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($callId !== null) {
@@ -8153,38 +9621,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -8225,7 +9663,7 @@ final class CallsApi
     /**
      * Create response for operation 'deleteCallRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function deleteCallRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -8258,6 +9696,261 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation deleteCallsConfiguration
+     *
+     * Delete calls configuration
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsConfigurationResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function deleteCallsConfiguration(string $callsConfigurationId)
+    {
+        $request = $this->deleteCallsConfigurationRequest($callsConfigurationId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->deleteCallsConfigurationResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->deleteCallsConfigurationApiException($exception);
+        }
+    }
+
+    /**
+     * Operation deleteCallsConfigurationAsync
+     *
+     * Delete calls configuration
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function deleteCallsConfigurationAsync(string $callsConfigurationId): PromiseInterface
+    {
+        $request = $this->deleteCallsConfigurationRequest($callsConfigurationId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->deleteCallsConfigurationResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->deleteCallsConfigurationApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteCallsConfiguration'
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function deleteCallsConfigurationRequest(string $callsConfigurationId): Request
+    {
+        $allData = [
+             'callsConfigurationId' => $callsConfigurationId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsConfigurationId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/configurations/{callsConfigurationId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($callsConfigurationId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'callsConfigurationId' . '}',
+                $this->objectSerializer->toPathValue($callsConfigurationId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'DELETE',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'deleteCallsConfiguration'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsConfigurationResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function deleteCallsConfigurationResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsConfigurationResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'deleteCallsConfiguration'
+     */
+    private function deleteCallsConfigurationApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -8314,7 +10007,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function deleteCallsFile(string $fileId)
     {
@@ -8391,22 +10084,16 @@ final class CallsApi
              'fileId' => $fileId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'fileId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/files/{fileId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -8422,38 +10109,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -8494,7 +10151,7 @@ final class CallsApi
     /**
      * Create response for operation 'deleteCallsFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function deleteCallsFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -8537,6 +10194,28 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -8569,14 +10248,15 @@ final class CallsApi
      * Delete conference recordings
      *
      * @param string $conferenceId Conference ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConferenceRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConferenceRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function deleteConferenceRecordings(string $conferenceId)
+    public function deleteConferenceRecordings(string $conferenceId, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->deleteConferenceRecordingsRequest($conferenceId);
+        $request = $this->deleteConferenceRecordingsRequest($conferenceId, $location);
 
         try {
             try {
@@ -8604,12 +10284,13 @@ final class CallsApi
      * Delete conference recordings
      *
      * @param string $conferenceId Conference ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function deleteConferenceRecordingsAsync(string $conferenceId): PromiseInterface
+    public function deleteConferenceRecordingsAsync(string $conferenceId, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->deleteConferenceRecordingsRequest($conferenceId);
+        $request = $this->deleteConferenceRecordingsRequest($conferenceId, $location);
 
         return $this
             ->client
@@ -8640,34 +10321,37 @@ final class CallsApi
      * Create request for operation 'deleteConferenceRecordings'
      *
      * @param string $conferenceId Conference ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function deleteConferenceRecordingsRequest(string $conferenceId): Request
+    private function deleteConferenceRecordingsRequest(string $conferenceId, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'conferenceId' => $conferenceId,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/conferences/{conferenceId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($conferenceId !== null) {
@@ -8680,38 +10364,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -8752,7 +10406,7 @@ final class CallsApi
     /**
      * Create response for operation 'deleteConferenceRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConferenceRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConferenceRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function deleteConferenceRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -8785,6 +10439,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -8838,14 +10503,15 @@ final class CallsApi
      * Delete dialog recordings
      *
      * @param string $dialogId Dialog ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogRecordingResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogRecordingResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function deleteDialogRecordings(string $dialogId)
+    public function deleteDialogRecordings(string $dialogId, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->deleteDialogRecordingsRequest($dialogId);
+        $request = $this->deleteDialogRecordingsRequest($dialogId, $location);
 
         try {
             try {
@@ -8873,12 +10539,13 @@ final class CallsApi
      * Delete dialog recordings
      *
      * @param string $dialogId Dialog ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function deleteDialogRecordingsAsync(string $dialogId): PromiseInterface
+    public function deleteDialogRecordingsAsync(string $dialogId, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->deleteDialogRecordingsRequest($dialogId);
+        $request = $this->deleteDialogRecordingsRequest($dialogId, $location);
 
         return $this
             ->client
@@ -8909,34 +10576,37 @@ final class CallsApi
      * Create request for operation 'deleteDialogRecordings'
      *
      * @param string $dialogId Dialog ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function deleteDialogRecordingsRequest(string $dialogId): Request
+    private function deleteDialogRecordingsRequest(string $dialogId, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'dialogId' => $dialogId,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/dialogs/{dialogId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($dialogId !== null) {
@@ -8949,38 +10619,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -9021,7 +10661,7 @@ final class CallsApi
     /**
      * Create response for operation 'deleteDialogRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogRecordingResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogRecordingResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function deleteDialogRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -9054,6 +10694,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -9110,7 +10761,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function deleteMediaStreamConfig(string $mediaStreamConfigId)
     {
@@ -9187,22 +10838,16 @@ final class CallsApi
              'mediaStreamConfigId' => $mediaStreamConfigId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'mediaStreamConfigId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/media-stream-configs/{mediaStreamConfigId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -9218,38 +10863,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -9290,7 +10905,7 @@ final class CallsApi
     /**
      * Create response for operation 'deleteMediaStreamConfig'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function deleteMediaStreamConfigResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -9323,6 +10938,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -9376,14 +11002,15 @@ final class CallsApi
      * Delete recording file
      *
      * @param string $fileId File ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsRecordingFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsRecordingFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function deleteRecordingFile(string $fileId)
+    public function deleteRecordingFile(string $fileId, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->deleteRecordingFileRequest($fileId);
+        $request = $this->deleteRecordingFileRequest($fileId, $location);
 
         try {
             try {
@@ -9411,12 +11038,13 @@ final class CallsApi
      * Delete recording file
      *
      * @param string $fileId File ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function deleteRecordingFileAsync(string $fileId): PromiseInterface
+    public function deleteRecordingFileAsync(string $fileId, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->deleteRecordingFileRequest($fileId);
+        $request = $this->deleteRecordingFileRequest($fileId, $location);
 
         return $this
             ->client
@@ -9447,34 +11075,37 @@ final class CallsApi
      * Create request for operation 'deleteRecordingFile'
      *
      * @param string $fileId File ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function deleteRecordingFileRequest(string $fileId): Request
+    private function deleteRecordingFileRequest(string $fileId, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'fileId' => $fileId,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'fileId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/files/{fileId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($fileId !== null) {
@@ -9487,38 +11118,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -9559,7 +11160,7 @@ final class CallsApi
     /**
      * Create response for operation 'deleteRecordingFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsRecordingFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsRecordingFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function deleteRecordingFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -9592,6 +11193,784 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation deleteSipTrunk
+     *
+     * Delete SIP trunk
+     *
+     * @param string $sipTrunkId SIP trunk ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsSipTrunkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function deleteSipTrunk(string $sipTrunkId)
+    {
+        $request = $this->deleteSipTrunkRequest($sipTrunkId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->deleteSipTrunkResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->deleteSipTrunkApiException($exception);
+        }
+    }
+
+    /**
+     * Operation deleteSipTrunkAsync
+     *
+     * Delete SIP trunk
+     *
+     * @param string $sipTrunkId SIP trunk ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function deleteSipTrunkAsync(string $sipTrunkId): PromiseInterface
+    {
+        $request = $this->deleteSipTrunkRequest($sipTrunkId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->deleteSipTrunkResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->deleteSipTrunkApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteSipTrunk'
+     *
+     * @param string $sipTrunkId SIP trunk ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function deleteSipTrunkRequest(string $sipTrunkId): Request
+    {
+        $allData = [
+             'sipTrunkId' => $sipTrunkId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/{sipTrunkId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'DELETE',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'deleteSipTrunk'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsSipTrunkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function deleteSipTrunkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 202) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsSipTrunkResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'deleteSipTrunk'
+     */
+    private function deleteSipTrunkApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation deleteSipTrunkServiceAddress
+     *
+     * Delete SIP trunk service address
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsPublicSipTrunkServiceAddress|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function deleteSipTrunkServiceAddress(string $sipTrunkServiceAddressId)
+    {
+        $request = $this->deleteSipTrunkServiceAddressRequest($sipTrunkServiceAddressId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->deleteSipTrunkServiceAddressResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->deleteSipTrunkServiceAddressApiException($exception);
+        }
+    }
+
+    /**
+     * Operation deleteSipTrunkServiceAddressAsync
+     *
+     * Delete SIP trunk service address
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function deleteSipTrunkServiceAddressAsync(string $sipTrunkServiceAddressId): PromiseInterface
+    {
+        $request = $this->deleteSipTrunkServiceAddressRequest($sipTrunkServiceAddressId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->deleteSipTrunkServiceAddressResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->deleteSipTrunkServiceAddressApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteSipTrunkServiceAddress'
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function deleteSipTrunkServiceAddressRequest(string $sipTrunkServiceAddressId): Request
+    {
+        $allData = [
+             'sipTrunkServiceAddressId' => $sipTrunkServiceAddressId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkServiceAddressId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/service-addresses/{sipTrunkServiceAddressId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkServiceAddressId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkServiceAddressId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkServiceAddressId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'DELETE',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'deleteSipTrunkServiceAddress'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsPublicSipTrunkServiceAddress|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function deleteSipTrunkServiceAddressResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsPublicSipTrunkServiceAddress', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'deleteSipTrunkServiceAddress'
+     */
+    private function deleteSipTrunkServiceAddressApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation dialogBroadcastWebrtcText
+     *
+     * Broadcast text
+     *
+     * @param string $dialogId Dialog ID. (required)
+     * @param \Infobip\Model\CallsDialogBroadcastWebrtcTextRequest $callsDialogBroadcastWebrtcTextRequest callsDialogBroadcastWebrtcTextRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function dialogBroadcastWebrtcText(string $dialogId, \Infobip\Model\CallsDialogBroadcastWebrtcTextRequest $callsDialogBroadcastWebrtcTextRequest)
+    {
+        $request = $this->dialogBroadcastWebrtcTextRequest($dialogId, $callsDialogBroadcastWebrtcTextRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->dialogBroadcastWebrtcTextResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->dialogBroadcastWebrtcTextApiException($exception);
+        }
+    }
+
+    /**
+     * Operation dialogBroadcastWebrtcTextAsync
+     *
+     * Broadcast text
+     *
+     * @param string $dialogId Dialog ID. (required)
+     * @param \Infobip\Model\CallsDialogBroadcastWebrtcTextRequest $callsDialogBroadcastWebrtcTextRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function dialogBroadcastWebrtcTextAsync(string $dialogId, \Infobip\Model\CallsDialogBroadcastWebrtcTextRequest $callsDialogBroadcastWebrtcTextRequest): PromiseInterface
+    {
+        $request = $this->dialogBroadcastWebrtcTextRequest($dialogId, $callsDialogBroadcastWebrtcTextRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->dialogBroadcastWebrtcTextResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->dialogBroadcastWebrtcTextApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'dialogBroadcastWebrtcText'
+     *
+     * @param string $dialogId Dialog ID. (required)
+     * @param \Infobip\Model\CallsDialogBroadcastWebrtcTextRequest $callsDialogBroadcastWebrtcTextRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function dialogBroadcastWebrtcTextRequest(string $dialogId, \Infobip\Model\CallsDialogBroadcastWebrtcTextRequest $callsDialogBroadcastWebrtcTextRequest): Request
+    {
+        $allData = [
+             'dialogId' => $dialogId,
+             'callsDialogBroadcastWebrtcTextRequest' => $callsDialogBroadcastWebrtcTextRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'dialogId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsDialogBroadcastWebrtcTextRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/dialogs/{dialogId}/broadcast-webrtc-text';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($dialogId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'dialogId' . '}',
+                $this->objectSerializer->toPathValue($dialogId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsDialogBroadcastWebrtcTextRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsDialogBroadcastWebrtcTextRequest)
+                : $callsDialogBroadcastWebrtcTextRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'dialogBroadcastWebrtcText'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function dialogBroadcastWebrtcTextResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsActionResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'dialogBroadcastWebrtcText'
+     */
+    private function dialogBroadcastWebrtcTextApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -9649,7 +12028,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function dialogPlayFile(string $dialogId, \Infobip\Model\CallsDialogPlayRequest $callsDialogPlayRequest)
     {
@@ -9729,25 +12108,19 @@ final class CallsApi
              'callsDialogPlayRequest' => $callsDialogPlayRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsDialogPlayRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/{dialogId}/play';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -9766,38 +12139,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsDialogPlayRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsDialogPlayRequest)
                 : $callsDialogPlayRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -9839,7 +12184,7 @@ final class CallsApi
     /**
      * Create response for operation 'dialogPlayFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function dialogPlayFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -9883,6 +12228,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -9940,7 +12296,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function dialogSayText(string $dialogId, \Infobip\Model\CallsDialogSayRequest $callsDialogSayRequest)
     {
@@ -10020,25 +12376,19 @@ final class CallsApi
              'callsDialogSayRequest' => $callsDialogSayRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsDialogSayRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/{dialogId}/say';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -10057,38 +12407,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsDialogSayRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsDialogSayRequest)
                 : $callsDialogSayRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -10130,7 +12452,7 @@ final class CallsApi
     /**
      * Create response for operation 'dialogSayText'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function dialogSayTextResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -10174,6 +12496,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -10231,7 +12564,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function dialogStartRecording(string $dialogId, \Infobip\Model\CallsDialogRecordingRequest $callsDialogRecordingRequest)
     {
@@ -10311,25 +12644,19 @@ final class CallsApi
              'callsDialogRecordingRequest' => $callsDialogRecordingRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsDialogRecordingRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/{dialogId}/start-recording';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -10348,38 +12675,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsDialogRecordingRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsDialogRecordingRequest)
                 : $callsDialogRecordingRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -10421,7 +12720,7 @@ final class CallsApi
     /**
      * Create response for operation 'dialogStartRecording'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function dialogStartRecordingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -10465,6 +12764,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -10521,7 +12831,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function dialogStopPlayingFile(string $dialogId)
     {
@@ -10598,22 +12908,16 @@ final class CallsApi
              'dialogId' => $dialogId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/{dialogId}/stop-play';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -10629,38 +12933,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -10701,7 +12975,7 @@ final class CallsApi
     /**
      * Create response for operation 'dialogStopPlayingFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function dialogStopPlayingFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -10734,6 +13008,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -10790,7 +13075,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function dialogStopRecording(string $dialogId)
     {
@@ -10867,22 +13152,16 @@ final class CallsApi
              'dialogId' => $dialogId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/{dialogId}/stop-recording';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -10898,38 +13177,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -10970,7 +13219,7 @@ final class CallsApi
     /**
      * Create response for operation 'dialogStopRecording'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function dialogStopRecordingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -11024,6 +13273,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 404) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -11067,14 +13327,16 @@ final class CallsApi
      * Download recording file
      *
      * @param string $fileId File ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
+     * @param null|string $range Range header specifies range of bytes to be returned by the response. If range header is not specified, response will return a complete file. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \SplFileObject|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \SplFileObject|\SplFileObject|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function downloadRecordingFile(string $fileId)
+    public function downloadRecordingFile(string $fileId, ?\Infobip\Model\CallsRecordingLocation $location = null, ?string $range = null)
     {
-        $request = $this->downloadRecordingFileRequest($fileId);
+        $request = $this->downloadRecordingFileRequest($fileId, $location, $range);
 
         try {
             try {
@@ -11102,12 +13364,14 @@ final class CallsApi
      * Download recording file
      *
      * @param string $fileId File ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
+     * @param null|string $range Range header specifies range of bytes to be returned by the response. If range header is not specified, response will return a complete file. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function downloadRecordingFileAsync(string $fileId): PromiseInterface
+    public function downloadRecordingFileAsync(string $fileId, ?\Infobip\Model\CallsRecordingLocation $location = null, ?string $range = null): PromiseInterface
     {
-        $request = $this->downloadRecordingFileRequest($fileId);
+        $request = $this->downloadRecordingFileRequest($fileId, $location, $range);
 
         return $this
             ->client
@@ -11138,34 +13402,46 @@ final class CallsApi
      * Create request for operation 'downloadRecordingFile'
      *
      * @param string $fileId File ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
+     * @param null|string $range Range header specifies range of bytes to be returned by the response. If range header is not specified, response will return a complete file. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function downloadRecordingFileRequest(string $fileId): Request
+    private function downloadRecordingFileRequest(string $fileId, ?\Infobip\Model\CallsRecordingLocation $location = null, ?string $range = null): Request
     {
         $allData = [
              'fileId' => $fileId,
+             'location' => $location,
+             'range' => $range,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'fileId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                    'range' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/files/{fileId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
+
+        // header params
+        if ($range !== null) {
+            $headerParams['Range'] = $this->objectSerializer->toHeaderValue($range);
+        }
 
         // path params
         if ($fileId !== null) {
@@ -11178,38 +13454,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/octet-stream',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -11250,7 +13496,7 @@ final class CallsApi
     /**
      * Create response for operation 'downloadRecordingFile'
      * @throws ApiException on non-2xx response
-     * @return \SplFileObject|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \SplFileObject|\SplFileObject|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function downloadRecordingFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -11270,6 +13516,9 @@ final class CallsApi
         $responseResult = null;
 
         if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\SplFileObject', $responseHeaders);
+        }
+        if ($statusCode === 206) {
             $responseResult = $this->deserialize($responseBody, '\SplFileObject', $responseHeaders);
         }
         return $responseResult;
@@ -11293,7 +13542,29 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 416) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -11339,7 +13610,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getBulkStatus(string $bulkId)
     {
@@ -11416,22 +13687,16 @@ final class CallsApi
              'bulkId' => $bulkId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/bulks/{bulkId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -11447,38 +13712,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -11519,7 +13754,7 @@ final class CallsApi
     /**
      * Create response for operation 'getBulkStatus'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getBulkStatusResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -11552,6 +13787,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -11608,7 +13854,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getCall(string $callId)
     {
@@ -11685,22 +13931,16 @@ final class CallsApi
              'callId' => $callId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -11716,38 +13956,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -11788,7 +13998,7 @@ final class CallsApi
     /**
      * Create response for operation 'getCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -11821,6 +14031,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -11877,7 +14098,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallLog|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallLog|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getCallHistory(string $callId)
     {
@@ -11954,22 +14175,16 @@ final class CallsApi
              'callId' => $callId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/history';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -11985,38 +14200,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -12057,7 +14242,7 @@ final class CallsApi
     /**
      * Create response for operation 'getCallHistory'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallLog|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallLog|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getCallHistoryResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -12090,6 +14275,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -12143,14 +14339,15 @@ final class CallsApi
      * Get call recordings
      *
      * @param string $callId Call ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getCallRecordings(string $callId)
+    public function getCallRecordings(string $callId, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->getCallRecordingsRequest($callId);
+        $request = $this->getCallRecordingsRequest($callId, $location);
 
         try {
             try {
@@ -12178,12 +14375,13 @@ final class CallsApi
      * Get call recordings
      *
      * @param string $callId Call ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function getCallRecordingsAsync(string $callId): PromiseInterface
+    public function getCallRecordingsAsync(string $callId, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->getCallRecordingsRequest($callId);
+        $request = $this->getCallRecordingsRequest($callId, $location);
 
         return $this
             ->client
@@ -12214,34 +14412,37 @@ final class CallsApi
      * Create request for operation 'getCallRecordings'
      *
      * @param string $callId Call ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function getCallRecordingsRequest(string $callId): Request
+    private function getCallRecordingsRequest(string $callId, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'callId' => $callId,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/calls/{callId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($callId !== null) {
@@ -12254,38 +14455,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -12326,7 +14497,7 @@ final class CallsApi
     /**
      * Create response for operation 'getCallRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getCallRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -12359,6 +14530,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -12412,6 +14594,7 @@ final class CallsApi
      * Get calls
      *
      * @param null|\Infobip\Model\CallEndpointType $type Call endpoint type. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|string $from Caller identifier. (optional)
      * @param null|string $to Callee identifier. (optional)
@@ -12420,16 +14603,17 @@ final class CallsApi
      * @param null|\DateTime $startTimeAfter Date and time for when the call has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|string $conferenceId Conference ID. (optional)
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $bulkId Bulk ID. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getCalls(?\Infobip\Model\CallEndpointType $type = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?string $conferenceId = null, ?string $dialogId = null, int $page = 0, int $size = 20)
+    public function getCalls(?\Infobip\Model\CallEndpointType $type = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?string $conferenceId = null, ?string $dialogId = null, ?string $bulkId = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getCallsRequest($type, $applicationId, $from, $to, $direction, $status, $startTimeAfter, $conferenceId, $dialogId, $page, $size);
+        $request = $this->getCallsRequest($type, $callsConfigurationId, $applicationId, $from, $to, $direction, $status, $startTimeAfter, $conferenceId, $dialogId, $bulkId, $page, $size);
 
         try {
             try {
@@ -12457,6 +14641,7 @@ final class CallsApi
      * Get calls
      *
      * @param null|\Infobip\Model\CallEndpointType $type Call endpoint type. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|string $from Caller identifier. (optional)
      * @param null|string $to Callee identifier. (optional)
@@ -12465,14 +14650,15 @@ final class CallsApi
      * @param null|\DateTime $startTimeAfter Date and time for when the call has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|string $conferenceId Conference ID. (optional)
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $bulkId Bulk ID. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    public function getCallsAsync(?\Infobip\Model\CallEndpointType $type = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?string $conferenceId = null, ?string $dialogId = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getCallsAsync(?\Infobip\Model\CallEndpointType $type = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?string $conferenceId = null, ?string $dialogId = null, ?string $bulkId = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getCallsRequest($type, $applicationId, $from, $to, $direction, $status, $startTimeAfter, $conferenceId, $dialogId, $page, $size);
+        $request = $this->getCallsRequest($type, $callsConfigurationId, $applicationId, $from, $to, $direction, $status, $startTimeAfter, $conferenceId, $dialogId, $bulkId, $page, $size);
 
         return $this
             ->client
@@ -12503,6 +14689,7 @@ final class CallsApi
      * Create request for operation 'getCalls'
      *
      * @param null|\Infobip\Model\CallEndpointType $type Call endpoint type. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|string $from Caller identifier. (optional)
      * @param null|string $to Callee identifier. (optional)
@@ -12511,15 +14698,17 @@ final class CallsApi
      * @param null|\DateTime $startTimeAfter Date and time for when the call has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|string $conferenceId Conference ID. (optional)
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $bulkId Bulk ID. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    private function getCallsRequest(?\Infobip\Model\CallEndpointType $type = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?string $conferenceId = null, ?string $dialogId = null, int $page = 0, int $size = 20): Request
+    private function getCallsRequest(?\Infobip\Model\CallEndpointType $type = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?string $conferenceId = null, ?string $dialogId = null, ?string $bulkId = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
              'type' => $type,
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
              'from' => $from,
              'to' => $to,
@@ -12528,17 +14717,16 @@ final class CallsApi
              'startTimeAfter' => $startTimeAfter,
              'conferenceId' => $conferenceId,
              'dialogId' => $dialogId,
+             'bulkId' => $bulkId,
              'page' => $page,
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'type' => [
-                        new Assert\Choice(['PHONE','SIP','WEBRTC','VIBER',]),
+                    ],
+                    'callsConfigurationId' => [
                     ],
                     'applicationId' => [
                     ],
@@ -12547,10 +14735,8 @@ final class CallsApi
                     'to' => [
                     ],
                     'direction' => [
-                        new Assert\Choice(['INBOUND','OUTBOUND',]),
                     ],
                     'status' => [
-                        new Assert\Choice(['CALLING','RINGING','PRE_ESTABLISHED','ESTABLISHED','FINISHED','FAILED','CANCELLED','NO_ANSWER','BUSY',]),
                     ],
                     'startTimeAfter' => [
                     ],
@@ -12558,21 +14744,20 @@ final class CallsApi
                     ],
                     'dialogId' => [
                     ],
+                    'bulkId' => [
+                    ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -12580,6 +14765,11 @@ final class CallsApi
         // query params
         if ($type !== null) {
             $queryParams['type'] = $type;
+        }
+
+        // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
         }
 
         // query params
@@ -12623,6 +14813,11 @@ final class CallsApi
         }
 
         // query params
+        if ($bulkId !== null) {
+            $queryParams['bulkId'] = $bulkId;
+        }
+
+        // query params
         if ($page !== null) {
             $queryParams['page'] = $page;
         }
@@ -12634,38 +14829,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -12706,7 +14871,7 @@ final class CallsApi
     /**
      * Create response for operation 'getCalls'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getCallsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -12760,6 +14925,514 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getCallsConfiguration
+     *
+     * Get calls configuration
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsConfigurationResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getCallsConfiguration(string $callsConfigurationId)
+    {
+        $request = $this->getCallsConfigurationRequest($callsConfigurationId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getCallsConfigurationResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getCallsConfigurationApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getCallsConfigurationAsync
+     *
+     * Get calls configuration
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getCallsConfigurationAsync(string $callsConfigurationId): PromiseInterface
+    {
+        $request = $this->getCallsConfigurationRequest($callsConfigurationId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getCallsConfigurationResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getCallsConfigurationApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getCallsConfiguration'
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getCallsConfigurationRequest(string $callsConfigurationId): Request
+    {
+        $allData = [
+             'callsConfigurationId' => $callsConfigurationId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsConfigurationId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/configurations/{callsConfigurationId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($callsConfigurationId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'callsConfigurationId' . '}',
+                $this->objectSerializer->toPathValue($callsConfigurationId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getCallsConfiguration'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsConfigurationResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getCallsConfigurationResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsConfigurationResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getCallsConfiguration'
+     */
+    private function getCallsConfigurationApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getCallsConfigurations
+     *
+     * Get calls configurations
+     *
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsConfigurationPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getCallsConfigurations(int $page = 0, int $size = 20)
+    {
+        $request = $this->getCallsConfigurationsRequest($page, $size);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getCallsConfigurationsResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getCallsConfigurationsApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getCallsConfigurationsAsync
+     *
+     * Get calls configurations
+     *
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getCallsConfigurationsAsync(int $page = 0, int $size = 20): PromiseInterface
+    {
+        $request = $this->getCallsConfigurationsRequest($page, $size);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getCallsConfigurationsResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getCallsConfigurationsApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getCallsConfigurations'
+     *
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getCallsConfigurationsRequest(int $page = 0, int $size = 20): Request
+    {
+        $allData = [
+             'page' => $page,
+             'size' => $size,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'page' => [
+                        new Assert\GreaterThanOrEqual(0),
+                    ],
+                    'size' => [
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/configurations';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // query params
+        if ($page !== null) {
+            $queryParams['page'] = $page;
+        }
+
+        // query params
+        if ($size !== null) {
+            $queryParams['size'] = $size;
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getCallsConfigurations'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsConfigurationPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getCallsConfigurationsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsConfigurationPage', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getCallsConfigurations'
+     */
+    private function getCallsConfigurationsApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -12795,7 +15468,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getCallsFile(string $fileId)
     {
@@ -12872,22 +15545,16 @@ final class CallsApi
              'fileId' => $fileId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'fileId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/files/{fileId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -12903,38 +15570,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -12975,7 +15612,7 @@ final class CallsApi
     /**
      * Create response for operation 'getCallsFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getCallsFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -13008,6 +15645,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -13065,7 +15713,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsFilePage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsFilePage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getCallsFiles(int $page = 0, int $size = 20)
     {
@@ -13145,26 +15793,20 @@ final class CallsApi
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/files';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -13181,38 +15823,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -13253,7 +15865,7 @@ final class CallsApi
     /**
      * Create response for operation 'getCallsFiles'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsFilePage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsFilePage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getCallsFilesResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -13307,6 +15919,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -13339,6 +15962,7 @@ final class CallsApi
      * Get calls history
      *
      * @param null|\Infobip\Model\CallEndpointType $type Call endpoint type. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|string $from Caller identifier. (optional)
      * @param null|string $to Callee identifier. (optional)
@@ -13348,16 +15972,17 @@ final class CallsApi
      * @param null|\DateTime $endTimeBefore Date and time for when the call has been finished. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|string $conferenceId Conference ID. (optional)
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $bulkId Bulk ID. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getCallsHistory(?\Infobip\Model\CallEndpointType $type = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?string $conferenceId = null, ?string $dialogId = null, int $page = 0, int $size = 20)
+    public function getCallsHistory(?\Infobip\Model\CallEndpointType $type = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?string $conferenceId = null, ?string $dialogId = null, ?string $bulkId = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getCallsHistoryRequest($type, $applicationId, $from, $to, $direction, $status, $startTimeAfter, $endTimeBefore, $conferenceId, $dialogId, $page, $size);
+        $request = $this->getCallsHistoryRequest($type, $callsConfigurationId, $applicationId, $from, $to, $direction, $status, $startTimeAfter, $endTimeBefore, $conferenceId, $dialogId, $bulkId, $page, $size);
 
         try {
             try {
@@ -13385,6 +16010,7 @@ final class CallsApi
      * Get calls history
      *
      * @param null|\Infobip\Model\CallEndpointType $type Call endpoint type. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|string $from Caller identifier. (optional)
      * @param null|string $to Callee identifier. (optional)
@@ -13394,14 +16020,15 @@ final class CallsApi
      * @param null|\DateTime $endTimeBefore Date and time for when the call has been finished. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|string $conferenceId Conference ID. (optional)
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $bulkId Bulk ID. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    public function getCallsHistoryAsync(?\Infobip\Model\CallEndpointType $type = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?string $conferenceId = null, ?string $dialogId = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getCallsHistoryAsync(?\Infobip\Model\CallEndpointType $type = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?string $conferenceId = null, ?string $dialogId = null, ?string $bulkId = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getCallsHistoryRequest($type, $applicationId, $from, $to, $direction, $status, $startTimeAfter, $endTimeBefore, $conferenceId, $dialogId, $page, $size);
+        $request = $this->getCallsHistoryRequest($type, $callsConfigurationId, $applicationId, $from, $to, $direction, $status, $startTimeAfter, $endTimeBefore, $conferenceId, $dialogId, $bulkId, $page, $size);
 
         return $this
             ->client
@@ -13432,6 +16059,7 @@ final class CallsApi
      * Create request for operation 'getCallsHistory'
      *
      * @param null|\Infobip\Model\CallEndpointType $type Call endpoint type. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|string $from Caller identifier. (optional)
      * @param null|string $to Callee identifier. (optional)
@@ -13441,15 +16069,17 @@ final class CallsApi
      * @param null|\DateTime $endTimeBefore Date and time for when the call has been finished. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|string $conferenceId Conference ID. (optional)
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $bulkId Bulk ID. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    private function getCallsHistoryRequest(?\Infobip\Model\CallEndpointType $type = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?string $conferenceId = null, ?string $dialogId = null, int $page = 0, int $size = 20): Request
+    private function getCallsHistoryRequest(?\Infobip\Model\CallEndpointType $type = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $from = null, ?string $to = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallState $status = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?string $conferenceId = null, ?string $dialogId = null, ?string $bulkId = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
              'type' => $type,
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
              'from' => $from,
              'to' => $to,
@@ -13459,17 +16089,16 @@ final class CallsApi
              'endTimeBefore' => $endTimeBefore,
              'conferenceId' => $conferenceId,
              'dialogId' => $dialogId,
+             'bulkId' => $bulkId,
              'page' => $page,
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'type' => [
-                        new Assert\Choice(['PHONE','SIP','WEBRTC','VIBER',]),
+                    ],
+                    'callsConfigurationId' => [
                     ],
                     'applicationId' => [
                     ],
@@ -13478,10 +16107,8 @@ final class CallsApi
                     'to' => [
                     ],
                     'direction' => [
-                        new Assert\Choice(['INBOUND','OUTBOUND',]),
                     ],
                     'status' => [
-                        new Assert\Choice(['CALLING','RINGING','PRE_ESTABLISHED','ESTABLISHED','FINISHED','FAILED','CANCELLED','NO_ANSWER','BUSY',]),
                     ],
                     'startTimeAfter' => [
                     ],
@@ -13491,21 +16118,20 @@ final class CallsApi
                     ],
                     'dialogId' => [
                     ],
+                    'bulkId' => [
+                    ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/history';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -13513,6 +16139,11 @@ final class CallsApi
         // query params
         if ($type !== null) {
             $queryParams['type'] = $type;
+        }
+
+        // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
         }
 
         // query params
@@ -13561,6 +16192,11 @@ final class CallsApi
         }
 
         // query params
+        if ($bulkId !== null) {
+            $queryParams['bulkId'] = $bulkId;
+        }
+
+        // query params
         if ($page !== null) {
             $queryParams['page'] = $page;
         }
@@ -13572,38 +16208,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -13644,7 +16250,7 @@ final class CallsApi
     /**
      * Create response for operation 'getCallsHistory'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getCallsHistoryResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -13698,6 +16304,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -13730,22 +16347,25 @@ final class CallsApi
      * Get calls recordings
      *
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $endpointIdentifier Endpoint identifier. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) call recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) call recording ended. (optional)
      * @param null|\Infobip\Model\CallDirection $direction Call direction. (optional)
      * @param null|\Infobip\Model\CallEndpointType $endpointType Endpoint type. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getCallsRecordings(?string $callId = null, ?string $applicationId = null, ?string $endpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallEndpointType $endpointType = null, int $page = 0, int $size = 20)
+    public function getCallsRecordings(?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $endpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallEndpointType $endpointType = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getCallsRecordingsRequest($callId, $applicationId, $endpointIdentifier, $startTimeAfter, $endTimeBefore, $direction, $endpointType, $page, $size);
+        $request = $this->getCallsRecordingsRequest($callId, $callsConfigurationId, $applicationId, $entityId, $endpointIdentifier, $startTimeAfter, $endTimeBefore, $direction, $endpointType, $location, $page, $size);
 
         try {
             try {
@@ -13773,20 +16393,23 @@ final class CallsApi
      * Get calls recordings
      *
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $endpointIdentifier Endpoint identifier. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) call recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) call recording ended. (optional)
      * @param null|\Infobip\Model\CallDirection $direction Call direction. (optional)
      * @param null|\Infobip\Model\CallEndpointType $endpointType Endpoint type. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    public function getCallsRecordingsAsync(?string $callId = null, ?string $applicationId = null, ?string $endpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallEndpointType $endpointType = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getCallsRecordingsAsync(?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $endpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallEndpointType $endpointType = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getCallsRecordingsRequest($callId, $applicationId, $endpointIdentifier, $startTimeAfter, $endTimeBefore, $direction, $endpointType, $page, $size);
+        $request = $this->getCallsRecordingsRequest($callId, $callsConfigurationId, $applicationId, $entityId, $endpointIdentifier, $startTimeAfter, $endTimeBefore, $direction, $endpointType, $location, $page, $size);
 
         return $this
             ->client
@@ -13817,39 +16440,46 @@ final class CallsApi
      * Create request for operation 'getCallsRecordings'
      *
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $endpointIdentifier Endpoint identifier. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) call recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) call recording ended. (optional)
      * @param null|\Infobip\Model\CallDirection $direction Call direction. (optional)
      * @param null|\Infobip\Model\CallEndpointType $endpointType Endpoint type. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    private function getCallsRecordingsRequest(?string $callId = null, ?string $applicationId = null, ?string $endpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallEndpointType $endpointType = null, int $page = 0, int $size = 20): Request
+    private function getCallsRecordingsRequest(?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $endpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?\Infobip\Model\CallDirection $direction = null, ?\Infobip\Model\CallEndpointType $endpointType = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
              'callId' => $callId,
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
+             'entityId' => $entityId,
              'endpointIdentifier' => $endpointIdentifier,
              'startTimeAfter' => $startTimeAfter,
              'endTimeBefore' => $endTimeBefore,
              'direction' => $direction,
              'endpointType' => $endpointType,
+             'location' => $location,
              'page' => $page,
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                     ],
+                    'callsConfigurationId' => [
+                    ],
                     'applicationId' => [
+                    ],
+                    'entityId' => [
                     ],
                     'endpointIdentifier' => [
                     ],
@@ -13858,26 +16488,23 @@ final class CallsApi
                     'endTimeBefore' => [
                     ],
                     'direction' => [
-                        new Assert\Choice(['INBOUND','OUTBOUND',]),
                     ],
                     'endpointType' => [
-                        new Assert\Choice(['PHONE','SIP','WEBRTC','VIBER',]),
+                    ],
+                    'location' => [
                     ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/calls';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -13888,8 +16515,18 @@ final class CallsApi
         }
 
         // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
+        }
+
+        // query params
         if ($applicationId !== null) {
             $queryParams['applicationId'] = $applicationId;
+        }
+
+        // query params
+        if ($entityId !== null) {
+            $queryParams['entityId'] = $entityId;
         }
 
         // query params
@@ -13918,6 +16555,11 @@ final class CallsApi
         }
 
         // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
+
+        // query params
         if ($page !== null) {
             $queryParams['page'] = $page;
         }
@@ -13929,38 +16571,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -14001,7 +16613,7 @@ final class CallsApi
     /**
      * Create response for operation 'getCallsRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getCallsRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -14055,6 +16667,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -14090,7 +16713,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getConference(string $conferenceId)
     {
@@ -14167,22 +16790,16 @@ final class CallsApi
              'conferenceId' => $conferenceId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -14198,38 +16815,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -14270,7 +16857,7 @@ final class CallsApi
     /**
      * Create response for operation 'getConference'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getConferenceResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -14303,6 +16890,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -14359,7 +16957,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConferenceLog|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConferenceLog|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getConferenceHistory(string $conferenceId)
     {
@@ -14436,22 +17034,16 @@ final class CallsApi
              'conferenceId' => $conferenceId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/history';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -14467,38 +17059,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -14539,7 +17101,7 @@ final class CallsApi
     /**
      * Create response for operation 'getConferenceHistory'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConferenceLog|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConferenceLog|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getConferenceHistoryResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -14572,6 +17134,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -14625,14 +17198,15 @@ final class CallsApi
      * Get conference recordings
      *
      * @param string $conferenceId Conference ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConferenceRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConferenceRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getConferenceRecordings(string $conferenceId)
+    public function getConferenceRecordings(string $conferenceId, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->getConferenceRecordingsRequest($conferenceId);
+        $request = $this->getConferenceRecordingsRequest($conferenceId, $location);
 
         try {
             try {
@@ -14660,12 +17234,13 @@ final class CallsApi
      * Get conference recordings
      *
      * @param string $conferenceId Conference ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function getConferenceRecordingsAsync(string $conferenceId): PromiseInterface
+    public function getConferenceRecordingsAsync(string $conferenceId, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->getConferenceRecordingsRequest($conferenceId);
+        $request = $this->getConferenceRecordingsRequest($conferenceId, $location);
 
         return $this
             ->client
@@ -14696,34 +17271,37 @@ final class CallsApi
      * Create request for operation 'getConferenceRecordings'
      *
      * @param string $conferenceId Conference ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function getConferenceRecordingsRequest(string $conferenceId): Request
+    private function getConferenceRecordingsRequest(string $conferenceId, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'conferenceId' => $conferenceId,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/conferences/{conferenceId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($conferenceId !== null) {
@@ -14736,38 +17314,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -14808,7 +17356,7 @@ final class CallsApi
     /**
      * Create response for operation 'getConferenceRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConferenceRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConferenceRecording|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getConferenceRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -14841,6 +17389,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -14895,6 +17454,7 @@ final class CallsApi
      *
      * @param null|string $name Conference name. (optional)
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\DateTime $startTimeAfter Date and time for when the conference has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
@@ -14902,11 +17462,11 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConferencePage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConferencePage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getConferences(?string $name = null, ?string $callId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20)
+    public function getConferences(?string $name = null, ?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getConferencesRequest($name, $callId, $applicationId, $startTimeAfter, $page, $size);
+        $request = $this->getConferencesRequest($name, $callId, $callsConfigurationId, $applicationId, $startTimeAfter, $page, $size);
 
         try {
             try {
@@ -14935,6 +17495,7 @@ final class CallsApi
      *
      * @param null|string $name Conference name. (optional)
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\DateTime $startTimeAfter Date and time for when the conference has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
@@ -14942,9 +17503,9 @@ final class CallsApi
      *
      * @throws InvalidArgumentException
      */
-    public function getConferencesAsync(?string $name = null, ?string $callId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getConferencesAsync(?string $name = null, ?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getConferencesRequest($name, $callId, $applicationId, $startTimeAfter, $page, $size);
+        $request = $this->getConferencesRequest($name, $callId, $callsConfigurationId, $applicationId, $startTimeAfter, $page, $size);
 
         return $this
             ->client
@@ -14976,6 +17537,7 @@ final class CallsApi
      *
      * @param null|string $name Conference name. (optional)
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\DateTime $startTimeAfter Date and time for when the conference has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
@@ -14983,45 +17545,42 @@ final class CallsApi
      *
      * @throws InvalidArgumentException
      */
-    private function getConferencesRequest(?string $name = null, ?string $callId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20): Request
+    private function getConferencesRequest(?string $name = null, ?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
              'name' => $name,
              'callId' => $callId,
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
              'startTimeAfter' => $startTimeAfter,
              'page' => $page,
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'name' => [
                     ],
                     'callId' => [
+                    ],
+                    'callsConfigurationId' => [
                     ],
                     'applicationId' => [
                     ],
                     'startTimeAfter' => [
                     ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -15034,6 +17593,11 @@ final class CallsApi
         // query params
         if ($callId !== null) {
             $queryParams['callId'] = $callId;
+        }
+
+        // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
         }
 
         // query params
@@ -15058,38 +17622,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -15130,7 +17664,7 @@ final class CallsApi
     /**
      * Create response for operation 'getConferences'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConferencePage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConferencePage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getConferencesResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -15184,6 +17718,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -15217,6 +17762,7 @@ final class CallsApi
      *
      * @param null|string $name Conference name. (optional)
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\DateTime $startTimeAfter Date and time for when the conference has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|\DateTime $endTimeBefore Date and time for when the conference has been finished. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
@@ -15225,11 +17771,11 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConferenceLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConferenceLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getConferencesHistory(?string $name = null, ?string $callId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20)
+    public function getConferencesHistory(?string $name = null, ?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getConferencesHistoryRequest($name, $callId, $applicationId, $startTimeAfter, $endTimeBefore, $page, $size);
+        $request = $this->getConferencesHistoryRequest($name, $callId, $callsConfigurationId, $applicationId, $startTimeAfter, $endTimeBefore, $page, $size);
 
         try {
             try {
@@ -15258,6 +17804,7 @@ final class CallsApi
      *
      * @param null|string $name Conference name. (optional)
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\DateTime $startTimeAfter Date and time for when the conference has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|\DateTime $endTimeBefore Date and time for when the conference has been finished. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
@@ -15266,9 +17813,9 @@ final class CallsApi
      *
      * @throws InvalidArgumentException
      */
-    public function getConferencesHistoryAsync(?string $name = null, ?string $callId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getConferencesHistoryAsync(?string $name = null, ?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getConferencesHistoryRequest($name, $callId, $applicationId, $startTimeAfter, $endTimeBefore, $page, $size);
+        $request = $this->getConferencesHistoryRequest($name, $callId, $callsConfigurationId, $applicationId, $startTimeAfter, $endTimeBefore, $page, $size);
 
         return $this
             ->client
@@ -15300,6 +17847,7 @@ final class CallsApi
      *
      * @param null|string $name Conference name. (optional)
      * @param null|string $callId Call ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\DateTime $startTimeAfter Date and time for when the conference has been created. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
      * @param null|\DateTime $endTimeBefore Date and time for when the conference has been finished. Has the following format: &#x60;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSS+ZZZZ&#x60;. (optional)
@@ -15308,11 +17856,12 @@ final class CallsApi
      *
      * @throws InvalidArgumentException
      */
-    private function getConferencesHistoryRequest(?string $name = null, ?string $callId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20): Request
+    private function getConferencesHistoryRequest(?string $name = null, ?string $callId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
              'name' => $name,
              'callId' => $callId,
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
              'startTimeAfter' => $startTimeAfter,
              'endTimeBefore' => $endTimeBefore,
@@ -15320,14 +17869,13 @@ final class CallsApi
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'name' => [
                     ],
                     'callId' => [
+                    ],
+                    'callsConfigurationId' => [
                     ],
                     'applicationId' => [
                     ],
@@ -15336,20 +17884,17 @@ final class CallsApi
                     'endTimeBefore' => [
                     ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/history';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -15362,6 +17907,11 @@ final class CallsApi
         // query params
         if ($callId !== null) {
             $queryParams['callId'] = $callId;
+        }
+
+        // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
         }
 
         // query params
@@ -15391,38 +17941,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -15463,7 +17983,7 @@ final class CallsApi
     /**
      * Create response for operation 'getConferencesHistory'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConferenceLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConferenceLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getConferencesHistoryResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -15517,6 +18037,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -15549,22 +18080,27 @@ final class CallsApi
      * Get conferences recordings
      *
      * @param null|string $conferenceId Conference ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $conferenceName Conference name. (optional)
      * @param null|string $callId Filter all conference recordings where call ID was included in the recording. (optional)
+     * @param null|\Infobip\Model\CallEndpointType $callEndpointType Filter all conference recordings where calls with endpoint type were included in the recording. (optional)
+     * @param null|string $callEndpointIdentifier Filter all conference recordings where calls with endpoint identifier were included in the recording. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) conference recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) conference recording ended. (optional)
      * @param null|bool $composition Flag indicating whether auto-compose feature was turned on for the recording. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConferenceRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConferenceRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getConferencesRecordings(?string $conferenceId = null, ?string $applicationId = null, ?string $conferenceName = null, ?string $callId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, int $page = 0, int $size = 20)
+    public function getConferencesRecordings(?string $conferenceId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $conferenceName = null, ?string $callId = null, ?\Infobip\Model\CallEndpointType $callEndpointType = null, ?string $callEndpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getConferencesRecordingsRequest($conferenceId, $applicationId, $conferenceName, $callId, $startTimeAfter, $endTimeBefore, $composition, $page, $size);
+        $request = $this->getConferencesRecordingsRequest($conferenceId, $callsConfigurationId, $applicationId, $entityId, $conferenceName, $callId, $callEndpointType, $callEndpointIdentifier, $startTimeAfter, $endTimeBefore, $composition, $location, $page, $size);
 
         try {
             try {
@@ -15592,20 +18128,25 @@ final class CallsApi
      * Get conferences recordings
      *
      * @param null|string $conferenceId Conference ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $conferenceName Conference name. (optional)
      * @param null|string $callId Filter all conference recordings where call ID was included in the recording. (optional)
+     * @param null|\Infobip\Model\CallEndpointType $callEndpointType Filter all conference recordings where calls with endpoint type were included in the recording. (optional)
+     * @param null|string $callEndpointIdentifier Filter all conference recordings where calls with endpoint identifier were included in the recording. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) conference recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) conference recording ended. (optional)
      * @param null|bool $composition Flag indicating whether auto-compose feature was turned on for the recording. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    public function getConferencesRecordingsAsync(?string $conferenceId = null, ?string $applicationId = null, ?string $conferenceName = null, ?string $callId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getConferencesRecordingsAsync(?string $conferenceId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $conferenceName = null, ?string $callId = null, ?\Infobip\Model\CallEndpointType $callEndpointType = null, ?string $callEndpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getConferencesRecordingsRequest($conferenceId, $applicationId, $conferenceName, $callId, $startTimeAfter, $endTimeBefore, $composition, $page, $size);
+        $request = $this->getConferencesRecordingsRequest($conferenceId, $callsConfigurationId, $applicationId, $entityId, $conferenceName, $callId, $callEndpointType, $callEndpointIdentifier, $startTimeAfter, $endTimeBefore, $composition, $location, $page, $size);
 
         return $this
             ->client
@@ -15636,43 +18177,58 @@ final class CallsApi
      * Create request for operation 'getConferencesRecordings'
      *
      * @param null|string $conferenceId Conference ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $conferenceName Conference name. (optional)
      * @param null|string $callId Filter all conference recordings where call ID was included in the recording. (optional)
+     * @param null|\Infobip\Model\CallEndpointType $callEndpointType Filter all conference recordings where calls with endpoint type were included in the recording. (optional)
+     * @param null|string $callEndpointIdentifier Filter all conference recordings where calls with endpoint identifier were included in the recording. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) conference recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) conference recording ended. (optional)
      * @param null|bool $composition Flag indicating whether auto-compose feature was turned on for the recording. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    private function getConferencesRecordingsRequest(?string $conferenceId = null, ?string $applicationId = null, ?string $conferenceName = null, ?string $callId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, int $page = 0, int $size = 20): Request
+    private function getConferencesRecordingsRequest(?string $conferenceId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $conferenceName = null, ?string $callId = null, ?\Infobip\Model\CallEndpointType $callEndpointType = null, ?string $callEndpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
              'conferenceId' => $conferenceId,
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
+             'entityId' => $entityId,
              'conferenceName' => $conferenceName,
              'callId' => $callId,
+             'callEndpointType' => $callEndpointType,
+             'callEndpointIdentifier' => $callEndpointIdentifier,
              'startTimeAfter' => $startTimeAfter,
              'endTimeBefore' => $endTimeBefore,
              'composition' => $composition,
+             'location' => $location,
              'page' => $page,
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                     ],
+                    'callsConfigurationId' => [
+                    ],
                     'applicationId' => [
+                    ],
+                    'entityId' => [
                     ],
                     'conferenceName' => [
                     ],
                     'callId' => [
+                    ],
+                    'callEndpointType' => [
+                    ],
+                    'callEndpointIdentifier' => [
                     ],
                     'startTimeAfter' => [
                     ],
@@ -15680,21 +18236,20 @@ final class CallsApi
                     ],
                     'composition' => [
                     ],
+                    'location' => [
+                    ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/conferences';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -15705,8 +18260,18 @@ final class CallsApi
         }
 
         // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
+        }
+
+        // query params
         if ($applicationId !== null) {
             $queryParams['applicationId'] = $applicationId;
+        }
+
+        // query params
+        if ($entityId !== null) {
+            $queryParams['entityId'] = $entityId;
         }
 
         // query params
@@ -15717,6 +18282,16 @@ final class CallsApi
         // query params
         if ($callId !== null) {
             $queryParams['callId'] = $callId;
+        }
+
+        // query params
+        if ($callEndpointType !== null) {
+            $queryParams['callEndpointType'] = $callEndpointType;
+        }
+
+        // query params
+        if ($callEndpointIdentifier !== null) {
+            $queryParams['callEndpointIdentifier'] = $callEndpointIdentifier;
         }
 
         // query params
@@ -15735,6 +18310,11 @@ final class CallsApi
         }
 
         // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
+
+        // query params
         if ($page !== null) {
             $queryParams['page'] = $page;
         }
@@ -15746,38 +18326,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -15818,7 +18368,7 @@ final class CallsApi
     /**
      * Create response for operation 'getConferencesRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConferenceRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConferenceRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getConferencesRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -15872,6 +18422,245 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getCountries
+     *
+     * Get countries
+     *
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsCountryList|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getCountries()
+    {
+        $request = $this->getCountriesRequest();
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getCountriesResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getCountriesApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getCountriesAsync
+     *
+     * Get countries
+     *
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getCountriesAsync(): PromiseInterface
+    {
+        $request = $this->getCountriesRequest();
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getCountriesResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getCountriesApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getCountries'
+     *
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getCountriesRequest(): Request
+    {
+        $allData = [
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/service-addresses/countries';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getCountries'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsCountryList|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getCountriesResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsCountryList', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getCountries'
+     */
+    private function getCountriesApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -15907,7 +18696,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getDialog(string $dialogId)
     {
@@ -15984,22 +18773,16 @@ final class CallsApi
              'dialogId' => $dialogId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/{dialogId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -16015,38 +18798,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -16087,7 +18840,7 @@ final class CallsApi
     /**
      * Create response for operation 'getDialog'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getDialogResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -16120,6 +18873,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -16176,7 +18940,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogLogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogLogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getDialogHistory(string $dialogId)
     {
@@ -16253,22 +19017,16 @@ final class CallsApi
              'dialogId' => $dialogId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/{dialogId}/history';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -16284,38 +19042,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -16356,7 +19084,7 @@ final class CallsApi
     /**
      * Create response for operation 'getDialogHistory'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogLogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogLogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getDialogHistoryResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -16389,6 +19117,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -16442,14 +19181,15 @@ final class CallsApi
      * Get dialog recordings
      *
      * @param string $dialogId Dialog ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogRecordingResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogRecordingResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getDialogRecordings(string $dialogId)
+    public function getDialogRecordings(string $dialogId, ?\Infobip\Model\CallsRecordingLocation $location = null)
     {
-        $request = $this->getDialogRecordingsRequest($dialogId);
+        $request = $this->getDialogRecordingsRequest($dialogId, $location);
 
         try {
             try {
@@ -16477,12 +19217,13 @@ final class CallsApi
      * Get dialog recordings
      *
      * @param string $dialogId Dialog ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    public function getDialogRecordingsAsync(string $dialogId): PromiseInterface
+    public function getDialogRecordingsAsync(string $dialogId, ?\Infobip\Model\CallsRecordingLocation $location = null): PromiseInterface
     {
-        $request = $this->getDialogRecordingsRequest($dialogId);
+        $request = $this->getDialogRecordingsRequest($dialogId, $location);
 
         return $this
             ->client
@@ -16513,34 +19254,37 @@ final class CallsApi
      * Create request for operation 'getDialogRecordings'
      *
      * @param string $dialogId Dialog ID. (required)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      *
      * @throws InvalidArgumentException
      */
-    private function getDialogRecordingsRequest(string $dialogId): Request
+    private function getDialogRecordingsRequest(string $dialogId, ?\Infobip\Model\CallsRecordingLocation $location = null): Request
     {
         $allData = [
              'dialogId' => $dialogId,
+             'location' => $location,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'location' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/dialogs/{dialogId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
 
         // path params
         if ($dialogId !== null) {
@@ -16553,38 +19297,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -16625,7 +19339,7 @@ final class CallsApi
     /**
      * Create response for operation 'getDialogRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogRecordingResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogRecordingResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getDialogRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -16658,6 +19372,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -16710,6 +19435,7 @@ final class CallsApi
      *
      * Get dialogs
      *
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\Infobip\Model\CallsDialogState $state Dialog state. (optional)
      * @param null|string $parentCallId Parent call ID. (optional)
@@ -16720,11 +19446,11 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getDialogs(?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20)
+    public function getDialogs(?string $callsConfigurationId = null, ?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getDialogsRequest($applicationId, $state, $parentCallId, $childCallId, $startTimeAfter, $page, $size);
+        $request = $this->getDialogsRequest($callsConfigurationId, $applicationId, $state, $parentCallId, $childCallId, $startTimeAfter, $page, $size);
 
         try {
             try {
@@ -16751,6 +19477,7 @@ final class CallsApi
      *
      * Get dialogs
      *
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\Infobip\Model\CallsDialogState $state Dialog state. (optional)
      * @param null|string $parentCallId Parent call ID. (optional)
@@ -16761,9 +19488,9 @@ final class CallsApi
      *
      * @throws InvalidArgumentException
      */
-    public function getDialogsAsync(?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getDialogsAsync(?string $callsConfigurationId = null, ?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getDialogsRequest($applicationId, $state, $parentCallId, $childCallId, $startTimeAfter, $page, $size);
+        $request = $this->getDialogsRequest($callsConfigurationId, $applicationId, $state, $parentCallId, $childCallId, $startTimeAfter, $page, $size);
 
         return $this
             ->client
@@ -16793,6 +19520,7 @@ final class CallsApi
     /**
      * Create request for operation 'getDialogs'
      *
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\Infobip\Model\CallsDialogState $state Dialog state. (optional)
      * @param null|string $parentCallId Parent call ID. (optional)
@@ -16803,9 +19531,10 @@ final class CallsApi
      *
      * @throws InvalidArgumentException
      */
-    private function getDialogsRequest(?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20): Request
+    private function getDialogsRequest(?string $callsConfigurationId = null, ?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
              'state' => $state,
              'parentCallId' => $parentCallId,
@@ -16815,15 +19544,13 @@ final class CallsApi
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsConfigurationId' => [
+                    ],
                     'applicationId' => [
                     ],
                     'state' => [
-                        new Assert\Choice(['CREATED','ESTABLISHED','FINISHED','FAILED',]),
                     ],
                     'parentCallId' => [
                     ],
@@ -16832,23 +19559,25 @@ final class CallsApi
                     'startTimeAfter' => [
                     ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
+        }
 
         // query params
         if ($applicationId !== null) {
@@ -16887,38 +19616,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -16959,7 +19658,7 @@ final class CallsApi
     /**
      * Create response for operation 'getDialogs'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getDialogsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -17013,6 +19712,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -17044,6 +19754,7 @@ final class CallsApi
      *
      * Get dialogs history
      *
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\Infobip\Model\CallsDialogState $state Dialog state. (optional)
      * @param null|string $parentCallId Parent call ID. (optional)
@@ -17055,11 +19766,11 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getDialogsHistory(?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20)
+    public function getDialogsHistory(?string $callsConfigurationId = null, ?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getDialogsHistoryRequest($applicationId, $state, $parentCallId, $childCallId, $startTimeAfter, $endTimeBefore, $page, $size);
+        $request = $this->getDialogsHistoryRequest($callsConfigurationId, $applicationId, $state, $parentCallId, $childCallId, $startTimeAfter, $endTimeBefore, $page, $size);
 
         try {
             try {
@@ -17086,6 +19797,7 @@ final class CallsApi
      *
      * Get dialogs history
      *
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\Infobip\Model\CallsDialogState $state Dialog state. (optional)
      * @param null|string $parentCallId Parent call ID. (optional)
@@ -17097,9 +19809,9 @@ final class CallsApi
      *
      * @throws InvalidArgumentException
      */
-    public function getDialogsHistoryAsync(?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getDialogsHistoryAsync(?string $callsConfigurationId = null, ?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getDialogsHistoryRequest($applicationId, $state, $parentCallId, $childCallId, $startTimeAfter, $endTimeBefore, $page, $size);
+        $request = $this->getDialogsHistoryRequest($callsConfigurationId, $applicationId, $state, $parentCallId, $childCallId, $startTimeAfter, $endTimeBefore, $page, $size);
 
         return $this
             ->client
@@ -17129,6 +19841,7 @@ final class CallsApi
     /**
      * Create request for operation 'getDialogsHistory'
      *
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
      * @param null|\Infobip\Model\CallsDialogState $state Dialog state. (optional)
      * @param null|string $parentCallId Parent call ID. (optional)
@@ -17140,9 +19853,10 @@ final class CallsApi
      *
      * @throws InvalidArgumentException
      */
-    private function getDialogsHistoryRequest(?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20): Request
+    private function getDialogsHistoryRequest(?string $callsConfigurationId = null, ?string $applicationId = null, ?\Infobip\Model\CallsDialogState $state = null, ?string $parentCallId = null, ?string $childCallId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
              'state' => $state,
              'parentCallId' => $parentCallId,
@@ -17153,15 +19867,13 @@ final class CallsApi
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsConfigurationId' => [
+                    ],
                     'applicationId' => [
                     ],
                     'state' => [
-                        new Assert\Choice(['CREATED','ESTABLISHED','FINISHED','FAILED',]),
                     ],
                     'parentCallId' => [
                     ],
@@ -17172,23 +19884,25 @@ final class CallsApi
                     'endTimeBefore' => [
                     ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/history';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
+        }
 
         // query params
         if ($applicationId !== null) {
@@ -17232,38 +19946,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -17304,7 +19988,7 @@ final class CallsApi
     /**
      * Create response for operation 'getDialogsHistory'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogLogPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getDialogsHistoryResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -17358,6 +20042,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -17390,21 +20085,26 @@ final class CallsApi
      * Get dialogs recordings
      *
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $callId Filter all dialog recordings where call ID was included in the recording. (optional)
+     * @param null|\Infobip\Model\CallEndpointType $callEndpointType Filter all dialog recordings where calls with endpoint type were included in the recording. (optional)
+     * @param null|string $callEndpointIdentifier Filter all dialog recordings where calls with endpoint identifier were included in the recording. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) dialog recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) dialog recording ended. (optional)
      * @param null|bool $composition Flag indicating whether auto-compose feature was turned on for the recording. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function getDialogsRecordings(?string $dialogId = null, ?string $applicationId = null, ?string $callId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, int $page = 0, int $size = 20)
+    public function getDialogsRecordings(?string $dialogId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $callId = null, ?\Infobip\Model\CallEndpointType $callEndpointType = null, ?string $callEndpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20)
     {
-        $request = $this->getDialogsRecordingsRequest($dialogId, $applicationId, $callId, $startTimeAfter, $endTimeBefore, $composition, $page, $size);
+        $request = $this->getDialogsRecordingsRequest($dialogId, $callsConfigurationId, $applicationId, $entityId, $callId, $callEndpointType, $callEndpointIdentifier, $startTimeAfter, $endTimeBefore, $composition, $location, $page, $size);
 
         try {
             try {
@@ -17432,19 +20132,24 @@ final class CallsApi
      * Get dialogs recordings
      *
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $callId Filter all dialog recordings where call ID was included in the recording. (optional)
+     * @param null|\Infobip\Model\CallEndpointType $callEndpointType Filter all dialog recordings where calls with endpoint type were included in the recording. (optional)
+     * @param null|string $callEndpointIdentifier Filter all dialog recordings where calls with endpoint identifier were included in the recording. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) dialog recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) dialog recording ended. (optional)
      * @param null|bool $composition Flag indicating whether auto-compose feature was turned on for the recording. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    public function getDialogsRecordingsAsync(?string $dialogId = null, ?string $applicationId = null, ?string $callId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, int $page = 0, int $size = 20): PromiseInterface
+    public function getDialogsRecordingsAsync(?string $dialogId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $callId = null, ?\Infobip\Model\CallEndpointType $callEndpointType = null, ?string $callEndpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20): PromiseInterface
     {
-        $request = $this->getDialogsRecordingsRequest($dialogId, $applicationId, $callId, $startTimeAfter, $endTimeBefore, $composition, $page, $size);
+        $request = $this->getDialogsRecordingsRequest($dialogId, $callsConfigurationId, $applicationId, $entityId, $callId, $callEndpointType, $callEndpointIdentifier, $startTimeAfter, $endTimeBefore, $composition, $location, $page, $size);
 
         return $this
             ->client
@@ -17475,39 +20180,54 @@ final class CallsApi
      * Create request for operation 'getDialogsRecordings'
      *
      * @param null|string $dialogId Dialog ID. (optional)
+     * @param null|string $callsConfigurationId Calls Configuration ID. (optional)
      * @param null|string $applicationId Application ID. (optional)
+     * @param null|string $entityId Entity ID. (optional)
      * @param null|string $callId Filter all dialog recordings where call ID was included in the recording. (optional)
+     * @param null|\Infobip\Model\CallEndpointType $callEndpointType Filter all dialog recordings where calls with endpoint type were included in the recording. (optional)
+     * @param null|string $callEndpointIdentifier Filter all dialog recordings where calls with endpoint identifier were included in the recording. (optional)
      * @param null|\DateTime $startTimeAfter Date and time when the (first) dialog recording started. (optional)
      * @param null|\DateTime $endTimeBefore Date and time when the (last) dialog recording ended. (optional)
      * @param null|bool $composition Flag indicating whether auto-compose feature was turned on for the recording. (optional)
+     * @param null|\Infobip\Model\CallsRecordingLocation $location Recording location. (optional)
      * @param int $page Results page to retrieve (0..N). (optional, default to 0)
      * @param int $size Number of records per page. (optional, default to 20)
      *
      * @throws InvalidArgumentException
      */
-    private function getDialogsRecordingsRequest(?string $dialogId = null, ?string $applicationId = null, ?string $callId = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, int $page = 0, int $size = 20): Request
+    private function getDialogsRecordingsRequest(?string $dialogId = null, ?string $callsConfigurationId = null, ?string $applicationId = null, ?string $entityId = null, ?string $callId = null, ?\Infobip\Model\CallEndpointType $callEndpointType = null, ?string $callEndpointIdentifier = null, ?\DateTime $startTimeAfter = null, ?\DateTime $endTimeBefore = null, ?bool $composition = null, ?\Infobip\Model\CallsRecordingLocation $location = null, int $page = 0, int $size = 20): Request
     {
         $allData = [
              'dialogId' => $dialogId,
+             'callsConfigurationId' => $callsConfigurationId,
              'applicationId' => $applicationId,
+             'entityId' => $entityId,
              'callId' => $callId,
+             'callEndpointType' => $callEndpointType,
+             'callEndpointIdentifier' => $callEndpointIdentifier,
              'startTimeAfter' => $startTimeAfter,
              'endTimeBefore' => $endTimeBefore,
              'composition' => $composition,
+             'location' => $location,
              'page' => $page,
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
+                    ],
+                    'callsConfigurationId' => [
                     ],
                     'applicationId' => [
                     ],
+                    'entityId' => [
+                    ],
                     'callId' => [
+                    ],
+                    'callEndpointType' => [
+                    ],
+                    'callEndpointIdentifier' => [
                     ],
                     'startTimeAfter' => [
                     ],
@@ -17515,21 +20235,20 @@ final class CallsApi
                     ],
                     'composition' => [
                     ],
+                    'location' => [
+                    ],
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/recordings/dialogs';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -17540,13 +20259,33 @@ final class CallsApi
         }
 
         // query params
+        if ($callsConfigurationId !== null) {
+            $queryParams['callsConfigurationId'] = $callsConfigurationId;
+        }
+
+        // query params
         if ($applicationId !== null) {
             $queryParams['applicationId'] = $applicationId;
         }
 
         // query params
+        if ($entityId !== null) {
+            $queryParams['entityId'] = $entityId;
+        }
+
+        // query params
         if ($callId !== null) {
             $queryParams['callId'] = $callId;
+        }
+
+        // query params
+        if ($callEndpointType !== null) {
+            $queryParams['callEndpointType'] = $callEndpointType;
+        }
+
+        // query params
+        if ($callEndpointIdentifier !== null) {
+            $queryParams['callEndpointIdentifier'] = $callEndpointIdentifier;
         }
 
         // query params
@@ -17565,6 +20304,11 @@ final class CallsApi
         }
 
         // query params
+        if ($location !== null) {
+            $queryParams['location'] = $location;
+        }
+
+        // query params
         if ($page !== null) {
             $queryParams['page'] = $page;
         }
@@ -17576,38 +20320,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -17648,7 +20362,7 @@ final class CallsApi
     /**
      * Create response for operation 'getDialogsRecordings'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogRecordingPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getDialogsRecordingsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -17702,6 +20416,17 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -17737,7 +20462,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getMediaStreamConfig(string $mediaStreamConfigId)
     {
@@ -17814,22 +20539,16 @@ final class CallsApi
              'mediaStreamConfigId' => $mediaStreamConfigId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'mediaStreamConfigId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/media-stream-configs/{mediaStreamConfigId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -17845,38 +20564,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -17917,7 +20606,7 @@ final class CallsApi
     /**
      * Create response for operation 'getMediaStreamConfig'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getMediaStreamConfigResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -17950,6 +20639,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -18007,7 +20707,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsMediaStreamConfigPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsMediaStreamConfigPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function getMediaStreamConfigs(int $page = 0, int $size = 20)
     {
@@ -18087,26 +20787,20 @@ final class CallsApi
              'size' => $size,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'page' => [
-                        new Assert\GreaterThan(0),
+                        new Assert\GreaterThanOrEqual(0),
                     ],
                     'size' => [
-                        new Assert\LessThan(100),
-                        new Assert\GreaterThan(1),
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/media-stream-configs';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -18123,38 +20817,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -18195,7 +20859,7 @@ final class CallsApi
     /**
      * Create response for operation 'getMediaStreamConfigs'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsMediaStreamConfigPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsMediaStreamConfigPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function getMediaStreamConfigsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -18249,6 +20913,1528 @@ final class CallsApi
 
             return $apiException;
         }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getRegions
+     *
+     * Get regions
+     *
+     * @param string $countryCode Country code. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsRegionList|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getRegions(string $countryCode)
+    {
+        $request = $this->getRegionsRequest($countryCode);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getRegionsResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getRegionsApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getRegionsAsync
+     *
+     * Get regions
+     *
+     * @param string $countryCode Country code. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getRegionsAsync(string $countryCode): PromiseInterface
+    {
+        $request = $this->getRegionsRequest($countryCode);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getRegionsResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getRegionsApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getRegions'
+     *
+     * @param string $countryCode Country code. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getRegionsRequest(string $countryCode): Request
+    {
+        $allData = [
+             'countryCode' => $countryCode,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'countryCode' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/service-addresses/countries/regions';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // query params
+        if ($countryCode !== null) {
+            $queryParams['countryCode'] = $countryCode;
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getRegions'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsRegionList|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getRegionsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsRegionList', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getRegions'
+     */
+    private function getRegionsApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getSipTrunk
+     *
+     * Get SIP trunk
+     *
+     * @param string $sipTrunkId SIP trunk ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsSipTrunkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getSipTrunk(string $sipTrunkId)
+    {
+        $request = $this->getSipTrunkRequest($sipTrunkId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getSipTrunkResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getSipTrunkApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getSipTrunkAsync
+     *
+     * Get SIP trunk
+     *
+     * @param string $sipTrunkId SIP trunk ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getSipTrunkAsync(string $sipTrunkId): PromiseInterface
+    {
+        $request = $this->getSipTrunkRequest($sipTrunkId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getSipTrunkResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getSipTrunkApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getSipTrunk'
+     *
+     * @param string $sipTrunkId SIP trunk ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getSipTrunkRequest(string $sipTrunkId): Request
+    {
+        $allData = [
+             'sipTrunkId' => $sipTrunkId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/{sipTrunkId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getSipTrunk'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsSipTrunkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getSipTrunkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsSipTrunkResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getSipTrunk'
+     */
+    private function getSipTrunkApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getSipTrunkServiceAddress
+     *
+     * Get SIP trunk service address
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsPublicSipTrunkServiceAddress|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getSipTrunkServiceAddress(string $sipTrunkServiceAddressId)
+    {
+        $request = $this->getSipTrunkServiceAddressRequest($sipTrunkServiceAddressId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getSipTrunkServiceAddressResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getSipTrunkServiceAddressApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getSipTrunkServiceAddressAsync
+     *
+     * Get SIP trunk service address
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getSipTrunkServiceAddressAsync(string $sipTrunkServiceAddressId): PromiseInterface
+    {
+        $request = $this->getSipTrunkServiceAddressRequest($sipTrunkServiceAddressId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getSipTrunkServiceAddressResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getSipTrunkServiceAddressApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getSipTrunkServiceAddress'
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getSipTrunkServiceAddressRequest(string $sipTrunkServiceAddressId): Request
+    {
+        $allData = [
+             'sipTrunkServiceAddressId' => $sipTrunkServiceAddressId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkServiceAddressId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/service-addresses/{sipTrunkServiceAddressId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkServiceAddressId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkServiceAddressId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkServiceAddressId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getSipTrunkServiceAddress'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsPublicSipTrunkServiceAddress|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getSipTrunkServiceAddressResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsPublicSipTrunkServiceAddress', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getSipTrunkServiceAddress'
+     */
+    private function getSipTrunkServiceAddressApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getSipTrunkServiceAddresses
+     *
+     * Get SIP trunk service addresses
+     *
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsSipTrunkServiceAddressPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getSipTrunkServiceAddresses(int $page = 0, int $size = 20)
+    {
+        $request = $this->getSipTrunkServiceAddressesRequest($page, $size);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getSipTrunkServiceAddressesResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getSipTrunkServiceAddressesApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getSipTrunkServiceAddressesAsync
+     *
+     * Get SIP trunk service addresses
+     *
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getSipTrunkServiceAddressesAsync(int $page = 0, int $size = 20): PromiseInterface
+    {
+        $request = $this->getSipTrunkServiceAddressesRequest($page, $size);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getSipTrunkServiceAddressesResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getSipTrunkServiceAddressesApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getSipTrunkServiceAddresses'
+     *
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getSipTrunkServiceAddressesRequest(int $page = 0, int $size = 20): Request
+    {
+        $allData = [
+             'page' => $page,
+             'size' => $size,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'page' => [
+                        new Assert\GreaterThanOrEqual(0),
+                    ],
+                    'size' => [
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/service-addresses';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // query params
+        if ($page !== null) {
+            $queryParams['page'] = $page;
+        }
+
+        // query params
+        if ($size !== null) {
+            $queryParams['size'] = $size;
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getSipTrunkServiceAddresses'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsSipTrunkServiceAddressPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getSipTrunkServiceAddressesResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsSipTrunkServiceAddressPage', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getSipTrunkServiceAddresses'
+     */
+    private function getSipTrunkServiceAddressesApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getSipTrunkStatus
+     *
+     * Get SIP trunk status
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsExtendedSipTrunkStatusResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getSipTrunkStatus(string $sipTrunkId)
+    {
+        $request = $this->getSipTrunkStatusRequest($sipTrunkId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getSipTrunkStatusResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getSipTrunkStatusApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getSipTrunkStatusAsync
+     *
+     * Get SIP trunk status
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getSipTrunkStatusAsync(string $sipTrunkId): PromiseInterface
+    {
+        $request = $this->getSipTrunkStatusRequest($sipTrunkId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getSipTrunkStatusResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getSipTrunkStatusApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getSipTrunkStatus'
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getSipTrunkStatusRequest(string $sipTrunkId): Request
+    {
+        $allData = [
+             'sipTrunkId' => $sipTrunkId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/{sipTrunkId}/status';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getSipTrunkStatus'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsExtendedSipTrunkStatusResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getSipTrunkStatusResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsExtendedSipTrunkStatusResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getSipTrunkStatus'
+     */
+    private function getSipTrunkStatusApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getSipTrunks
+     *
+     * Get SIP trunks
+     *
+     * @param null|string $name SIP trunk name. (optional)
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsSipTrunkPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function getSipTrunks(?string $name = null, int $page = 0, int $size = 20)
+    {
+        $request = $this->getSipTrunksRequest($name, $page, $size);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getSipTrunksResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getSipTrunksApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getSipTrunksAsync
+     *
+     * Get SIP trunks
+     *
+     * @param null|string $name SIP trunk name. (optional)
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getSipTrunksAsync(?string $name = null, int $page = 0, int $size = 20): PromiseInterface
+    {
+        $request = $this->getSipTrunksRequest($name, $page, $size);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getSipTrunksResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getSipTrunksApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getSipTrunks'
+     *
+     * @param null|string $name SIP trunk name. (optional)
+     * @param int $page Results page to retrieve (0..N). (optional, default to 0)
+     * @param int $size Number of records per page. (optional, default to 20)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getSipTrunksRequest(?string $name = null, int $page = 0, int $size = 20): Request
+    {
+        $allData = [
+             'name' => $name,
+             'page' => $page,
+             'size' => $size,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'name' => [
+                    ],
+                    'page' => [
+                        new Assert\GreaterThanOrEqual(0),
+                    ],
+                    'size' => [
+                        new Assert\LessThanOrEqual(100),
+                        new Assert\GreaterThanOrEqual(1),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // query params
+        if ($name !== null) {
+            $queryParams['name'] = $name;
+        }
+
+        // query params
+        if ($page !== null) {
+            $queryParams['page'] = $page;
+        }
+
+        // query params
+        if ($size !== null) {
+            $queryParams['size'] = $size;
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getSipTrunks'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsSipTrunkPage|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function getSipTrunksResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsSipTrunkPage', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getSipTrunks'
+     */
+    private function getSipTrunksApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 429) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -18285,7 +22471,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function hangupCall(string $callId, \Infobip\Model\CallsHangupRequest $callsHangupRequest)
     {
@@ -18365,25 +22551,19 @@ final class CallsApi
              'callsHangupRequest' => $callsHangupRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsHangupRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/hangup';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -18402,38 +22582,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsHangupRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsHangupRequest)
                 : $callsHangupRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -18475,7 +22627,7 @@ final class CallsApi
     /**
      * Create response for operation 'hangupCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\Call|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function hangupCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -18519,6 +22671,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -18575,7 +22738,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function hangupConference(string $conferenceId)
     {
@@ -18652,22 +22815,16 @@ final class CallsApi
              'conferenceId' => $conferenceId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/hangup';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -18683,38 +22840,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -18755,7 +22882,7 @@ final class CallsApi
     /**
      * Create response for operation 'hangupConference'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsConference|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function hangupConferenceResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -18788,6 +22915,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -18844,7 +22982,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function hangupDialog(string $dialogId)
     {
@@ -18921,22 +23059,16 @@ final class CallsApi
              'dialogId' => $dialogId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'dialogId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/dialogs/{dialogId}/hangup';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -18952,38 +23084,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -19024,7 +23126,7 @@ final class CallsApi
     /**
      * Create response for operation 'hangupDialog'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsDialogResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function hangupDialogResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -19057,6 +23159,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -19113,7 +23226,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function pauseBulk(string $bulkId)
     {
@@ -19190,22 +23303,16 @@ final class CallsApi
              'bulkId' => $bulkId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/bulks/{bulkId}/pause';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -19221,38 +23328,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -19293,7 +23370,7 @@ final class CallsApi
     /**
      * Create response for operation 'pauseBulk'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function pauseBulkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -19326,6 +23403,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -19379,14 +23467,15 @@ final class CallsApi
      * Pre-answer
      *
      * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsPreAnswerRequest $callsPreAnswerRequest callsPreAnswerRequest (required)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
-    public function preAnswerCall(string $callId)
+    public function preAnswerCall(string $callId, \Infobip\Model\CallsPreAnswerRequest $callsPreAnswerRequest)
     {
-        $request = $this->preAnswerCallRequest($callId);
+        $request = $this->preAnswerCallRequest($callId, $callsPreAnswerRequest);
 
         try {
             try {
@@ -19414,12 +23503,13 @@ final class CallsApi
      * Pre-answer
      *
      * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsPreAnswerRequest $callsPreAnswerRequest (required)
      *
      * @throws InvalidArgumentException
      */
-    public function preAnswerCallAsync(string $callId): PromiseInterface
+    public function preAnswerCallAsync(string $callId, \Infobip\Model\CallsPreAnswerRequest $callsPreAnswerRequest): PromiseInterface
     {
-        $request = $this->preAnswerCallRequest($callId);
+        $request = $this->preAnswerCallRequest($callId, $callsPreAnswerRequest);
 
         return $this
             ->client
@@ -19450,31 +23540,30 @@ final class CallsApi
      * Create request for operation 'preAnswerCall'
      *
      * @param string $callId Call ID. (required)
+     * @param \Infobip\Model\CallsPreAnswerRequest $callsPreAnswerRequest (required)
      *
      * @throws InvalidArgumentException
      */
-    private function preAnswerCallRequest(string $callId): Request
+    private function preAnswerCallRequest(string $callId, \Infobip\Model\CallsPreAnswerRequest $callsPreAnswerRequest): Request
     {
         $allData = [
              'callId' => $callId,
+             'callsPreAnswerRequest' => $callsPreAnswerRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'callsPreAnswerRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/pre-answer';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -19490,37 +23579,13 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
+            'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
+        if (isset($callsPreAnswerRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsPreAnswerRequest)
+                : $callsPreAnswerRequest;
         }
 
         $apiKey = $this->config->getApiKey();
@@ -19562,7 +23627,7 @@ final class CallsApi
     /**
      * Create response for operation 'preAnswerCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function preAnswerCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -19594,7 +23659,29 @@ final class CallsApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -19652,7 +23739,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function removeConferenceCall(string $conferenceId, string $callId)
     {
@@ -19732,25 +23819,19 @@ final class CallsApi
              'callId' => $callId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/call/{callId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -19775,38 +23856,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -19847,7 +23898,7 @@ final class CallsApi
     /**
      * Create response for operation 'removeConferenceCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function removeConferenceCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -19880,6 +23931,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -19937,7 +23999,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function rescheduleBulk(string $bulkId, \Infobip\Model\CallsRescheduleRequest $callsRescheduleRequest)
     {
@@ -20017,25 +24079,19 @@ final class CallsApi
              'callsRescheduleRequest' => $callsRescheduleRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsRescheduleRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/bulks/{bulkId}/reschedule';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -20054,38 +24110,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsRescheduleRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsRescheduleRequest)
                 : $callsRescheduleRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -20127,7 +24155,7 @@ final class CallsApi
     /**
      * Create response for operation 'rescheduleBulk'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function rescheduleBulkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -20159,7 +24187,284 @@ final class CallsApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation resetSipTrunkPassword
+     *
+     * Reset registered SIP trunk password
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsSipTrunkRegistrationCredentials|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function resetSipTrunkPassword(string $sipTrunkId)
+    {
+        $request = $this->resetSipTrunkPasswordRequest($sipTrunkId);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->resetSipTrunkPasswordResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->resetSipTrunkPasswordApiException($exception);
+        }
+    }
+
+    /**
+     * Operation resetSipTrunkPasswordAsync
+     *
+     * Reset registered SIP trunk password
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function resetSipTrunkPasswordAsync(string $sipTrunkId): PromiseInterface
+    {
+        $request = $this->resetSipTrunkPasswordRequest($sipTrunkId);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->resetSipTrunkPasswordResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->resetSipTrunkPasswordApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'resetSipTrunkPassword'
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function resetSipTrunkPasswordRequest(string $sipTrunkId): Request
+    {
+        $allData = [
+             'sipTrunkId' => $sipTrunkId,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkId' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/{sipTrunkId}/reset-password';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'resetSipTrunkPassword'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsSipTrunkRegistrationCredentials|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function resetSipTrunkPasswordResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsSipTrunkRegistrationCredentials', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'resetSipTrunkPassword'
+     */
+    private function resetSipTrunkPasswordApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -20216,7 +24521,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function resumeBulk(string $bulkId)
     {
@@ -20293,22 +24598,16 @@ final class CallsApi
              'bulkId' => $bulkId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/bulks/{bulkId}/resume';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -20324,38 +24623,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -20396,7 +24665,7 @@ final class CallsApi
     /**
      * Create response for operation 'resumeBulk'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallBulkStatus|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function resumeBulkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -20429,6 +24698,17 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -20485,7 +24765,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function sendRinging(string $callId)
     {
@@ -20562,22 +24842,16 @@ final class CallsApi
              'callId' => $callId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/send-ringing';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -20593,38 +24867,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -20665,7 +24909,7 @@ final class CallsApi
     /**
      * Create response for operation 'sendRinging'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function sendRingingResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -20698,6 +24942,285 @@ final class CallsApi
         $statusCode = $apiException->getCode();
 
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation setSipTrunkStatus
+     *
+     * Set SIP trunk status
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     * @param \Infobip\Model\CallsSipTrunkStatusRequest $callsSipTrunkStatusRequest callsSipTrunkStatusRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsSipTrunkStatusResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function setSipTrunkStatus(string $sipTrunkId, \Infobip\Model\CallsSipTrunkStatusRequest $callsSipTrunkStatusRequest)
+    {
+        $request = $this->setSipTrunkStatusRequest($sipTrunkId, $callsSipTrunkStatusRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->setSipTrunkStatusResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->setSipTrunkStatusApiException($exception);
+        }
+    }
+
+    /**
+     * Operation setSipTrunkStatusAsync
+     *
+     * Set SIP trunk status
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     * @param \Infobip\Model\CallsSipTrunkStatusRequest $callsSipTrunkStatusRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function setSipTrunkStatusAsync(string $sipTrunkId, \Infobip\Model\CallsSipTrunkStatusRequest $callsSipTrunkStatusRequest): PromiseInterface
+    {
+        $request = $this->setSipTrunkStatusRequest($sipTrunkId, $callsSipTrunkStatusRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->setSipTrunkStatusResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->setSipTrunkStatusApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'setSipTrunkStatus'
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     * @param \Infobip\Model\CallsSipTrunkStatusRequest $callsSipTrunkStatusRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function setSipTrunkStatusRequest(string $sipTrunkId, \Infobip\Model\CallsSipTrunkStatusRequest $callsSipTrunkStatusRequest): Request
+    {
+        $allData = [
+             'sipTrunkId' => $sipTrunkId,
+             'callsSipTrunkStatusRequest' => $callsSipTrunkStatusRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsSipTrunkStatusRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/{sipTrunkId}/status';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsSipTrunkStatusRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsSipTrunkStatusRequest)
+                : $callsSipTrunkStatusRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'setSipTrunkStatus'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsSipTrunkStatusResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function setSipTrunkStatusResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsSipTrunkStatusResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'setSipTrunkStatus'
+     */
+    private function setSipTrunkStatusApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -20755,7 +25278,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function startMediaStream(string $callId, \Infobip\Model\CallsStartMediaStreamRequest $callsStartMediaStreamRequest)
     {
@@ -20835,25 +25358,19 @@ final class CallsApi
              'callsStartMediaStreamRequest' => $callsStartMediaStreamRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsStartMediaStreamRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/start-media-stream';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -20872,38 +25389,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsStartMediaStreamRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsStartMediaStreamRequest)
                 : $callsStartMediaStreamRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -20945,7 +25434,7 @@ final class CallsApi
     /**
      * Create response for operation 'startMediaStream'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function startMediaStreamResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -20989,6 +25478,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -21045,7 +25545,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function stopMediaStream(string $callId)
     {
@@ -21122,22 +25622,16 @@ final class CallsApi
              'callId' => $callId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/calls/{callId}/stop-media-stream';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -21153,38 +25647,8 @@ final class CallsApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -21225,7 +25689,7 @@ final class CallsApi
     /**
      * Create response for operation 'stopMediaStream'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function stopMediaStreamResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -21269,6 +25733,285 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation updateCallsConfiguration
+     *
+     * Update calls configuration
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     * @param \Infobip\Model\CallsConfigurationUpdateRequest $callsConfigurationUpdateRequest callsConfigurationUpdateRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsConfigurationResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function updateCallsConfiguration(string $callsConfigurationId, \Infobip\Model\CallsConfigurationUpdateRequest $callsConfigurationUpdateRequest)
+    {
+        $request = $this->updateCallsConfigurationRequest($callsConfigurationId, $callsConfigurationUpdateRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->updateCallsConfigurationResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->updateCallsConfigurationApiException($exception);
+        }
+    }
+
+    /**
+     * Operation updateCallsConfigurationAsync
+     *
+     * Update calls configuration
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     * @param \Infobip\Model\CallsConfigurationUpdateRequest $callsConfigurationUpdateRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function updateCallsConfigurationAsync(string $callsConfigurationId, \Infobip\Model\CallsConfigurationUpdateRequest $callsConfigurationUpdateRequest): PromiseInterface
+    {
+        $request = $this->updateCallsConfigurationRequest($callsConfigurationId, $callsConfigurationUpdateRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->updateCallsConfigurationResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->updateCallsConfigurationApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateCallsConfiguration'
+     *
+     * @param string $callsConfigurationId Calls configuration ID. (required)
+     * @param \Infobip\Model\CallsConfigurationUpdateRequest $callsConfigurationUpdateRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function updateCallsConfigurationRequest(string $callsConfigurationId, \Infobip\Model\CallsConfigurationUpdateRequest $callsConfigurationUpdateRequest): Request
+    {
+        $allData = [
+             'callsConfigurationId' => $callsConfigurationId,
+             'callsConfigurationUpdateRequest' => $callsConfigurationUpdateRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsConfigurationId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsConfigurationUpdateRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/configurations/{callsConfigurationId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($callsConfigurationId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'callsConfigurationId' . '}',
+                $this->objectSerializer->toPathValue($callsConfigurationId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsConfigurationUpdateRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsConfigurationUpdateRequest)
+                : $callsConfigurationUpdateRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'PUT',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'updateCallsConfiguration'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsConfigurationResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function updateCallsConfigurationResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsConfigurationResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'updateCallsConfiguration'
+     */
+    private function updateCallsConfigurationApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -21326,7 +26069,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function updateConference(string $conferenceId, \Infobip\Model\CallsUpdateRequest $callsUpdateRequest)
     {
@@ -21406,25 +26149,19 @@ final class CallsApi
              'callsUpdateRequest' => $callsUpdateRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsUpdateRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -21443,38 +26180,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsUpdateRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsUpdateRequest)
                 : $callsUpdateRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -21516,7 +26225,7 @@ final class CallsApi
     /**
      * Create response for operation 'updateConference'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function updateConferenceResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -21560,6 +26269,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -21618,7 +26338,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function updateConferenceCall(string $conferenceId, string $callId, \Infobip\Model\CallsUpdateRequest $callsUpdateRequest)
     {
@@ -21701,11 +26421,8 @@ final class CallsApi
              'callsUpdateRequest' => $callsUpdateRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'conferenceId' => [
                         new Assert\NotBlank(),
                     ],
@@ -21715,14 +26432,11 @@ final class CallsApi
                     'callsUpdateRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/conferences/{conferenceId}/call/{callId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -21750,38 +26464,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsUpdateRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsUpdateRequest)
                 : $callsUpdateRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -21823,7 +26509,7 @@ final class CallsApi
     /**
      * Create response for operation 'updateConferenceCall'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsActionResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function updateConferenceCallResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -21867,6 +26553,17 @@ final class CallsApi
             return $apiException;
         }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -21924,7 +26621,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function updateMediaStreamConfig(string $mediaStreamConfigId, \Infobip\Model\CallsMediaStreamConfigRequest $callsMediaStreamConfigRequest)
     {
@@ -22004,25 +26701,19 @@ final class CallsApi
              'callsMediaStreamConfigRequest' => $callsMediaStreamConfigRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'mediaStreamConfigId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsMediaStreamConfigRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/media-stream-configs/{mediaStreamConfigId}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -22041,38 +26732,10 @@ final class CallsApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsMediaStreamConfigRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsMediaStreamConfigRequest)
                 : $callsMediaStreamConfigRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -22114,7 +26777,7 @@ final class CallsApi
     /**
      * Create response for operation 'updateMediaStreamConfig'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsMediaStreamConfigResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function updateMediaStreamConfigResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -22146,7 +26809,565 @@ final class CallsApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation updateSipTrunk
+     *
+     * Update SIP trunk
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     * @param \Infobip\Model\CallsSipTrunkUpdateRequest $callsSipTrunkUpdateRequest callsSipTrunkUpdateRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsSipTrunkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function updateSipTrunk(string $sipTrunkId, \Infobip\Model\CallsSipTrunkUpdateRequest $callsSipTrunkUpdateRequest)
+    {
+        $request = $this->updateSipTrunkRequest($sipTrunkId, $callsSipTrunkUpdateRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->updateSipTrunkResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->updateSipTrunkApiException($exception);
+        }
+    }
+
+    /**
+     * Operation updateSipTrunkAsync
+     *
+     * Update SIP trunk
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     * @param \Infobip\Model\CallsSipTrunkUpdateRequest $callsSipTrunkUpdateRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function updateSipTrunkAsync(string $sipTrunkId, \Infobip\Model\CallsSipTrunkUpdateRequest $callsSipTrunkUpdateRequest): PromiseInterface
+    {
+        $request = $this->updateSipTrunkRequest($sipTrunkId, $callsSipTrunkUpdateRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->updateSipTrunkResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->updateSipTrunkApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateSipTrunk'
+     *
+     * @param string $sipTrunkId Sip Trunk ID. (required)
+     * @param \Infobip\Model\CallsSipTrunkUpdateRequest $callsSipTrunkUpdateRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function updateSipTrunkRequest(string $sipTrunkId, \Infobip\Model\CallsSipTrunkUpdateRequest $callsSipTrunkUpdateRequest): Request
+    {
+        $allData = [
+             'sipTrunkId' => $sipTrunkId,
+             'callsSipTrunkUpdateRequest' => $callsSipTrunkUpdateRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsSipTrunkUpdateRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/{sipTrunkId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsSipTrunkUpdateRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsSipTrunkUpdateRequest)
+                : $callsSipTrunkUpdateRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'PUT',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'updateSipTrunk'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsSipTrunkResponse|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function updateSipTrunkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 202) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsSipTrunkResponse', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'updateSipTrunk'
+     */
+    private function updateSipTrunkApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation updateSipTrunkServiceAddress
+     *
+     * Update SIP trunk service address
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     * @param \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest callsPublicSipTrunkServiceAddressRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\CallsPublicSipTrunkServiceAddress|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     */
+    public function updateSipTrunkServiceAddress(string $sipTrunkServiceAddressId, \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest)
+    {
+        $request = $this->updateSipTrunkServiceAddressRequest($sipTrunkServiceAddressId, $callsPublicSipTrunkServiceAddressRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->updateSipTrunkServiceAddressResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->updateSipTrunkServiceAddressApiException($exception);
+        }
+    }
+
+    /**
+     * Operation updateSipTrunkServiceAddressAsync
+     *
+     * Update SIP trunk service address
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     * @param \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function updateSipTrunkServiceAddressAsync(string $sipTrunkServiceAddressId, \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest): PromiseInterface
+    {
+        $request = $this->updateSipTrunkServiceAddressRequest($sipTrunkServiceAddressId, $callsPublicSipTrunkServiceAddressRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->updateSipTrunkServiceAddressResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->updateSipTrunkServiceAddressApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateSipTrunkServiceAddress'
+     *
+     * @param string $sipTrunkServiceAddressId SIP trunk service address ID. (required)
+     * @param \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function updateSipTrunkServiceAddressRequest(string $sipTrunkServiceAddressId, \Infobip\Model\CallsPublicSipTrunkServiceAddressRequest $callsPublicSipTrunkServiceAddressRequest): Request
+    {
+        $allData = [
+             'sipTrunkServiceAddressId' => $sipTrunkServiceAddressId,
+             'callsPublicSipTrunkServiceAddressRequest' => $callsPublicSipTrunkServiceAddressRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'sipTrunkServiceAddressId' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsPublicSipTrunkServiceAddressRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/calls/1/sip-trunks/service-addresses/{sipTrunkServiceAddressId}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($sipTrunkServiceAddressId !== null) {
+            $resourcePath = str_replace(
+                '{' . 'sipTrunkServiceAddressId' . '}',
+                $this->objectSerializer->toPathValue($sipTrunkServiceAddressId),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsPublicSipTrunkServiceAddressRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsPublicSipTrunkServiceAddressRequest)
+                : $callsPublicSipTrunkServiceAddressRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'PUT',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'updateSipTrunkServiceAddress'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\CallsPublicSipTrunkServiceAddress|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     */
+    private function updateSipTrunkServiceAddressResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        if ($statusCode === 200) {
+            $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsPublicSipTrunkServiceAddress', $responseHeaders);
+        }
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'updateSipTrunkServiceAddress'
+     */
+    private function updateSipTrunkServiceAddressApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -22203,7 +27424,7 @@ final class CallsApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
+     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException
      */
     public function uploadCallsAudioFile(\SplFileObject $file)
     {
@@ -22280,20 +27501,15 @@ final class CallsApi
              'file' => $file,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'file' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/calls/1/files';
         $formParams = [];
         $queryParams = [];
@@ -22317,10 +27533,7 @@ final class CallsApi
             'Content-Type' => 'multipart/form-data',
         ];
 
-        // for model (json/xml)
         if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
             if ($headers['Content-Type'] === 'multipart/form-data') {
                 $boundary = '----' . hash('sha256', uniqid('', true));
                 $headers['Content-Type'] .= '; boundary=' . $boundary;
@@ -22337,12 +27550,10 @@ final class CallsApi
                     }
                 }
 
-                // for HTTP post (form)
                 $httpBody = new MultipartStream($multipartContents, $boundary);
             } elseif ($headers['Content-Type'] === 'application/json') {
                 $httpBody = $this->objectSerializer->serialize($formParams);
             } else {
-                // for HTTP post (form)
                 $httpBody = Query::build($formParams);
             }
         }
@@ -22386,7 +27597,7 @@ final class CallsApi
     /**
      * Create response for operation 'uploadCallsAudioFile'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
+     * @return \Infobip\Model\CallsFile|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|null
      */
     private function uploadCallsAudioFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -22418,7 +27629,29 @@ final class CallsApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
                 '\Infobip\Model\ApiException',
@@ -22454,4 +27687,5 @@ final class CallsApi
 
         return $apiException;
     }
+
 }

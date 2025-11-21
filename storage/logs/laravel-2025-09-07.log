@@ -1,4 +1,0 @@
-[2025-09-07 00:42:13] local.INFO: {"url":"https:\/\/api.payscribe.ng\/api\/v1\/payouts\/account\/lookup","data":{"account":"9030117230","bank":"100004"},"Api key":"ps_pk_live_Ig6GSO2ygRU47MeF1R0SZN7Ee7l98vjK0Aw"}  
-[2025-09-07 00:42:14] local.INFO: {"status":true,"description":"Bank lookup successfully.","message":{"details":{"account_number":"9030117230","account_name":"CHIBUIKE PATRICK NWACHUKWU","id":"9AQ3MbU5tpBf8UCA1umZ2Y7GAvBmTqKx"}},"status_code":200}  
-[2025-09-07 05:57:34] local.INFO: {"url":"https:\/\/api.payscribe.ng\/api\/v1\/payouts\/account\/lookup","data":{"account":"0801391983","bank":"120001"},"Api key":"ps_pk_live_Ig6GSO2ygRU47MeF1R0SZN7Ee7l98vjK0Aw"}  
-[2025-09-07 05:57:37] local.INFO: {"status":false,"description":"Something went wrong, we would fix this. ErrorId: 730","status_code":501}  

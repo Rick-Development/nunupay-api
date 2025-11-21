@@ -16,6 +16,7 @@
 
 namespace Twilio\Rest\Content\V1;
 
+use Twilio\Exceptions\TwilioException;
 use Twilio\ListResource;
 use Twilio\Stream;
 use Twilio\Values;
@@ -42,6 +43,27 @@ class ContentList extends ListResource
     }
 
     /**
+     * Create the ContentInstance
+     *
+     * @param ContentCreateRequest $contentCreateRequest
+     * @return ContentInstance Created ContentInstance
+     * @throws TwilioException When an HTTP error occurs.
+     */
+    public function create(ContentCreateRequest $contentCreateRequest): ContentInstance
+    {
+
+        $headers = Values::of(['Content-Type' => 'application/json', 'Accept' => 'application/json' ]);
+        $data = $contentCreateRequest->toArray();
+        $payload = $this->version->create('POST', $this->uri, [], $data, $headers);
+
+        return new ContentInstance(
+            $this->version,
+            $payload
+        );
+    }
+
+
+    /**
      * Reads ContentInstance records from the API as a list.
      * Unlike stream(), this operation is eager and will load `limit` records into
      * memory before returning.
@@ -56,7 +78,7 @@ class ContentList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return ContentInstance[] Array of results
      */
-    public function read(int $limit = null, $pageSize = null): array
+    public function read(?int $limit = null, $pageSize = null): array
     {
         return \iterator_to_array($this->stream($limit, $pageSize), false);
     }
@@ -79,7 +101,7 @@ class ContentList extends ListResource
      *                        efficient page size, i.e. min(limit, 1000)
      * @return Stream stream of results
      */
-    public function stream(int $limit = null, $pageSize = null): Stream
+    public function stream(?int $limit = null, $pageSize = null): Stream
     {
         $limits = $this->version->readLimits($limit, $pageSize);
 
@@ -110,7 +132,8 @@ class ContentList extends ListResource
             'PageSize' => $pageSize,
         ]);
 
-        $response = $this->version->page('GET', $this->uri, $params);
+        $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json']);
+        $response = $this->version->page('GET', $this->uri, $params, [], $headers);
 
         return new ContentPage($this->version, $response, $this->solution);
     }

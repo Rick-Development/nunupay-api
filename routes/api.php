@@ -392,6 +392,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //Card Issuing
         Route::post('create-card', [PayscribeCreateCardController::class, 'createCard']);
+        
+        Route::get('get-cards', [PayscribeCardDetailsController::class, 'GetvirtualCards']);
     
         Route::post('topup-card', [PayscribeTopupCardController::class, 'topupCard']);
     

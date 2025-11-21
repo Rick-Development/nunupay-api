@@ -12,8 +12,7 @@ MailerSend PHP SDK
         * [Send an email](#send-an-email)
         * [Add CC, BCC recipients](#cc-bcc-recipients)
         * [Send a template-based email](#template)
-        * [Advanced personalization](#personalization)
-        * [Simple personalization](#variables)
+        * [Personalization](#personalization)
         * [Send an email with attachment](#attachments)
         * [Send a scheduled message](#send-a-scheduled-message)
         * [Send email with precedence bulk header](#precedence-bulk-header)
@@ -52,7 +51,10 @@ MailerSend PHP SDK
         * [Get a single scheduled message](#get-a-single-scheduled-message)
         * [Delete a scheduled message](#delete-a-scheduled-message)
     * [Tokens API](#tokens)
+        * [Get all tokens](#get-all-tokens)
+        * [Find a token](#find-a-token)
         * [Create a token](#create-a-token)
+        * [Change a token name](#change-a-token-name)
         * [Update token](#update-token)
         * [Delete token](#delete-token)
     * [Recipients API](#recipients)
@@ -278,7 +280,6 @@ $mailersend->email->send($emailParams);
 
 ```php
 use MailerSend\MailerSend;
-use MailerSend\Helpers\Builder\Variable;
 use MailerSend\Helpers\Builder\Recipient;
 use MailerSend\Helpers\Builder\EmailParams;
 
@@ -286,10 +287,6 @@ $mailersend = new MailerSend();
 
 $recipients = [
     new Recipient('your@client.com', 'Your Client'),
-];
-
-$variables = [
-    new Variable('your@client.com', ['var' => 'value'])
 ];
 
 $tags = ['tag'];
@@ -300,7 +297,6 @@ $emailParams = (new EmailParams())
     ->setRecipients($recipients)
     ->setSubject('Subject')
     ->setTemplateId('ss243wdasd')
-    ->setVariables($variables)
     ->setTags($tags);
 
 $mailersend->email->send($emailParams);
@@ -348,38 +344,6 @@ $emailParams = (new EmailParams())
     ->setHtml('This is the html version with a {$var}.')
     ->setText('This is the text versions with a {$var}.')
     ->setPersonalization($personalization);
-
-$mailersend->email->send($emailParams);
-```
-
-<a name="variables"></a>
-
-### Simple personalization
-
-```php
-use MailerSend\MailerSend;
-use MailerSend\Helpers\Builder\Variable;
-use MailerSend\Helpers\Builder\Recipient;
-use MailerSend\Helpers\Builder\EmailParams;
-
-$mailersend = new MailerSend();
-
-$recipients = [
-    new Recipient('your@client.com', 'Your Client'),
-];
-
-$variables = [
-    new Variable('your@client.com', ['var' => 'value'])
-];
-
-$emailParams = (new EmailParams())
-    ->setFrom('your@domain.com')
-    ->setFromName('Your Name')
-    ->setRecipients($recipients)
-    ->setSubject('Subject {$var}')
-    ->setHtml('This is the html version with a {$var}.')
-    ->setText('This is the text versions with a {$var}.')
-    ->setVariables($variables);
 
 $mailersend->email->send($emailParams);
 ```
@@ -631,7 +595,8 @@ $mailersend->inbound->create(
         ->setMatchFilter(
             (new MatchFilter(Constants::TYPE_MATCH_SENDER))
                 ->addFilter(new Filter(Constants::COMPARER_EQUAL, 'sender@mailersend.com', 'sender')))
-        ->addForward(new Forward(Constants::COMPARER_EQUAL, 'value'))
+        ->addForward(new Forward(Constants::TYPE_WEBHOOK, 'value'))
+        ->setInboundPriority(50)
 );
 ```
 
@@ -669,7 +634,8 @@ $mailersend->inbound->create(
                     ]
                 ])
         )
-        ->addForward(new Forward(Constants::COMPARER_EQUAL, 'value'))
+        ->addForward(new Forward(Constants::TYPE_WEBHOOK, 'value'))
+        ->setInboundPriority(50)
 );
 ```
 
@@ -709,10 +675,11 @@ $mailersend->inbound->create(
         ])
         ->setForwards([
             [
-                'type' => Constants::COMPARER_EQUAL,
+                'type' => Constants::TYPE_WEBHOOK,
                 'value' => 'value',
             ]
         ])
+        ->setInboundPriority(50)
 );
 ```
 
@@ -740,7 +707,7 @@ $mailersend->inbound->update(
             (new CatchFilter(Constants::TYPE_CATCH_ALL))
         )
         ->setMatchFilter(new MatchFilter(Constants::TYPE_MATCH_ALL))
-        ->addForward(new Forward(Constants::COMPARER_EQUAL, 'value'))
+        ->addForward(new Forward(Constants::TYPE_WEBHOOK, 'value'))
 );
 ```
 
@@ -1067,6 +1034,32 @@ $mailersend->scheduleMessages->delete('message_id');
 
 ## Tokens
 
+<a name="get_all_tokens"></a>
+
+### Get all tokens
+
+```php
+use MailerSend\MailerSend;
+
+$mailersend = new MailerSend();
+
+$mailersend->token->getAll($page = 1, $limit = 10);
+```
+
+<a name="find-a-token"></a>
+
+### Find a token
+
+```php
+use MailerSend\MailerSend;
+
+$mailersend = new MailerSend();
+
+$mailersend->token->find('token_id'); 
+```
+
+<a name="delete-token"></a>
+
 <a name="create_a_token"></a>
 
 ### Create a token
@@ -1095,6 +1088,19 @@ $response = $mailersend->token->create(
 );
 
 echo $response['body']['data']['accessToken'];
+```
+
+<a name="change-a-token-name"></a>
+
+### Change a token name
+
+```php
+use MailerSend\MailerSend;
+use MailerSend\Helpers\Builder\TokenParams;
+
+$mailersend = new MailerSend();
+
+$mailersend->token->changeName('token_id', 'new name'); 
 ```
 
 <a name="update-token"></a>
@@ -2326,7 +2332,6 @@ $mailersend->apiQuota->get();
 
 ```php
 use MailerSend\MailerSend;
-use MailerSend\Helpers\Builder\Variable;
 use MailerSend\Helpers\Builder\Recipient;
 use MailerSend\Helpers\Builder\EmailParams;
 use MailerSend\Exceptions\MailerSendValidationException;
@@ -2338,19 +2343,13 @@ $recipients = [
     new Recipient('your@client.com', 'Your Client'),
 ];
 
-// This should be your@client.com, as in $recipients
-$variables = [
-    new Variable('your@domain.com', ['var' => 'value'])
-];
-
 $emailParams = (new EmailParams())
     ->setFrom('your@domain.com')
     ->setFromName('Your Name')
     ->setRecipients($recipients)
     ->setSubject('Subject {$var}')
     ->setHtml('This is the html version with a {$var}.')
-    ->setText('This is the text versions with a {$var}.')
-    ->setVariables($variables);
+    ->setText('This is the text versions with a {$var}.');
 
 try{
     $mailersend->email->send($emailParams);

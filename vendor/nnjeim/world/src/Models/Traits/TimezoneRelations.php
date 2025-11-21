@@ -2,17 +2,14 @@
 
 namespace Nnjeim\World\Models\Traits;
 
-use Nnjeim\World\Models;
-
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait TimezoneRelations
 {
-	/**
-	 * @return BelongsTo
-	 */
 	public function country(): BelongsTo
 	{
-		return $this->belongsTo(Models\Country::class);
+		$countryClass = config('world.models.countries');
+
+		return $this->belongsTo($countryClass);
 	}
 }

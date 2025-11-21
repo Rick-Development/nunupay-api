@@ -2,25 +2,21 @@
 
 namespace Nnjeim\World\Models\Traits;
 
-use Nnjeim\World\Models;
-
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait CityRelations
 {
-	/**
-	 * @return BelongsTo
-	 */
 	public function country(): BelongsTo
 	{
-		return $this->belongsTo(Models\Country::class);
+		$countryClass = config('world.models.countries');
+
+		return $this->belongsTo($countryClass);
 	}
 
-	/**
-	 * @return BelongsTo
-	 */
 	public function state(): BelongsTo
 	{
-		return $this->belongsTo(Models\State::class);
+		$stateClass = config('world.models.states');
+
+		return $this->belongsTo($stateClass);
 	}
 }

@@ -5,6 +5,13 @@
 # @license http://www.gnu.org/licenses/lgpl.html LGPL v3 or later
 ###############
 
+# QuarkPC (https://www.quark.cn/)
+- regex: 'QuarkPC/(\d+\.[\.\d]+)'
+  name: 'QuarkPC'
+  version: '$1'
+  engine:
+    default: 'Blink'
+
 # AltiBrowser (http://www.alticast.co.kr/)
 - regex: 'AltiBrowser/([\d.]+)'
   name: 'AltiBrowser'
@@ -110,7 +117,7 @@
   version: '$1'
 
 # Motorola Internet Browser
-- regex: 'MIB/(\d+[.\d]+)'
+- regex: '(?:MIB|MotorolaWebKit.*Version)/(\d+[.\d]+)'
   name: 'Motorola Internet Browser'
   version: '$1'
 
@@ -2197,7 +2204,7 @@
   version: '$1'
   engine:
     default: 'WebKit'
-- regex: 'Opera%20GX/.+CFNetwork/.+Darwin/'
+- regex: 'Opera(?:%20)?GX/.+CFNetwork/.+Darwin/'
   name: 'Opera GX'
   version: ''
   engine:
@@ -3172,6 +3179,12 @@
   version: '$1'
   engine:
     default: 'Trident'
+# Pocket Internet Explorer
+- regex: '(?:MSPIE|Pocket Internet Explorer)[ /](\d+[.\d]+)'
+  name: 'Pocket Internet Explorer'
+  version: '$1'
+  engine:
+    default: 'Trident'
 
 #Kindle Browser
 - regex: 'Kindle/(\d+[.\d]+)'
@@ -3340,6 +3353,11 @@
   version: '$1'
   engine:
     default: 'WebKit'
+- regex: 'NetworkingExtension/.+ Network/.+ iOS/(\d+[.\d]+)'
+  name: 'Mobile Safari'
+  version: '$1'
+  engine:
+    default: 'WebKit'
 - regex: '(?:Version/(\d+\.[.\d]+) .*)?Mobile.*Safari/'
   name: 'Mobile Safari'
   version: '$1'
@@ -3353,6 +3371,16 @@
 - regex: 'Version/(\d+\.[.\d]+) .*Safari/|(?:Safari|Safari(?:%20)?%E6%B5%8F%E8%A7%88%E5%99%A8)/?\d+'
   name: 'Safari'
   version: '$1'
+  engine:
+    default: 'WebKit'
+- regex: 'NetworkingExtension/(\d+[.\d]+).+ CFNetwork'
+  name: 'Safari'
+  version: '$1'
+  engine:
+    default: 'WebKit'
+- regex: 'Macintosh'
+  name: 'Safari'
+  version: ''
   engine:
     default: 'WebKit'
 

@@ -1,7 +1,5 @@
 <?php
 
-// phpcs:ignorefile
-
 declare(strict_types=1);
 
 /**
@@ -19,46 +17,26 @@ declare(strict_types=1);
 namespace Infobip\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation as Serializer;
-use Symfony\Component\Serializer\Annotation\Ignore;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 class CallsUrlPlayContent extends CallsPlayContent
 {
-    public const DISCRIMINATOR = 'type';
-    public const OPENAPI_MODEL_NAME = 'CallsUrlPlayContent';
-
     public const TYPE = 'URL';
-
-    public const OPENAPI_FORMATS = [
-        'fileUrl' => null
-    ];
 
     /**
      */
     public function __construct(
         #[Assert\NotBlank]
-
-    protected string $fileUrl,
+        protected string $fileUrl,
+        #[Assert\LessThanOrEqual(86400)]
+        protected ?int $cacheDuration = null,
     ) {
-        $modelDiscriminatorValue = 'URL';
+        $modelDiscriminatorValue = self::TYPE;
 
         parent::__construct(
             type: $modelDiscriminatorValue,
         );
     }
 
-    #[Ignore]
-    public function getModelName(): string
-    {
-        return self::OPENAPI_MODEL_NAME;
-    }
-
-    #[Ignore]
-    public static function getDiscriminator(): ?string
-    {
-        return self::DISCRIMINATOR;
-    }
 
     public function getFileUrl(): string
     {
@@ -68,6 +46,17 @@ class CallsUrlPlayContent extends CallsPlayContent
     public function setFileUrl(string $fileUrl): self
     {
         $this->fileUrl = $fileUrl;
+        return $this;
+    }
+
+    public function getCacheDuration(): int|null
+    {
+        return $this->cacheDuration;
+    }
+
+    public function setCacheDuration(?int $cacheDuration): self
+    {
+        $this->cacheDuration = $cacheDuration;
         return $this;
     }
 }

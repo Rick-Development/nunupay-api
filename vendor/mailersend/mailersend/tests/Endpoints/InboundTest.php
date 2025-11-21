@@ -3,7 +3,7 @@
 namespace MailerSend\Tests\Endpoints;
 
 use Http\Mock\Client;
-use Illuminate\Support\Arr;
+use MailerSend\Helpers\Arr;
 use MailerSend\Common\Constants;
 use MailerSend\Common\HttpLayer;
 use MailerSend\Endpoints\Inbound;
@@ -14,6 +14,7 @@ use MailerSend\Helpers\Builder\Forward;
 use MailerSend\Helpers\Builder\Inbound as InboundBuilder;
 use MailerSend\Helpers\Builder\MatchFilter;
 use MailerSend\Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\ResponseInterface;
 
 class InboundTest extends TestCase
@@ -39,6 +40,7 @@ class InboundTest extends TestCase
      * @throws \MailerSend\Exceptions\MailerSendAssertException
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
+    #[DataProvider('validInboundRoutingListDataProvider')]
     public function test_get_all(array $params, array $expected): void
     {
         $response = $this->createMock(ResponseInterface::class);
@@ -71,6 +73,7 @@ class InboundTest extends TestCase
      * @throws \JsonException
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
+    #[DataProvider('invalidInboundRoutingListDataProvider')]
     public function test_get_all_with_errors(array $params): void
     {
         $this->expectException(MailerSendAssertException::class);
@@ -99,6 +102,7 @@ class InboundTest extends TestCase
      * @throws \JsonException
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
+    #[DataProvider('validInboundRoutingCreateDataProvider')]
     public function test_create(InboundBuilder $params, array $expected): void
     {
         $response = $this->createMock(ResponseInterface::class);
@@ -186,7 +190,7 @@ class InboundTest extends TestCase
         $this->inboundRouting->delete('');
     }
 
-    public function validInboundRoutingListDataProvider(): array
+    public static function validInboundRoutingListDataProvider(): array
     {
         return [
             'empty request' => [
@@ -242,7 +246,7 @@ class InboundTest extends TestCase
         ];
     }
 
-    public function invalidInboundRoutingListDataProvider(): array
+    public static function invalidInboundRoutingListDataProvider(): array
     {
         return [
             'with limit under 10' => [
@@ -258,7 +262,7 @@ class InboundTest extends TestCase
         ];
     }
 
-    public function validInboundRoutingCreateDataProvider(): array
+    public static function validInboundRoutingCreateDataProvider(): array
     {
         return [
             'enabled, catch all, match all' => [
@@ -288,6 +292,38 @@ class InboundTest extends TestCase
                             'value' => 'value',
                         ],
                     ],
+                    'inbound_priority' => null,
+                ],
+            ],
+            'enabled, catch all, match all, with priority' => [
+                'params' => (new InboundBuilder('domainId', 'name', true))
+                    ->setInboundDomain('inboundDomain')
+                    ->setCatchFilter(
+                        (new CatchFilter(Constants::TYPE_CATCH_ALL))
+                    )
+                    ->setMatchFilter(
+                        (new MatchFilter(Constants::TYPE_MATCH_ALL))
+                    )
+                    ->addForward(new Forward(Constants::TYPE_WEBHOOK, 'value'))
+                    ->setInboundPriority(50),
+                'expected' => [
+                    'domain_id' => 'domainId',
+                    'name' => 'name',
+                    'domain_enabled' => true,
+                    'inbound_domain' => 'inboundDomain',
+                    'catch_filter' => [
+                        'type' => Constants::TYPE_CATCH_ALL,
+                    ],
+                    'match_filter' => [
+                        'type' => Constants::TYPE_MATCH_ALL,
+                    ],
+                    'forwards' => [
+                        [
+                            'type' => Constants::TYPE_WEBHOOK,
+                            'value' => 'value',
+                        ],
+                    ],
+                    'inbound_priority' => 50,
                 ],
             ],
             'disabled, catch all, match all' => [

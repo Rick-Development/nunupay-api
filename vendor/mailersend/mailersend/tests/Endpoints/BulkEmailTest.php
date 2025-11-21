@@ -3,19 +3,19 @@
 namespace MailerSend\Tests\Endpoints;
 
 use Http\Mock\Client;
-use Illuminate\Support\Arr;
 use MailerSend\Common\HttpLayer;
 use MailerSend\Endpoints\BulkEmail;
 use MailerSend\Exceptions\MailerSendAssertException;
 use MailerSend\Exceptions\MailerSendValidationException;
+use MailerSend\Helpers\Arr;
 use MailerSend\Helpers\Builder\Attachment;
 use MailerSend\Helpers\Builder\EmailParams;
 use MailerSend\Helpers\Builder\Personalization;
 use MailerSend\Helpers\Builder\Recipient;
-use MailerSend\Helpers\Builder\Variable;
 use MailerSend\Tests\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class BulkEmailTest extends TestCase
 {
@@ -69,6 +69,7 @@ class BulkEmailTest extends TestCase
      * @throws \JsonException
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
+    #[DataProvider('validEmailParamsProvider')]
     public function test_send_email(array $bulkEmailParams): void
     {
         $response = $this->createMock(ResponseInterface::class);
@@ -119,15 +120,7 @@ class BulkEmailTest extends TestCase
                 self::assertEquals($tag, Arr::get($request_body, "$key.tags.$k"));
             }
             self::assertEquals($emailParams->getTemplateId(), Arr::get($request_body, "$key.template_id"));
-            self::assertCount(count($emailParams->getVariables()), Arr::get($request_body, "$key.variables") ?? []);
-            foreach ($emailParams->getVariables() as $variableKey => $variable) {
-                $variable = !is_array($variable) ? $variable->toArray() : $variable;
-                self::assertEquals($variable['email'], Arr::get($request_body, "$key.variables.$variableKey.email"));
-                foreach ($variable['substitutions'] as $substitutionKey => $substitution) {
-                    self::assertEquals($substitution['var'], Arr::get($request_body, "$key.variables.$variableKey.substitutions.$substitutionKey.var"));
-                    self::assertEquals($substitution['value'], Arr::get($request_body, "$key.variables.$variableKey.substitutions.$substitutionKey.value"));
-                }
-            }
+
             self::assertCount(count($emailParams->getAttachments()), Arr::get($request_body, "$key.attachments") ?? []);
             foreach ($emailParams->getAttachments() as $k => $attachment) {
                 $attachment = !is_array($attachment) ? $attachment->toArray() : $attachment;
@@ -155,6 +148,7 @@ class BulkEmailTest extends TestCase
      * @throws \JsonException
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
+    #[DataProvider('invalidEmailParamsProvider')]
     public function test_send_email_with_errors(array $bulkEmailParams)
     {
         $this->expectException(MailerSendAssertException::class);
@@ -167,7 +161,7 @@ class BulkEmailTest extends TestCase
         $this->bulkEmail->send($bulkEmailParams);
     }
 
-    public function validEmailParamsProvider()
+    public static function validEmailParamsProvider()
     {
         return [
             'simple request' => [
@@ -259,40 +253,6 @@ class BulkEmailTest extends TestCase
                         ->setText('Text')
                         ->setAttachments([
                             new Attachment('attachment2', 'file2.jpg'),
-                        ]),
-                ]
-            ],
-            'using variables helper' => [
-                [
-                    (new EmailParams())
-                        ->setFrom('test@mailersend.com')
-                        ->setFromName('Sender')
-                        ->setRecipients([
-                            [
-                                'name' => 'Recipient',
-                                'email' => 'recipient1@mailersend.com',
-                            ]
-                        ])
-                        ->setSubject('Subject')
-                        ->setHtml('HTML')
-                        ->setText('Text')
-                        ->setVariables([
-                            new Variable('recipient1@mailersend.com', ['var1' => 'value1'])
-                        ]),
-                    (new EmailParams())
-                        ->setFrom('test@mailersend.com')
-                        ->setFromName('Sender')
-                        ->setRecipients([
-                            [
-                                'name' => 'Recipient',
-                                'email' => 'recipient2@mailersend.com',
-                            ]
-                        ])
-                        ->setSubject('Subject')
-                        ->setHtml('HTML')
-                        ->setText('Text')
-                        ->setVariables([
-                            new Variable('recipient2@mailersend.com', ['var2' => 'value2'])
                         ]),
                 ]
             ],
@@ -515,10 +475,26 @@ class BulkEmailTest extends TestCase
                         ->setInReplyToHeader('test@mailersend.com'),
                 ],
             ],
+            'with unicode email' => [
+                [
+                    (new EmailParams())
+                        ->setFrom('ügyfélszolgálat@mailersend.com')
+                        ->setFromName('Ügyfélszolgálat')
+                        ->setRecipients([
+                            [
+                                'name' => 'Recipient',
+                                'email' => 'recipient@mailersend.com',
+                            ]
+                        ])
+                        ->setSubject('Subject')
+                        ->setHtml('HTML')
+                        ->setText('Text'),
+                ],
+            ],
         ];
     }
 
-    public function invalidEmailParamsProvider()
+    public static function invalidEmailParamsProvider()
     {
         return [
             'no emails added' => [

@@ -22,15 +22,14 @@ declare(strict_types=1);
  *
  * Do not edit manually. To learn how to raise an issue, see the CONTRIBUTING guide or contact us @ support@infobip.com.
  */
-
 namespace Infobip;
 
 use Infobip\Model\EnumInterface;
 use Symfony\Component\PropertyInfo\Type;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
 {
@@ -38,7 +37,7 @@ final class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
      * @inheritdoc
      * @throws InvalidArgumentException
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): string
+    public function normalize(mixed $object, ?string $format = null, array $context = []): string
     {
         if (!$object instanceof EnumInterface) {
             throw new InvalidArgumentException('The object must implement EnumInterface');
@@ -48,9 +47,9 @@ final class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    * @inheritdoc
+    */
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof EnumInterface;
     }
@@ -59,7 +58,7 @@ final class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
      * @inheritdoc
      * @throws NotNormalizableValueException
      */
-    public function denormalize(mixed $data, string $type, string $format = null, array $context = []): EnumInterface
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): EnumInterface
     {
         if (null === $data || (\is_string($data) && '' === trim($data))) {
             throw NotNormalizableValueException::createForUnexpectedDataType(
@@ -75,10 +74,17 @@ final class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
+    * @inheritdoc
+    */
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
-        return \class_exists($type) && \is_subclass_of($type, EnumInterface::class);
+        return \is_string($data) && \class_exists($type) && \is_subclass_of($type, EnumInterface::class);
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            EnumInterface::class => true,
+        ];
     }
 }

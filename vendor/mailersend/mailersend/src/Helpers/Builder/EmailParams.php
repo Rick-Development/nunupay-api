@@ -16,7 +16,6 @@ class EmailParams
     protected ?string $text = null;
     protected ?string $template_id = null;
     protected array $tags = [];
-    protected array $variables = [];
     protected array $attachments = [];
     protected array $personalization = [];
     protected ?int $send_at = null;
@@ -26,6 +25,8 @@ class EmailParams
     protected ?bool $trackOpens = null;
     protected ?bool $trackContent = null;
     protected array $headers = [];
+    protected array $referencesHeader = [];
+    protected ?string $listUnsubscribe = null;
 
     public function getFrom(): ?string
     {
@@ -159,17 +160,6 @@ class EmailParams
         return $this;
     }
 
-    public function getVariables(): array
-    {
-        return $this->variables;
-    }
-
-    public function setVariables(array $variables): EmailParams
-    {
-        $this->variables = $variables;
-        return $this;
-    }
-
     public function getAttachments(): array
     {
         return $this->attachments;
@@ -272,6 +262,28 @@ class EmailParams
     public function setHeaders(array $headers): EmailParams
     {
         $this->headers = $headers;
+        return $this;
+    }
+
+    public function getReferencesHeader(): array
+    {
+        return $this->referencesHeader;
+    }
+
+    public function setReferencesHeader(array $referencesHeader): EmailParams
+    {
+        $this->referencesHeader = $referencesHeader;
+        return $this;
+    }
+
+    public function getListUnsubscribe(): ?string
+    {
+        return $this->listUnsubscribe;
+    }
+
+    public function setListUnsubscribe(string $listUnsubscribe): EmailParams
+    {
+        $this->listUnsubscribe = $listUnsubscribe;
         return $this;
     }
 }

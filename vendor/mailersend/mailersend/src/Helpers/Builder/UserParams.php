@@ -2,7 +2,7 @@
 
 namespace MailerSend\Helpers\Builder;
 
-use Illuminate\Contracts\Support\Arrayable;
+use MailerSend\Contracts\Arrayable;
 
 class UserParams implements Arrayable, \JsonSerializable
 {
@@ -17,7 +17,7 @@ class UserParams implements Arrayable, \JsonSerializable
      * @param string $email
      * @param string $role
      */
-    public function __construct(string $email = null, string $role = null)
+    public function __construct(?string $email = null, ?string $role = null)
     {
         $this->email = $email;
         $this->role = $role;

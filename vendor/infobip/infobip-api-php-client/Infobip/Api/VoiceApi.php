@@ -4,14 +4,13 @@
 
 /**
  * VoiceApi
- * PHP version 8.0
+ * PHP version 8.3
  *
  * @category Class
  * @package  Infobip
  * @author   Infobip Support
  * @link     https://www.infobip.com
  */
-
 declare(strict_types=1);
 
 /**
@@ -33,10 +32,8 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Query;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Utils;
 use Infobip\ApiException;
 use Infobip\Configuration;
 use Infobip\DeprecationChecker;
@@ -80,6 +77,1046 @@ final class VoiceApi
     }
 
     /**
+     * Operation createAVoiceIvrScenario
+     *
+     * Create Voice IVR Scenarios
+     *
+     * @param \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest callsUpdateScenarioRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsUpdateScenarioResponse
+     */
+    public function createAVoiceIvrScenario(\Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest)
+    {
+        $request = $this->createAVoiceIvrScenarioRequest($callsUpdateScenarioRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->createAVoiceIvrScenarioResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->createAVoiceIvrScenarioApiException($exception);
+        }
+    }
+
+    /**
+     * Operation createAVoiceIvrScenarioAsync
+     *
+     * Create Voice IVR Scenarios
+     *
+     * @param \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function createAVoiceIvrScenarioAsync(\Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest): PromiseInterface
+    {
+        $request = $this->createAVoiceIvrScenarioRequest($callsUpdateScenarioRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->createAVoiceIvrScenarioResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->createAVoiceIvrScenarioApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'createAVoiceIvrScenario'
+     *
+     * @param \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function createAVoiceIvrScenarioRequest(\Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest): Request
+    {
+        $allData = [
+             'callsUpdateScenarioRequest' => $callsUpdateScenarioRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsUpdateScenarioRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/ivr/1/scenarios';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsUpdateScenarioRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsUpdateScenarioRequest)
+                : $callsUpdateScenarioRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'createAVoiceIvrScenario'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsUpdateScenarioResponse|null
+     */
+    private function createAVoiceIvrScenarioResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsUpdateScenarioResponse', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'createAVoiceIvrScenario'
+     */
+    private function createAVoiceIvrScenarioApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\Infobip\Model\CallsUpdateScenarioResponse',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
+    /**
+     * Operation deleteAVoiceIvrScenario
+     *
+     * Delete Voice IVR Scenarios
+     *
+     * @param string $id Scenario identifier (for example E83E787CF2613450157ADA3476171E3F). (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return void
+     */
+    public function deleteAVoiceIvrScenario(string $id)
+    {
+        $request = $this->deleteAVoiceIvrScenarioRequest($id);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->deleteAVoiceIvrScenarioResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->deleteAVoiceIvrScenarioApiException($exception);
+        }
+    }
+
+    /**
+     * Operation deleteAVoiceIvrScenarioAsync
+     *
+     * Delete Voice IVR Scenarios
+     *
+     * @param string $id Scenario identifier (for example E83E787CF2613450157ADA3476171E3F). (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function deleteAVoiceIvrScenarioAsync(string $id): PromiseInterface
+    {
+        $request = $this->deleteAVoiceIvrScenarioRequest($id);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->deleteAVoiceIvrScenarioResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->deleteAVoiceIvrScenarioApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'deleteAVoiceIvrScenario'
+     *
+     * @param string $id Scenario identifier (for example E83E787CF2613450157ADA3476171E3F). (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function deleteAVoiceIvrScenarioRequest(string $id): Request
+    {
+        $allData = [
+             'id' => $id,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'id' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/ivr/1/scenarios/{id}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'id' . '}',
+                $this->objectSerializer->toPathValue($id),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'DELETE',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'deleteAVoiceIvrScenario'
+     * @throws ApiException on non-2xx response
+     * @return null
+     */
+    private function deleteAVoiceIvrScenarioResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'deleteAVoiceIvrScenario'
+     */
+    private function deleteAVoiceIvrScenarioApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+
+        return $apiException;
+    }
+
+    /**
+     * Operation downloadVoiceIvrRecordedFile
+     *
+     * Download Voice IVR Recorded File.
+     *
+     * @param string $id File ID to download. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\SplFileObject
+     */
+    public function downloadVoiceIvrRecordedFile(string $id)
+    {
+        $request = $this->downloadVoiceIvrRecordedFileRequest($id);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->downloadVoiceIvrRecordedFileResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->downloadVoiceIvrRecordedFileApiException($exception);
+        }
+    }
+
+    /**
+     * Operation downloadVoiceIvrRecordedFileAsync
+     *
+     * Download Voice IVR Recorded File.
+     *
+     * @param string $id File ID to download. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function downloadVoiceIvrRecordedFileAsync(string $id): PromiseInterface
+    {
+        $request = $this->downloadVoiceIvrRecordedFileRequest($id);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->downloadVoiceIvrRecordedFileResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->downloadVoiceIvrRecordedFileApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'downloadVoiceIvrRecordedFile'
+     *
+     * @param string $id File ID to download. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function downloadVoiceIvrRecordedFileRequest(string $id): Request
+    {
+        $allData = [
+             'id' => $id,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'id' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/ivr/1/files/{id}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'id' . '}',
+                $this->objectSerializer->toPathValue($id),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/octet-stream',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'downloadVoiceIvrRecordedFile'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\SplFileObject|null
+     */
+    private function downloadVoiceIvrRecordedFileResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\SplFileObject', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'downloadVoiceIvrRecordedFile'
+     */
+    private function downloadVoiceIvrRecordedFileApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\SplFileObject',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getAVoiceIvrScenario
+     *
+     * Get a Voice IVR Scenario
+     *
+     * @param string $id Scenario identifier. (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsUpdateScenarioResponse
+     */
+    public function getAVoiceIvrScenario(string $id)
+    {
+        $request = $this->getAVoiceIvrScenarioRequest($id);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getAVoiceIvrScenarioResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getAVoiceIvrScenarioApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getAVoiceIvrScenarioAsync
+     *
+     * Get a Voice IVR Scenario
+     *
+     * @param string $id Scenario identifier. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getAVoiceIvrScenarioAsync(string $id): PromiseInterface
+    {
+        $request = $this->getAVoiceIvrScenarioRequest($id);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getAVoiceIvrScenarioResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getAVoiceIvrScenarioApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getAVoiceIvrScenario'
+     *
+     * @param string $id Scenario identifier. (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getAVoiceIvrScenarioRequest(string $id): Request
+    {
+        $allData = [
+             'id' => $id,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'id' => [
+                        new Assert\NotBlank(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/ivr/1/scenarios/{id}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'id' . '}',
+                $this->objectSerializer->toPathValue($id),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getAVoiceIvrScenario'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsUpdateScenarioResponse|null
+     */
+    private function getAVoiceIvrScenarioResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsUpdateScenarioResponse', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getAVoiceIvrScenario'
+     */
+    private function getAVoiceIvrScenarioApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\Infobip\Model\CallsUpdateScenarioResponse',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
+    /**
      * Operation getSentBulks
      *
      * Get sent bulks
@@ -88,7 +1125,7 @@ final class VoiceApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkResponse
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkResponse
      */
     public function getSentBulks(string $bulkId)
     {
@@ -165,22 +1202,16 @@ final class VoiceApi
              'bulkId' => $bulkId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/tts/3/bulks';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -192,38 +1223,8 @@ final class VoiceApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -264,7 +1265,7 @@ final class VoiceApi
     /**
      * Create response for operation 'getSentBulks'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkResponse|null
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkResponse|null
      */
     private function getSentBulksResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -294,6 +1295,39 @@ final class VoiceApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode >= 400 && $statusCode <= 499) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -336,7 +1370,7 @@ final class VoiceApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkStatusResponse
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkStatusResponse
      */
     public function getSentBulksStatus(string $bulkId)
     {
@@ -413,22 +1447,16 @@ final class VoiceApi
              'bulkId' => $bulkId,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/tts/3/bulks/status';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -440,38 +1468,8 @@ final class VoiceApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -512,7 +1510,7 @@ final class VoiceApi
     /**
      * Create response for operation 'getSentBulksStatus'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkStatusResponse|null
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkStatusResponse|null
      */
     private function getSentBulksStatusResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -542,6 +1540,39 @@ final class VoiceApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode >= 400 && $statusCode <= 499) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -576,19 +1607,640 @@ final class VoiceApi
     }
 
     /**
+     * Operation getSentVoiceLogs
+     *
+     * Get sent Voice logs
+     *
+     * @param null|string $from The sender ID which can be alphanumeric or numeric. (optional)
+     * @param null|string $to Destination address of the voice message. (optional)
+     * @param null|string[] $bulkId The ID which uniquely identifies the request. (optional)
+     * @param null|string[] $messageId The ID that uniquely identifies the message sent. (optional)
+     * @param null|\Infobip\Model\CallsIpCoreGeneralStatus $generalStatus Sent voice message status group. Indicates whether the message has been successfully sent, not sent, delivered, not delivered, waiting for delivery or any other possible status. (optional)
+     * @param null|\DateTime $sentSince Lower limit on date and time of sending a Voice message. Has the following format: yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSXXX. (optional)
+     * @param null|\DateTime $sentUntil Upper limit on date and time of sending a Voice message. Has the following format: yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSXXX. (optional)
+     * @param null|int $limit Maximal number of messages in the returned logs. Default value is 50. (optional)
+     * @param null|string $mcc Mobile country code. (optional)
+     * @param null|string $mnc Mobile network code. (optional)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsLogsResponse
+     */
+    public function getSentVoiceLogs(?string $from = null, ?string $to = null, ?array $bulkId = null, ?array $messageId = null, ?\Infobip\Model\CallsIpCoreGeneralStatus $generalStatus = null, ?\DateTime $sentSince = null, ?\DateTime $sentUntil = null, ?int $limit = null, ?string $mcc = null, ?string $mnc = null)
+    {
+        $request = $this->getSentVoiceLogsRequest($from, $to, $bulkId, $messageId, $generalStatus, $sentSince, $sentUntil, $limit, $mcc, $mnc);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getSentVoiceLogsResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getSentVoiceLogsApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getSentVoiceLogsAsync
+     *
+     * Get sent Voice logs
+     *
+     * @param null|string $from The sender ID which can be alphanumeric or numeric. (optional)
+     * @param null|string $to Destination address of the voice message. (optional)
+     * @param null|string[] $bulkId The ID which uniquely identifies the request. (optional)
+     * @param null|string[] $messageId The ID that uniquely identifies the message sent. (optional)
+     * @param null|\Infobip\Model\CallsIpCoreGeneralStatus $generalStatus Sent voice message status group. Indicates whether the message has been successfully sent, not sent, delivered, not delivered, waiting for delivery or any other possible status. (optional)
+     * @param null|\DateTime $sentSince Lower limit on date and time of sending a Voice message. Has the following format: yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSXXX. (optional)
+     * @param null|\DateTime $sentUntil Upper limit on date and time of sending a Voice message. Has the following format: yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSXXX. (optional)
+     * @param null|int $limit Maximal number of messages in the returned logs. Default value is 50. (optional)
+     * @param null|string $mcc Mobile country code. (optional)
+     * @param null|string $mnc Mobile network code. (optional)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getSentVoiceLogsAsync(?string $from = null, ?string $to = null, ?array $bulkId = null, ?array $messageId = null, ?\Infobip\Model\CallsIpCoreGeneralStatus $generalStatus = null, ?\DateTime $sentSince = null, ?\DateTime $sentUntil = null, ?int $limit = null, ?string $mcc = null, ?string $mnc = null): PromiseInterface
+    {
+        $request = $this->getSentVoiceLogsRequest($from, $to, $bulkId, $messageId, $generalStatus, $sentSince, $sentUntil, $limit, $mcc, $mnc);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getSentVoiceLogsResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getSentVoiceLogsApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getSentVoiceLogs'
+     *
+     * @param null|string $from The sender ID which can be alphanumeric or numeric. (optional)
+     * @param null|string $to Destination address of the voice message. (optional)
+     * @param null|string[] $bulkId The ID which uniquely identifies the request. (optional)
+     * @param null|string[] $messageId The ID that uniquely identifies the message sent. (optional)
+     * @param null|\Infobip\Model\CallsIpCoreGeneralStatus $generalStatus Sent voice message status group. Indicates whether the message has been successfully sent, not sent, delivered, not delivered, waiting for delivery or any other possible status. (optional)
+     * @param null|\DateTime $sentSince Lower limit on date and time of sending a Voice message. Has the following format: yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSXXX. (optional)
+     * @param null|\DateTime $sentUntil Upper limit on date and time of sending a Voice message. Has the following format: yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSXXX. (optional)
+     * @param null|int $limit Maximal number of messages in the returned logs. Default value is 50. (optional)
+     * @param null|string $mcc Mobile country code. (optional)
+     * @param null|string $mnc Mobile network code. (optional)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getSentVoiceLogsRequest(?string $from = null, ?string $to = null, ?array $bulkId = null, ?array $messageId = null, ?\Infobip\Model\CallsIpCoreGeneralStatus $generalStatus = null, ?\DateTime $sentSince = null, ?\DateTime $sentUntil = null, ?int $limit = null, ?string $mcc = null, ?string $mnc = null): Request
+    {
+        $allData = [
+             'from' => $from,
+             'to' => $to,
+             'bulkId' => $bulkId,
+             'messageId' => $messageId,
+             'generalStatus' => $generalStatus,
+             'sentSince' => $sentSince,
+             'sentUntil' => $sentUntil,
+             'limit' => $limit,
+             'mcc' => $mcc,
+             'mnc' => $mnc,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'from' => [
+                    ],
+                    'to' => [
+                    ],
+                    'bulkId' => [
+                    ],
+                    'messageId' => [
+                    ],
+                    'generalStatus' => [
+                    ],
+                    'sentSince' => [
+                    ],
+                    'sentUntil' => [
+                    ],
+                    'limit' => [
+                    ],
+                    'mcc' => [
+                    ],
+                    'mnc' => [
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/tts/3/logs';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // query params
+        if ($from !== null) {
+            $queryParams['from'] = $from;
+        }
+
+        // query params
+        if ($to !== null) {
+            $queryParams['to'] = $to;
+        }
+
+        // query params
+        if ($bulkId !== null) {
+            $queryParams['bulkId'] = $bulkId;
+        }
+
+        // query params
+        if ($messageId !== null) {
+            $queryParams['messageId'] = $messageId;
+        }
+
+        // query params
+        if ($generalStatus !== null) {
+            $queryParams['generalStatus'] = $generalStatus;
+        }
+
+        // query params
+        if ($sentSince !== null) {
+            $queryParams['sentSince'] = $sentSince;
+        }
+
+        // query params
+        if ($sentUntil !== null) {
+            $queryParams['sentUntil'] = $sentUntil;
+        }
+
+        // query params
+        if ($limit !== null) {
+            $queryParams['limit'] = $limit;
+        }
+
+        // query params
+        if ($mcc !== null) {
+            $queryParams['mcc'] = $mcc;
+        }
+
+        // query params
+        if ($mnc !== null) {
+            $queryParams['mnc'] = $mnc;
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getSentVoiceLogs'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsLogsResponse|null
+     */
+    private function getSentVoiceLogsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsLogsResponse', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getSentVoiceLogs'
+     */
+    private function getSentVoiceLogsApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\Infobip\Model\CallsLogsResponse',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
+    /**
+     * Operation getVoiceDeliveryReports
+     *
+     * Get Voice Delivery Reports
+     *
+     * @param null|string $bulkId The ID that uniquely identifies the request. Bulk ID will be received only when you send a message to more than one destination addresses. (optional)
+     * @param null|string $messageId The ID that uniquely identifies the message sent. (optional)
+     * @param null|int $limit The maximum number of returned delivery reports. Default value is 50. (optional)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsReportResponse
+     */
+    public function getVoiceDeliveryReports(?string $bulkId = null, ?string $messageId = null, ?int $limit = null)
+    {
+        $request = $this->getVoiceDeliveryReportsRequest($bulkId, $messageId, $limit);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->getVoiceDeliveryReportsResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->getVoiceDeliveryReportsApiException($exception);
+        }
+    }
+
+    /**
+     * Operation getVoiceDeliveryReportsAsync
+     *
+     * Get Voice Delivery Reports
+     *
+     * @param null|string $bulkId The ID that uniquely identifies the request. Bulk ID will be received only when you send a message to more than one destination addresses. (optional)
+     * @param null|string $messageId The ID that uniquely identifies the message sent. (optional)
+     * @param null|int $limit The maximum number of returned delivery reports. Default value is 50. (optional)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getVoiceDeliveryReportsAsync(?string $bulkId = null, ?string $messageId = null, ?int $limit = null): PromiseInterface
+    {
+        $request = $this->getVoiceDeliveryReportsRequest($bulkId, $messageId, $limit);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->getVoiceDeliveryReportsResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->getVoiceDeliveryReportsApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getVoiceDeliveryReports'
+     *
+     * @param null|string $bulkId The ID that uniquely identifies the request. Bulk ID will be received only when you send a message to more than one destination addresses. (optional)
+     * @param null|string $messageId The ID that uniquely identifies the message sent. (optional)
+     * @param null|int $limit The maximum number of returned delivery reports. Default value is 50. (optional)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function getVoiceDeliveryReportsRequest(?string $bulkId = null, ?string $messageId = null, ?int $limit = null): Request
+    {
+        $allData = [
+             'bulkId' => $bulkId,
+             'messageId' => $messageId,
+             'limit' => $limit,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'bulkId' => [
+                    ],
+                    'messageId' => [
+                    ],
+                    'limit' => [
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/1/reports';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // query params
+        if ($bulkId !== null) {
+            $queryParams['bulkId'] = $bulkId;
+        }
+
+        // query params
+        if ($messageId !== null) {
+            $queryParams['messageId'] = $messageId;
+        }
+
+        // query params
+        if ($limit !== null) {
+            $queryParams['limit'] = $limit;
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'getVoiceDeliveryReports'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsReportResponse|null
+     */
+    private function getVoiceDeliveryReportsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsReportResponse', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'getVoiceDeliveryReports'
+     */
+    private function getVoiceDeliveryReportsApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\Infobip\Model\CallsReportResponse',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
+    /**
      * Operation getVoices
      *
      * Get Voices
      *
      * @param string $language Represents the language abbreviation. (e.g. &#x60;en&#x60;). You can find the list of supported languages in corresponding section for sending voice message. (required)
+     * @param bool $includeNeural Indicates whether neural voices should be included in the response. If set to &#x60;false&#x60; or omitted, only standard voices will be included in the response. If set to &#x60;true&#x60;, both standard and neural voices will be included in the response. (optional, default to false)
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsGetVoicesResponse
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsGetVoicesResponse
      */
-    public function getVoices(string $language)
+    public function getVoices(string $language, bool $includeNeural = false)
     {
-        $request = $this->getVoicesRequest($language);
+        $request = $this->getVoicesRequest($language, $includeNeural);
 
         try {
             try {
@@ -616,12 +2268,13 @@ final class VoiceApi
      * Get Voices
      *
      * @param string $language Represents the language abbreviation. (e.g. &#x60;en&#x60;). You can find the list of supported languages in corresponding section for sending voice message. (required)
+     * @param bool $includeNeural Indicates whether neural voices should be included in the response. If set to &#x60;false&#x60; or omitted, only standard voices will be included in the response. If set to &#x60;true&#x60;, both standard and neural voices will be included in the response. (optional, default to false)
      *
      * @throws InvalidArgumentException
      */
-    public function getVoicesAsync(string $language): PromiseInterface
+    public function getVoicesAsync(string $language, bool $includeNeural = false): PromiseInterface
     {
-        $request = $this->getVoicesRequest($language);
+        $request = $this->getVoicesRequest($language, $includeNeural);
 
         return $this
             ->client
@@ -652,34 +2305,37 @@ final class VoiceApi
      * Create request for operation 'getVoices'
      *
      * @param string $language Represents the language abbreviation. (e.g. &#x60;en&#x60;). You can find the list of supported languages in corresponding section for sending voice message. (required)
+     * @param bool $includeNeural Indicates whether neural voices should be included in the response. If set to &#x60;false&#x60; or omitted, only standard voices will be included in the response. If set to &#x60;true&#x60;, both standard and neural voices will be included in the response. (optional, default to false)
      *
      * @throws InvalidArgumentException
      */
-    private function getVoicesRequest(string $language): Request
+    private function getVoicesRequest(string $language, bool $includeNeural = false): Request
     {
         $allData = [
              'language' => $language,
+             'includeNeural' => $includeNeural,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'language' => [
                         new Assert\NotBlank(),
                     ],
-                ],
-                $validationConstraints
-            );
+                    'includeNeural' => [
+                    ],
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/tts/3/voices/{language}';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
+
+        // query params
+        if ($includeNeural !== null) {
+            $queryParams['includeNeural'] = $includeNeural;
+        }
 
         // path params
         if ($language !== null) {
@@ -692,38 +2348,8 @@ final class VoiceApi
 
         $headers = [
             'Accept' => 'application/json',
-
         ];
 
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
-        }
 
         $apiKey = $this->config->getApiKey();
 
@@ -764,7 +2390,7 @@ final class VoiceApi
     /**
      * Create response for operation 'getVoices'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsGetVoicesResponse|null
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsGetVoicesResponse|null
      */
     private function getVoicesResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -794,6 +2420,50 @@ final class VoiceApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode >= 400 && $statusCode <= 499) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -837,7 +2507,7 @@ final class VoiceApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkStatusResponse
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkStatusResponse
      */
     public function manageSentBulksStatus(string $bulkId, \Infobip\Model\CallsUpdateStatusRequest $callsUpdateStatusRequest)
     {
@@ -917,25 +2587,19 @@ final class VoiceApi
              'callsUpdateStatusRequest' => $callsUpdateStatusRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsUpdateStatusRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/tts/3/bulks/status';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -950,38 +2614,10 @@ final class VoiceApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsUpdateStatusRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsUpdateStatusRequest)
                 : $callsUpdateStatusRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -1023,7 +2659,7 @@ final class VoiceApi
     /**
      * Create response for operation 'manageSentBulksStatus'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkStatusResponse|null
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkStatusResponse|null
      */
     private function manageSentBulksStatusResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -1053,6 +2689,50 @@ final class VoiceApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode >= 400 && $statusCode <= 499) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -1096,7 +2776,7 @@ final class VoiceApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkResponse
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkResponse
      */
     public function rescheduleSentBulk(string $bulkId, \Infobip\Model\CallsBulkRequest $callsBulkRequest)
     {
@@ -1176,25 +2856,19 @@ final class VoiceApi
              'callsBulkRequest' => $callsBulkRequest,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'bulkId' => [
                         new Assert\NotBlank(),
                     ],
                     'callsBulkRequest' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/tts/3/bulks';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -1209,38 +2883,10 @@ final class VoiceApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsBulkRequest)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsBulkRequest)
                 : $callsBulkRequest;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -1282,7 +2928,7 @@ final class VoiceApi
     /**
      * Create response for operation 'rescheduleSentBulk'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkResponse|null
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsBulkResponse|null
      */
     private function rescheduleSentBulkResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -1312,6 +2958,50 @@ final class VoiceApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode >= 400 && $statusCode <= 499) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -1346,6 +3036,585 @@ final class VoiceApi
     }
 
     /**
+     * Operation searchVoiceIvrRecordedFiles
+     *
+     * Search Voice IVR Recorded Files
+     *
+     * @param null|int $page Page number you want to see. (optional)
+     * @param null|int $pageSize Size of the page you want to see. (optional)
+     * @param null|string $messageId The message ID to search by. (optional)
+     * @param null|string $number The called phone number to search by. (optional)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsRecordedAudioFilesResponse[]
+     */
+    public function searchVoiceIvrRecordedFiles(?int $page = null, ?int $pageSize = null, ?string $messageId = null, ?string $number = null)
+    {
+        $request = $this->searchVoiceIvrRecordedFilesRequest($page, $pageSize, $messageId, $number);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->searchVoiceIvrRecordedFilesResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->searchVoiceIvrRecordedFilesApiException($exception);
+        }
+    }
+
+    /**
+     * Operation searchVoiceIvrRecordedFilesAsync
+     *
+     * Search Voice IVR Recorded Files
+     *
+     * @param null|int $page Page number you want to see. (optional)
+     * @param null|int $pageSize Size of the page you want to see. (optional)
+     * @param null|string $messageId The message ID to search by. (optional)
+     * @param null|string $number The called phone number to search by. (optional)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function searchVoiceIvrRecordedFilesAsync(?int $page = null, ?int $pageSize = null, ?string $messageId = null, ?string $number = null): PromiseInterface
+    {
+        $request = $this->searchVoiceIvrRecordedFilesRequest($page, $pageSize, $messageId, $number);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->searchVoiceIvrRecordedFilesResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->searchVoiceIvrRecordedFilesApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'searchVoiceIvrRecordedFiles'
+     *
+     * @param null|int $page Page number you want to see. (optional)
+     * @param null|int $pageSize Size of the page you want to see. (optional)
+     * @param null|string $messageId The message ID to search by. (optional)
+     * @param null|string $number The called phone number to search by. (optional)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function searchVoiceIvrRecordedFilesRequest(?int $page = null, ?int $pageSize = null, ?string $messageId = null, ?string $number = null): Request
+    {
+        $allData = [
+             'page' => $page,
+             'pageSize' => $pageSize,
+             'messageId' => $messageId,
+             'number' => $number,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'page' => [
+                    ],
+                    'pageSize' => [
+                    ],
+                    'messageId' => [
+                    ],
+                    'number' => [
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/ivr/1/files';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // query params
+        if ($page !== null) {
+            $queryParams['page'] = $page;
+        }
+
+        // query params
+        if ($pageSize !== null) {
+            $queryParams['pageSize'] = $pageSize;
+        }
+
+        // query params
+        if ($messageId !== null) {
+            $queryParams['messageId'] = $messageId;
+        }
+
+        // query params
+        if ($number !== null) {
+            $queryParams['number'] = $number;
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'searchVoiceIvrRecordedFiles'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsRecordedAudioFilesResponse[]|null
+     */
+    private function searchVoiceIvrRecordedFilesResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsRecordedAudioFilesResponse[]', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'searchVoiceIvrRecordedFiles'
+     */
+    private function searchVoiceIvrRecordedFilesApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\Infobip\Model\CallsRecordedAudioFilesResponse[]',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
+    /**
+     * Operation searchVoiceIvrScenarios
+     *
+     * Search Voice IVR Scenarios
+     *
+     * @param null|int $page Page number you want to see. Default is 1. (optional)
+     * @param null|int $pageSize Size of the page you want to see. Default is 50. (optional)
+     * @param null|string $name The name to search by. (optional)
+     * @param null|string $label The label of scenario to search by. (optional)
+     * @param null|string $lastUsageDateSince Lower limit of last usage date in &#x60;yyyy-MM-dd&#x60; format. Note: For scenarios where &#x60;lastUsageDate&#x60; is &#x60;null&#x60;, filtering matches &#x60;createTime&#x60;. (optional)
+     * @param null|string $lastUsageDateUntil Upper limit of last usage date &#x60;yyyy-MM-dd&#x60; format. Note: For scenarios where &#x60;lastUsageDate&#x60; is &#x60;null&#x60;, filtering matches &#x60;createTime&#x60;. (optional)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsSearchResponse[]
+     */
+    public function searchVoiceIvrScenarios(?int $page = null, ?int $pageSize = null, ?string $name = null, ?string $label = null, ?string $lastUsageDateSince = null, ?string $lastUsageDateUntil = null)
+    {
+        $request = $this->searchVoiceIvrScenariosRequest($page, $pageSize, $name, $label, $lastUsageDateSince, $lastUsageDateUntil);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->searchVoiceIvrScenariosResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->searchVoiceIvrScenariosApiException($exception);
+        }
+    }
+
+    /**
+     * Operation searchVoiceIvrScenariosAsync
+     *
+     * Search Voice IVR Scenarios
+     *
+     * @param null|int $page Page number you want to see. Default is 1. (optional)
+     * @param null|int $pageSize Size of the page you want to see. Default is 50. (optional)
+     * @param null|string $name The name to search by. (optional)
+     * @param null|string $label The label of scenario to search by. (optional)
+     * @param null|string $lastUsageDateSince Lower limit of last usage date in &#x60;yyyy-MM-dd&#x60; format. Note: For scenarios where &#x60;lastUsageDate&#x60; is &#x60;null&#x60;, filtering matches &#x60;createTime&#x60;. (optional)
+     * @param null|string $lastUsageDateUntil Upper limit of last usage date &#x60;yyyy-MM-dd&#x60; format. Note: For scenarios where &#x60;lastUsageDate&#x60; is &#x60;null&#x60;, filtering matches &#x60;createTime&#x60;. (optional)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function searchVoiceIvrScenariosAsync(?int $page = null, ?int $pageSize = null, ?string $name = null, ?string $label = null, ?string $lastUsageDateSince = null, ?string $lastUsageDateUntil = null): PromiseInterface
+    {
+        $request = $this->searchVoiceIvrScenariosRequest($page, $pageSize, $name, $label, $lastUsageDateSince, $lastUsageDateUntil);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->searchVoiceIvrScenariosResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->searchVoiceIvrScenariosApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'searchVoiceIvrScenarios'
+     *
+     * @param null|int $page Page number you want to see. Default is 1. (optional)
+     * @param null|int $pageSize Size of the page you want to see. Default is 50. (optional)
+     * @param null|string $name The name to search by. (optional)
+     * @param null|string $label The label of scenario to search by. (optional)
+     * @param null|string $lastUsageDateSince Lower limit of last usage date in &#x60;yyyy-MM-dd&#x60; format. Note: For scenarios where &#x60;lastUsageDate&#x60; is &#x60;null&#x60;, filtering matches &#x60;createTime&#x60;. (optional)
+     * @param null|string $lastUsageDateUntil Upper limit of last usage date &#x60;yyyy-MM-dd&#x60; format. Note: For scenarios where &#x60;lastUsageDate&#x60; is &#x60;null&#x60;, filtering matches &#x60;createTime&#x60;. (optional)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function searchVoiceIvrScenariosRequest(?int $page = null, ?int $pageSize = null, ?string $name = null, ?string $label = null, ?string $lastUsageDateSince = null, ?string $lastUsageDateUntil = null): Request
+    {
+        $allData = [
+             'page' => $page,
+             'pageSize' => $pageSize,
+             'name' => $name,
+             'label' => $label,
+             'lastUsageDateSince' => $lastUsageDateSince,
+             'lastUsageDateUntil' => $lastUsageDateUntil,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'page' => [
+                        new Assert\GreaterThanOrEqual(1),
+                    ],
+                    'pageSize' => [
+                        new Assert\LessThanOrEqual(50),
+                        new Assert\GreaterThanOrEqual(1),
+                    ],
+                    'name' => [
+                    ],
+                    'label' => [
+                    ],
+                    'lastUsageDateSince' => [
+                    ],
+                    'lastUsageDateUntil' => [
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/ivr/1/scenarios';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // query params
+        if ($page !== null) {
+            $queryParams['page'] = $page;
+        }
+
+        // query params
+        if ($pageSize !== null) {
+            $queryParams['pageSize'] = $pageSize;
+        }
+
+        // query params
+        if ($name !== null) {
+            $queryParams['name'] = $name;
+        }
+
+        // query params
+        if ($label !== null) {
+            $queryParams['label'] = $label;
+        }
+
+        // query params
+        if ($lastUsageDateSince !== null) {
+            $queryParams['lastUsageDateSince'] = $lastUsageDateSince;
+        }
+
+        // query params
+        if ($lastUsageDateUntil !== null) {
+            $queryParams['lastUsageDateUntil'] = $lastUsageDateUntil;
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+        ];
+
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'searchVoiceIvrScenarios'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsSearchResponse[]|null
+     */
+    private function searchVoiceIvrScenariosResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsSearchResponse[]', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'searchVoiceIvrScenarios'
+     */
+    private function searchVoiceIvrScenariosApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\Infobip\Model\CallsSearchResponse[]',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
+    /**
      * Operation sendAdvancedVoiceTts
      *
      * Send advanced voice message
@@ -1354,7 +3623,7 @@ final class VoiceApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse
      */
     public function sendAdvancedVoiceTts(\Infobip\Model\CallsAdvancedBody $callsAdvancedBody)
     {
@@ -1431,22 +3700,16 @@ final class VoiceApi
              'callsAdvancedBody' => $callsAdvancedBody,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callsAdvancedBody' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/tts/3/advanced';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -1456,38 +3719,10 @@ final class VoiceApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsAdvancedBody)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsAdvancedBody)
                 : $callsAdvancedBody;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -1529,7 +3764,7 @@ final class VoiceApi
     /**
      * Create response for operation 'sendAdvancedVoiceTts'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse|null
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse|null
      */
     private function sendAdvancedVoiceTtsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -1559,6 +3794,50 @@ final class VoiceApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode >= 400 && $statusCode <= 499) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -1601,7 +3880,7 @@ final class VoiceApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse
      */
     public function sendMultipleVoiceTts(\Infobip\Model\CallsMultiBody $callsMultiBody)
     {
@@ -1678,22 +3957,16 @@ final class VoiceApi
              'callsMultiBody' => $callsMultiBody,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callsMultiBody' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/tts/3/multi';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -1703,38 +3976,10 @@ final class VoiceApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsMultiBody)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsMultiBody)
                 : $callsMultiBody;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -1776,7 +4021,7 @@ final class VoiceApi
     /**
      * Create response for operation 'sendMultipleVoiceTts'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse|null
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse|null
      */
     private function sendMultipleVoiceTtsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -1806,6 +4051,50 @@ final class VoiceApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode >= 400 && $statusCode <= 499) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -1848,7 +4137,7 @@ final class VoiceApi
      *
      * @throws ApiException on non-2xx response
      * @throws InvalidArgumentException
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse
      */
     public function sendSingleVoiceTts(\Infobip\Model\CallsSingleBody $callsSingleBody)
     {
@@ -1925,22 +4214,16 @@ final class VoiceApi
              'callsSingleBody' => $callsSingleBody,
         ];
 
-        $validationConstraints = [];
-
-        $this
-            ->addParamConstraints(
-                [
+        $validationConstraints = new Assert\Collection(
+            fields : [
                     'callsSingleBody' => [
                         new Assert\NotNull(),
                     ],
-                ],
-                $validationConstraints
-            );
+                ]
+        );
 
         $this->validateParams($allData, $validationConstraints);
-
         $resourcePath = '/tts/3/single';
-        $formParams = [];
         $queryParams = [];
         $headerParams = [];
         $httpBody = '';
@@ -1950,38 +4233,10 @@ final class VoiceApi
             'Content-Type' => 'application/json',
         ];
 
-        // for model (json/xml)
         if (isset($callsSingleBody)) {
             $httpBody = ($headers['Content-Type'] === 'application/json')
                 ? $this->objectSerializer->serialize($callsSingleBody)
                 : $callsSingleBody;
-        } elseif (count($formParams) > 0) {
-            $formParams = \json_decode($this->objectSerializer->serialize($formParams), true);
-
-            if ($headers['Content-Type'] === 'multipart/form-data') {
-                $boundary = '----' . hash('sha256', uniqid('', true));
-                $headers['Content-Type'] .= '; boundary=' . $boundary;
-                $multipartContents = [];
-
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = (\is_array($formParamValue)) ? $formParamValue : [$formParamValue];
-
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents, $boundary);
-            } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = $this->objectSerializer->serialize($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = Query::build($formParams);
-            }
         }
 
         $apiKey = $this->config->getApiKey();
@@ -2023,7 +4278,7 @@ final class VoiceApi
     /**
      * Create response for operation 'sendSingleVoiceTts'
      * @throws ApiException on non-2xx response
-     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse|null
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse|null
      */
     private function sendSingleVoiceTtsResponse(ResponseInterface $response, UriInterface $requestUri): mixed
     {
@@ -2053,6 +4308,50 @@ final class VoiceApi
     {
         $statusCode = $apiException->getCode();
 
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
         if ($statusCode >= 400 && $statusCode <= 499) {
             $data = $this->objectSerializer->deserialize(
                 $apiException->getResponseBody(),
@@ -2085,4 +4384,557 @@ final class VoiceApi
 
         return $apiException;
     }
+
+    /**
+     * Operation sendVoiceMessagesWithAnIvrScenario
+     *
+     * Launch IVR Scenario
+     *
+     * @param \Infobip\Model\CallsLaunchScenarioRequest $callsLaunchScenarioRequest callsLaunchScenarioRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse
+     */
+    public function sendVoiceMessagesWithAnIvrScenario(\Infobip\Model\CallsLaunchScenarioRequest $callsLaunchScenarioRequest)
+    {
+        $request = $this->sendVoiceMessagesWithAnIvrScenarioRequest($callsLaunchScenarioRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->sendVoiceMessagesWithAnIvrScenarioResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->sendVoiceMessagesWithAnIvrScenarioApiException($exception);
+        }
+    }
+
+    /**
+     * Operation sendVoiceMessagesWithAnIvrScenarioAsync
+     *
+     * Launch IVR Scenario
+     *
+     * @param \Infobip\Model\CallsLaunchScenarioRequest $callsLaunchScenarioRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function sendVoiceMessagesWithAnIvrScenarioAsync(\Infobip\Model\CallsLaunchScenarioRequest $callsLaunchScenarioRequest): PromiseInterface
+    {
+        $request = $this->sendVoiceMessagesWithAnIvrScenarioRequest($callsLaunchScenarioRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->sendVoiceMessagesWithAnIvrScenarioResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->sendVoiceMessagesWithAnIvrScenarioApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'sendVoiceMessagesWithAnIvrScenario'
+     *
+     * @param \Infobip\Model\CallsLaunchScenarioRequest $callsLaunchScenarioRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function sendVoiceMessagesWithAnIvrScenarioRequest(\Infobip\Model\CallsLaunchScenarioRequest $callsLaunchScenarioRequest): Request
+    {
+        $allData = [
+             'callsLaunchScenarioRequest' => $callsLaunchScenarioRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'callsLaunchScenarioRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/ivr/1/messages';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsLaunchScenarioRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsLaunchScenarioRequest)
+                : $callsLaunchScenarioRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'sendVoiceMessagesWithAnIvrScenario'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsVoiceResponse|null
+     */
+    private function sendVoiceMessagesWithAnIvrScenarioResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsVoiceResponse', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'sendVoiceMessagesWithAnIvrScenario'
+     */
+    private function sendVoiceMessagesWithAnIvrScenarioApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\Infobip\Model\CallsVoiceResponse',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
+    /**
+     * Operation updateVoiceIvrScenario
+     *
+     * Update Voice IVR Scenarios
+     *
+     * @param string $id Scenario identifier. (required)
+     * @param \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest callsUpdateScenarioRequest (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws InvalidArgumentException
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsUpdateScenarioResponse
+     */
+    public function updateVoiceIvrScenario(string $id, \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest)
+    {
+        $request = $this->updateVoiceIvrScenarioRequest($id, $callsUpdateScenarioRequest);
+
+        try {
+            try {
+                $response = $this->client->send($request);
+                $this->deprecationChecker->check($request, $response);
+                return $this->updateVoiceIvrScenarioResponse($response, $request->getUri());
+            } catch (GuzzleException $exception) {
+                $errorResponse = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                throw new ApiException(
+                    "[{$exception->getCode()}] {$exception->getMessage()}",
+                    $exception->getCode(),
+                    $errorResponse?->getHeaders(),
+                    ($errorResponse !== null) ? (string)$errorResponse->getBody() : null
+                );
+            }
+        } catch (ApiException $exception) {
+            throw $this->updateVoiceIvrScenarioApiException($exception);
+        }
+    }
+
+    /**
+     * Operation updateVoiceIvrScenarioAsync
+     *
+     * Update Voice IVR Scenarios
+     *
+     * @param string $id Scenario identifier. (required)
+     * @param \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    public function updateVoiceIvrScenarioAsync(string $id, \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest): PromiseInterface
+    {
+        $request = $this->updateVoiceIvrScenarioRequest($id, $callsUpdateScenarioRequest);
+
+        return $this
+            ->client
+            ->sendAsync($request)
+            ->then(
+                function ($response) use ($request) {
+                    $this->deprecationChecker->check($request, $response);
+                    return $this->updateVoiceIvrScenarioResponse($response, $request->getUri());
+                },
+                function (GuzzleException $exception) {
+                    $statusCode = $exception->getCode();
+
+                    $response = ($exception instanceof RequestException) ? $exception->getResponse() : null;
+
+                    $exception = new ApiException(
+                        "[{$statusCode}] {$exception->getMessage()}",
+                        $statusCode,
+                        $response?->getHeaders(),
+                        ($response !== null) ? (string)$response->getBody() : null
+                    );
+
+                    throw $this->updateVoiceIvrScenarioApiException($exception);
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateVoiceIvrScenario'
+     *
+     * @param string $id Scenario identifier. (required)
+     * @param \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest (required)
+     *
+     * @throws InvalidArgumentException
+     */
+    private function updateVoiceIvrScenarioRequest(string $id, \Infobip\Model\CallsUpdateScenarioRequest $callsUpdateScenarioRequest): Request
+    {
+        $allData = [
+             'id' => $id,
+             'callsUpdateScenarioRequest' => $callsUpdateScenarioRequest,
+        ];
+
+        $validationConstraints = new Assert\Collection(
+            fields : [
+                    'id' => [
+                        new Assert\NotBlank(),
+                    ],
+                    'callsUpdateScenarioRequest' => [
+                        new Assert\NotNull(),
+                    ],
+                ]
+        );
+
+        $this->validateParams($allData, $validationConstraints);
+        $resourcePath = '/voice/ivr/1/scenarios/{id}';
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'id' . '}',
+                $this->objectSerializer->toPathValue($id),
+                $resourcePath
+            );
+        }
+
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+
+        if (isset($callsUpdateScenarioRequest)) {
+            $httpBody = ($headers['Content-Type'] === 'application/json')
+                ? $this->objectSerializer->serialize($callsUpdateScenarioRequest)
+                : $callsUpdateScenarioRequest;
+        }
+
+        $apiKey = $this->config->getApiKey();
+
+        if ($apiKey !== null) {
+            $headers[$this->config->getApiKeyHeader()] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = \array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        foreach ($queryParams as $key => $value) {
+            if (\is_array($value)) {
+                continue;
+            }
+
+            $queryParams[$key] = $this->objectSerializer->toString($value);
+        }
+
+        $query = Query::build($queryParams);
+
+        return new Request(
+            'PUT',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Create response for operation 'updateVoiceIvrScenario'
+     * @throws ApiException on non-2xx response
+     * @return \Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\ApiException|\Infobip\Model\CallsUpdateScenarioResponse|null
+     */
+    private function updateVoiceIvrScenarioResponse(ResponseInterface $response, UriInterface $requestUri): mixed
+    {
+        $statusCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
+        $responseHeaders = $response->getHeaders();
+
+        if ($statusCode < 200 || $statusCode > 299) {
+            throw new ApiException(
+                sprintf('[%d] API Error (%s)', $statusCode, $requestUri),
+                $statusCode,
+                $responseHeaders,
+                $responseBody
+            );
+        }
+
+        $responseResult = null;
+
+        $responseResult = $this->deserialize($responseBody, '\Infobip\Model\CallsUpdateScenarioResponse', $responseHeaders);
+        return $responseResult;
+    }
+
+    /**
+     * Adapt given ApiException for operation 'updateVoiceIvrScenario'
+     */
+    private function updateVoiceIvrScenarioApiException(ApiException $apiException): ApiException
+    {
+        $statusCode = $apiException->getCode();
+
+        if ($statusCode === 400) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 401) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 403) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 404) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 429) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode === 500) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 400 && $statusCode <= 499) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        if ($statusCode >= 500 && $statusCode <= 599) {
+            $data = $this->objectSerializer->deserialize(
+                $apiException->getResponseBody(),
+                '\Infobip\Model\ApiException',
+                $apiException->getResponseHeaders()
+            );
+
+            $apiException->setResponseObject($data);
+
+            return $apiException;
+        }
+        $data = $this->objectSerializer->deserialize(
+            $apiException->getResponseBody(),
+            '\Infobip\Model\CallsUpdateScenarioResponse',
+            $apiException->getResponseHeaders()
+        );
+
+        $apiException->setResponseObject($data);
+
+        return $apiException;
+    }
+
 }

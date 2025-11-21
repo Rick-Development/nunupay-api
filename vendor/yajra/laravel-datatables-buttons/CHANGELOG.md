@@ -1,42 +1,33 @@
 # Laravel DataTables Buttons Plugin CHANGELOG.
 
-## v10.0.9 - 2024-02-27
+## v12.3.0 - 2025-10-01
 
-- fix: Update composer.json to use Larastan org #184
+- feat: DataTable as route action #201
 
-## v10.0.8 - 2023-11-15
+## v12.2.1 - 2025-10-01
 
-- fix: unnecessary exception thrown #183
+- fix: defaults override via options #200
 
-## v10.0.7 - 2023-07-31
+## v12.2.0 - 2025-10-01
 
-- fix: use callback function if exportRender method is set #177
+- feat: improve html builder #199
 
-## v10.0.6 - 2023-02-28
+## v12.1.3 - 2025-04-07
 
-- fix: export package integration error message #174
+- fix: custom ajax action #197
 
-## v10.0.5 - 2023-02-28
+## v12.1.2 - 2025-03-18
 
-- fix: prevent redeclaring export query generator function (Laravel Octane) #173
+- fix: stubs with generics #196
 
-## v10.0.4 - 2023-02-21
+## v12.1.1 - 2025-02-26
 
-- fix: stubs - remove redundant docs #172
-- fix: default model namespace
+- fix: stubs #195
 
-## v10.0.3 - 2023-02-20
+## v12.1.0 - 2025-02-26
 
-- fix: default model namespace config #171
+- feat: Macroable DataTable Base Class #193
 
-## v10.0.2 - 2023-02-20
+## v12.0.0 - 2025-02-26
 
-- fix: scopes when using api resource #170
-
-## v10.0.1 - 2023-02-20
-
-- fix: applyScopes method to support Collection #168
-
-## v10.0.0 - 2023-02-07
-
-- Add Laravel 10 compatibility #169
+- Laravel 12.x support

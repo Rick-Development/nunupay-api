@@ -22,19 +22,39 @@ abstract class ComplianceInquiriesOptions
 {
     /**
      * @param string $notificationEmail The email address that approval status updates will be sent to. If not specified, the email address associated with your primary customer profile will be used.
+     * @param string $themeSetId Theme id for styling the inquiry form.
+     * @param string $primaryProfileSid The unique SID identifier of the Primary Customer Profile that should be used as a parent. Only necessary when creating a secondary Customer Profile.
      * @return CreateComplianceInquiriesOptions Options builder
      */
     public static function create(
         
-        string $notificationEmail = Values::NONE
+        string $notificationEmail = Values::NONE,
+        string $themeSetId = Values::NONE,
+        string $primaryProfileSid = Values::NONE
 
     ): CreateComplianceInquiriesOptions
     {
         return new CreateComplianceInquiriesOptions(
-            $notificationEmail
+            $notificationEmail,
+            $themeSetId,
+            $primaryProfileSid
         );
     }
 
+    /**
+     * @param string $themeSetId Theme id for styling the inquiry form.
+     * @return UpdateComplianceInquiriesOptions Options builder
+     */
+    public static function update(
+        
+        string $themeSetId = Values::NONE
+
+    ): UpdateComplianceInquiriesOptions
+    {
+        return new UpdateComplianceInquiriesOptions(
+            $themeSetId
+        );
+    }
 
 }
 
@@ -42,13 +62,19 @@ class CreateComplianceInquiriesOptions extends Options
     {
     /**
      * @param string $notificationEmail The email address that approval status updates will be sent to. If not specified, the email address associated with your primary customer profile will be used.
+     * @param string $themeSetId Theme id for styling the inquiry form.
+     * @param string $primaryProfileSid The unique SID identifier of the Primary Customer Profile that should be used as a parent. Only necessary when creating a secondary Customer Profile.
      */
     public function __construct(
         
-        string $notificationEmail = Values::NONE
+        string $notificationEmail = Values::NONE,
+        string $themeSetId = Values::NONE,
+        string $primaryProfileSid = Values::NONE
 
     ) {
         $this->options['notificationEmail'] = $notificationEmail;
+        $this->options['themeSetId'] = $themeSetId;
+        $this->options['primaryProfileSid'] = $primaryProfileSid;
     }
 
     /**
@@ -64,6 +90,30 @@ class CreateComplianceInquiriesOptions extends Options
     }
 
     /**
+     * Theme id for styling the inquiry form.
+     *
+     * @param string $themeSetId Theme id for styling the inquiry form.
+     * @return $this Fluent Builder
+     */
+    public function setThemeSetId(string $themeSetId): self
+    {
+        $this->options['themeSetId'] = $themeSetId;
+        return $this;
+    }
+
+    /**
+     * The unique SID identifier of the Primary Customer Profile that should be used as a parent. Only necessary when creating a secondary Customer Profile.
+     *
+     * @param string $primaryProfileSid The unique SID identifier of the Primary Customer Profile that should be used as a parent. Only necessary when creating a secondary Customer Profile.
+     * @return $this Fluent Builder
+     */
+    public function setPrimaryProfileSid(string $primaryProfileSid): self
+    {
+        $this->options['primaryProfileSid'] = $primaryProfileSid;
+        return $this;
+    }
+
+    /**
      * Provide a friendly representation
      *
      * @return string Machine friendly representation
@@ -75,4 +125,40 @@ class CreateComplianceInquiriesOptions extends Options
     }
 }
 
+class UpdateComplianceInquiriesOptions extends Options
+    {
+    /**
+     * @param string $themeSetId Theme id for styling the inquiry form.
+     */
+    public function __construct(
+        
+        string $themeSetId = Values::NONE
+
+    ) {
+        $this->options['themeSetId'] = $themeSetId;
+    }
+
+    /**
+     * Theme id for styling the inquiry form.
+     *
+     * @param string $themeSetId Theme id for styling the inquiry form.
+     * @return $this Fluent Builder
+     */
+    public function setThemeSetId(string $themeSetId): self
+    {
+        $this->options['themeSetId'] = $themeSetId;
+        return $this;
+    }
+
+    /**
+     * Provide a friendly representation
+     *
+     * @return string Machine friendly representation
+     */
+    public function __toString(): string
+    {
+        $options = \http_build_query(Values::of($this->options), '', ' ');
+        return '[Twilio.Trusthub.V1.UpdateComplianceInquiriesOptions ' . $options . ']';
+    }
+}
 

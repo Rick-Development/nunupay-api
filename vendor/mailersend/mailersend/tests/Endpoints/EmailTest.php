@@ -3,18 +3,18 @@
 namespace MailerSend\Tests\Endpoints;
 
 use Http\Mock\Client;
-use Illuminate\Support\Arr;
 use MailerSend\Common\HttpLayer;
 use MailerSend\Endpoints\Email;
 use MailerSend\Exceptions\MailerSendAssertException;
 use MailerSend\Exceptions\MailerSendRateLimitException;
 use MailerSend\Exceptions\MailerSendValidationException;
+use MailerSend\Helpers\Arr;
 use MailerSend\Helpers\Builder\Attachment;
 use MailerSend\Helpers\Builder\EmailParams;
 use MailerSend\Helpers\Builder\Personalization;
 use MailerSend\Helpers\Builder\Recipient;
-use MailerSend\Helpers\Builder\Variable;
 use MailerSend\Tests\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -96,6 +96,7 @@ class EmailTest extends TestCase
      * @throws \JsonException
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
+    #[DataProvider('validEmailParamsProvider')]
     public function test_send_email(EmailParams $emailParams): void
     {
         $response = $this->createMock(ResponseInterface::class);
@@ -142,15 +143,7 @@ class EmailTest extends TestCase
             self::assertEquals($tag, Arr::get($request_body, "tags.$key"));
         }
         self::assertEquals($emailParams->getTemplateId(), Arr::get($request_body, 'template_id'));
-        self::assertCount(count($emailParams->getVariables()), Arr::get($request_body, 'variables') ?? []);
-        foreach ($emailParams->getVariables() as $variableKey => $variable) {
-            $variable = !is_array($variable) ? $variable->toArray() : $variable;
-            self::assertEquals($variable['email'], Arr::get($request_body, "variables.$variableKey.email"));
-            foreach ($variable['substitutions'] as $substitutionKey => $substitution) {
-                self::assertEquals($substitution['var'], Arr::get($request_body, "variables.$variableKey.substitutions.$substitutionKey.var"));
-                self::assertEquals($substitution['value'], Arr::get($request_body, "variables.$variableKey.substitutions.$substitutionKey.value"));
-            }
-        }
+
         self::assertCount(count($emailParams->getAttachments()), Arr::get($request_body, 'attachments') ?? []);
         foreach ($emailParams->getAttachments() as $key => $attachment) {
             $attachment = !is_array($attachment) ? $attachment->toArray() : $attachment;
@@ -189,6 +182,7 @@ class EmailTest extends TestCase
      * @throws \JsonException
      * @throws \Psr\Http\Client\ClientExceptionInterface
      */
+    #[DataProvider('invalidEmailParamsProvider')]
     public function test_send_email_with_errors(EmailParams $emailParams)
     {
         $this->expectException(MailerSendAssertException::class);
@@ -201,7 +195,7 @@ class EmailTest extends TestCase
         (new Email($httpLayer, self::OPTIONS))->send($emailParams);
     }
 
-    public function validEmailParamsProvider(): array
+    public static function validEmailParamsProvider(): array
     {
         return [
             'simple request' => [
@@ -248,23 +242,6 @@ class EmailTest extends TestCase
                     ->setText('Text')
                     ->setAttachments([
                         new Attachment('attachment', 'file.jpg'),
-                    ]),
-            ],
-            'using variables helper' => [
-                (new EmailParams())
-                    ->setFrom('test@mailersend.com')
-                    ->setFromName('Sender')
-                    ->setRecipients([
-                        [
-                            'name' => 'Recipient',
-                            'email' => 'recipient@mailersend.com',
-                        ]
-                    ])
-                    ->setSubject('Subject')
-                    ->setHtml('HTML')
-                    ->setText('Text')
-                    ->setVariables([
-                        new Variable('recipient@mailersend.com', ['var' => 'value'])
                     ]),
             ],
             'using personalization helper' => [
@@ -444,10 +421,63 @@ class EmailTest extends TestCase
                         ]
                     ])
             ],
+            'with references header' => [
+                (new EmailParams())
+                    ->setFrom('test@mailersend.com')
+                    ->setFromName('Sender')
+                    ->setReplyTo('reply-to@mailersend.com')
+                    ->setReplyToName('Reply To')
+                    ->setRecipients([
+                        [
+                            'name' => 'Recipient',
+                            'email' => 'recipient@mailersend.com',
+                        ]
+                    ])
+                    ->setSubject('Subject')
+                    ->setHtml('HTML')
+                    ->setText('Text')
+                    ->setTags([
+                        'tag'
+                    ])
+                    ->setInReplyToHeader('test@mailersend.com')
+                    ->setReferencesHeader([
+                        '<test@mailersend.com>',
+                        '<test2@mailersend.com>'
+                    ]),
+            ],
+            'with list unsubscribe' => [
+                (new EmailParams())
+                    ->setFrom('test@mailersend.com')
+                    ->setFromName('Sender')
+                    ->setRecipients([
+                        [
+                            'name' => 'Recipient',
+                            'email' => 'recipient@mailersend.com',
+                        ]
+                    ])
+                    ->setSubject('Subject')
+                    ->setHtml('HTML')
+                    ->setText('Text')
+                    ->setListUnsubscribe('https://www.mailersend.com/unsubscribe'),
+            ],
+            'with unicode email' => [
+                (new EmailParams())
+                    ->setFrom('ügyfélszolgálat@mailersend.com')
+                    ->setFromName('Ügyfélszolgálat')
+                    ->setRecipients([
+                        [
+                            'name' => 'Recipient',
+                            'email' => 'recipient@mailersend.com',
+                        ]
+                    ])
+                    ->setSubject('Subject')
+                    ->setHtml('HTML')
+                    ->setText('Text'),
+            ],
         ];
     }
 
-    public function invalidEmailParamsProvider(): array
+    public static function invalidEmailParamsProvider(): array
     {
         return [
             'template id, html and text missing' => [
