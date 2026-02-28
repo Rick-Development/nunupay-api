@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Illuminate\Http\Request;
+
+class Authenticate extends Middleware
+{
+    /**
+     * Get the path the user should be redirected to when they are not authenticated.
+     */
+    // protected function redirectTo(Request $request)
+    // {
+    //     if (!$request->expectsJson()) {
+    //         if (trim(request()->route()->getPrefix(), '/') == 'admin') {
+    //             return route('admin.login');
+    //         }
+    //         return route('login');
+    //     }
+    // }
+    
+    
+    protected function redirectTo(Request $request)
+{
+    // \Log::info('Redirecting unauthenticated user', [
+    //     'expectsJson' => $request->expectsJson(),
+    //     'route_prefix' => trim(request()->route()->getPrefix(), '/'),
+    // ]);
+
+    if (!$request->expectsJson()) {
+        if (trim(request()->route()->getPrefix(), '/') == 'admin') {
+            return route('admin.login');
+        }
+        return route('login');
+    }
+}
+
+}

@@ -1,0 +1,113 @@
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.4.10",
+        "ext-gd": "*",
+        "ext-simplexml": "*",
+        "authorizenet/authorizenet": "*",
+        "aws/aws-sdk-php": "*",
+        "barryvdh/laravel-dompdf": "*",
+        "cinetpay/cinetpay-php": "*",
+        "doctrine/dbal": "*",
+        "flutterwavedev/flutterwave-v3": "*",
+        "guzzlehttp/guzzle": "*",
+        "hisorange/browser-detect": "*",
+        "infobip-community/infobip-api-php-sdk": "*",
+        "infobip/infobip-api-php-client": "*",
+        "intervention/image": "*",
+        "laravel/framework": "12.0.0",
+        "laravel/sanctum": "*",
+        "laravel/socialite": "*",
+        "laravel/tinker": "*",
+        "laravel/ui": "*",
+        "mailersend/laravel-driver": "*",
+        "matthiasmullie/minify": "*",
+        "midtrans/midtrans-php": "*",
+        "mollie/laravel-mollie": "*",
+        "nnjeim/world": "*",
+        "nwidart/laravel-modules": "^12.0",
+        "plivo/plivo-php": "*",
+        "pragmarx/google2fa": "*",
+        "predis/predis": "*",
+        "pusher/pusher-php-server": "*",
+        "stevebauman/purify": "*",
+        "symfony/http-client": "*",
+        "symfony/mailchimp-mailer": "*",
+        "symfony/mailer": "*",
+        "symfony/mailgun-mailer": "*",
+        "symfony/postmark-mailer": "*",
+        "symfony/sendgrid-mailer": "*",
+        "symfony/sendinblue-mailer": "*",
+        "twilio/sdk": "*",
+        "vonage/client": "*",
+        "yajra/laravel-datatables": "*"
+    },
+    "require-dev": {
+        "authorizenet/authorizenet": "*",
+        "fakerphp/faker": "^1.9.1",
+        "laravel/pint": "^1.0",
+        "laravel/sail": "^1.18",
+        "mockery/mockery": "^1.4.4",
+        "nunomaduro/collision": "8.8.2",
+        "phpunit/phpunit": "^11.5.15",
+        "spatie/laravel-ignition": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/",
+            "Modules\\": "Modules/"
+        },
+        "exclude-from-classmap": [
+            "app/Services/stripe-php"
+        ],
+        "files": [
+            "app/Helpers/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "wikimedia/composer-merge-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
