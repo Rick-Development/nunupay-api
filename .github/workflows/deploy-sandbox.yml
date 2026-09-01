@@ -17,11 +17,18 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
+          script_stop: true
           script: |
             echo "Starting Sandbox Deployment..."
             cd /home/billway/nunupay-sandbox
+            git config --global --add safe.directory /home/billway/nunupay-sandbox || true
+            if [ ! -d ".git" ]; then
+              echo "Initializing Git repository in /home/billway/nunupay-sandbox..."
+              git init
+              git remote add origin https://github.com/Rick-Development/nunupay-api.git || git remote set-url origin https://github.com/Rick-Development/nunupay-api.git
+            fi
             git fetch origin sandbox
-            git checkout sandbox
+            git checkout -B sandbox origin/sandbox
             git reset --hard origin/sandbox
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php artisan migrate --force
