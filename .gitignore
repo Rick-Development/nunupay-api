@@ -2,6 +2,7 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/app/keys/
 /vendor
 .env
 .env.backup
@@ -18,6 +19,10 @@ yarn-error.log
 Archive.zip
 error_log
 json.json
-main-cedar-391910-cd7c5ebfdd8b.json
+*.json
+!composer.json
+!package.json
+!composer.lock
+!package-lock.json
 *.zip
 *.log

@@ -29,15 +29,6 @@ use App\Http\Controllers\PayscribeWebhookController;
 
 
 
-Route::get('/{any}', function () {
-      return redirect('/index.html');
-})->where('any', '.*');
-
-$basicControl = basicControl();
-//   Route::get('/', function(){
-//         return redirect('/index.html');
-//     }); 
-
 
 Route::post('/webhook/giftcard', [GiftcardWebhookController::class, 'handle']);
 Route::post('/webhook/payscribe', [PayscribeWebhookController::class, 'handle']);
