@@ -66,15 +66,6 @@
             "Database\\Seeders\\": "database/seeders/",
             "Modules\\": "Modules/"
         },
-        "exclude-from-classmap": [
-            "app/Services/stripe-php",
-            "app/Services/Gateway/stripe/stripe-php",
-            "app/Services/Gateway/coingate/coingate-php",
-            "app/Services/Gateway/paythrow/php-sdk",
-            "app/Services/Gateway/razorpay/razorpay-php",
-            "app/Services/Gateway/stripe/stripe-php/tests",
-            "app/Services/Gateway/razorpay/razorpay-php/libs"
-        ],
         "files": [
             "app/Helpers/helpers.php"
         ]
