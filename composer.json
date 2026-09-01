@@ -61,6 +61,9 @@
             "Database\\Seeders\\": "database/seeders/",
             "Modules\\": "Modules/"
         },
+        "exclude-from-classmap": [
+            "app/Http/Helpers/Wise Api"
+        ],
         "files": [
             "app/Helpers/helpers.php"
         ]

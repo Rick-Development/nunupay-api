@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\API;
 // app/Http/Controllers/NinepsbWebhookController.php
 
 
