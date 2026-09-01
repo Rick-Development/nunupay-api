@@ -67,7 +67,11 @@
             "Modules\\": "Modules/"
         },
         "exclude-from-classmap": [
-            "app/Services/stripe-php"
+            "app/Services/stripe-php",
+            "app/Services/Gateway/stripe/stripe-php",
+            "app/Services/Gateway/coingate/coingate-php",
+            "app/Services/Gateway/paythrow/php-sdk",
+            "app/Services/Gateway/razorpay/razorpay-php"
         ],
         "files": [
             "app/Helpers/helpers.php"
