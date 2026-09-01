@@ -28,7 +28,7 @@ jobs:
               git remote add origin https://github.com/Rick-Development/nunupay-api.git || git remote set-url origin https://github.com/Rick-Development/nunupay-api.git
             fi
             git fetch origin sandbox
-            git checkout -B sandbox origin/sandbox
+            git checkout -f -B sandbox origin/sandbox
             git reset --hard origin/sandbox
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php artisan migrate --force
