@@ -23,10 +23,8 @@ return new class extends Migration
             $table->string('currency');
             $table->string('brand');
             $table->string('masked');
-            $table->string('expiry_date');
+            $table->string('expiry_date')->nullable();
             $table->string('cvv');
-            $table->string('cvv');
-            $table->string('ref');
             $table->json('billing_address');
             $table->timestamps();
         });
