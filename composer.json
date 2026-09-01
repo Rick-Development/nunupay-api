@@ -11,10 +11,8 @@
         "php": "^8.4.10",
         "ext-gd": "*",
         "ext-simplexml": "*",
-        "authorizenet/authorizenet": "*",
         "aws/aws-sdk-php": "*",
         "barryvdh/laravel-dompdf": "*",
-        "cinetpay/cinetpay-php": "*",
         "doctrine/dbal": "*",
         "flutterwavedev/flutterwave-v3": "*",
         "guzzlehttp/guzzle": "*",
@@ -29,8 +27,6 @@
         "laravel/ui": "*",
         "mailersend/laravel-driver": "*",
         "matthiasmullie/minify": "*",
-        "midtrans/midtrans-php": "*",
-        "mollie/laravel-mollie": "*",
         "nnjeim/world": "*",
         "nwidart/laravel-modules": "^12.0",
         "plivo/plivo-php": "*",
@@ -50,7 +46,6 @@
         "yajra/laravel-datatables": "*"
     },
     "require-dev": {
-        "authorizenet/authorizenet": "*",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",

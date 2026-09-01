@@ -41,6 +41,9 @@ class PaymentController extends Controller
             }
 
             $gatewayObj = 'App\\Services\\Gateway\\' . $gateway->code . '\\Payment';
+            if (!class_exists($gatewayObj)) {
+                throw new Exception('Payment Gateway is not supported or disabled.');
+            }
 
             $data = $gatewayObj::prepareData($deposit, $gateway);
             $data = json_decode($data);
@@ -101,6 +104,9 @@ class PaymentController extends Controller
             }
 
             $gatewayObj = 'App\\Services\\Gateway\\' . $code . '\\Payment';
+            if (!class_exists($gatewayObj)) {
+                throw new Exception('Payment Gateway is not supported or disabled.');
+            }
             $data = $gatewayObj::ipn($request, $gateway, $deposit ?? null, $trx ?? null, $type ?? null);
 
         } catch (\Exception $exception) {
