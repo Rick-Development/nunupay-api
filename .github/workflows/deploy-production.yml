@@ -30,6 +30,7 @@ jobs:
             git fetch origin main
             git checkout -f -B main origin/main
             git reset --hard origin/main
+            rm -f bootstrap/cache/*.php
             composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
             php artisan migrate --force
             php artisan config:cache

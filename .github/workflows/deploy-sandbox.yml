@@ -30,6 +30,7 @@ jobs:
             git fetch origin sandbox
             git checkout -f -B sandbox origin/sandbox
             git reset --hard origin/sandbox
+            rm -f bootstrap/cache/*.php
             composer install --no-interaction --prefer-dist --optimize-autoloader
             php artisan migrate --force
             php artisan config:cache
