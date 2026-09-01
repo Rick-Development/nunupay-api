@@ -114,7 +114,7 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 Route::view('instruction/page', 'instruction-page')->name('instructionPage');
 
 
-Route::group(['middleware' => ['maintenanceMode']], function () use ($basicControl) {
+Route::group(['middleware' => ['maintenanceMode']], function () {
 
     Route::group(['middleware' => ['guest']], function () {
         // Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
