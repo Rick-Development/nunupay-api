@@ -61,8 +61,9 @@ class BasicControlController extends Controller
             ]);
             $basic = BasicControl();
             $basic->update($data);
-
-            Artisan::call('optimize:clear');
+            try {
+                Artisan::call('optimize:clear');
+            } catch (\Throwable $e) {}
             return back()->with('success', 'Successfully Updated');
         }
     }
@@ -112,7 +113,9 @@ class BasicControlController extends Controller
             BasicService::setEnv($env);
 
             session()->flash('success', 'Basic Control Configure Successfully');
-            Artisan::call('optimize:clear');
+            try {
+                Artisan::call('optimize:clear');
+            } catch (\Throwable $e) {}
             return back();
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
@@ -150,7 +153,9 @@ class BasicControlController extends Controller
                 throw new Exception('Something went wrong, when updating data');
 
             session()->flash('success', 'Basic Control Configure Successfully');
-            Artisan::call('optimize:clear');
+            try {
+                Artisan::call('optimize:clear');
+            } catch (\Throwable $e) {}
             return back();
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());

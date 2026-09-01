@@ -26,11 +26,7 @@ return [
             'icon' => 'fal fa-money-bill-alt',
             'short_description' => 'Money Transfer Settings , such as minimum/maximum transfer amount & transfer fees.',
         ],
-        '9Psb Setting' => [
-            'route' => 'admin.ninepsb.settings',
-            'icon' => 'fal fa-money-bill-alt',
-            'short_description' => 'Money Transfer Settings , such as minimum/maximum transfer amount & transfer fees.',
-        ],
+
         'referral' => [
             'route' => 'admin.refer-user.settings',
             'icon' => 'fal fa-users',

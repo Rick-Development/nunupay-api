@@ -36,27 +36,6 @@
                 </div>
             </div>
         @endif
-        @if($cardView->cardMethod?->code == 'stripe' && $cardView->status == 8)
-            <div class="alert alert-soft-dark mb-5" role="alert">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <img class="avatar avatar-xl alert_image" src="{{ asset('assets/admin/img/oc-megaphone.svg') }}"
-                             alt="Announce" data-hs-theme-appearance="default">
-                        <img class="avatar avatar-xl alert_image" src="{{ asset('assets/admin/img/oc-megaphone-light.svg') }}"
-                             alt="Announce" data-hs-theme-appearance="dark">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <div class="d-flex align-items-center">
-                            <p class="mb-0">@lang("Stripe add fund info :- ")
-                                <span class="text-danger">
-                                    @lang("Funding for Stripe virtual cards must be added manually, as Stripe's API does not support direct funding for virtual cards.")
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
 
         <div class="row">
             <div class="col-lg-8 mb-3 mb-lg-0">

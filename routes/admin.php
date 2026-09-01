@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\TxnSummaryController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\InAppNotificationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\SocialiteController;
 use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\StateController;
 use App\Http\Controllers\Admin\CityController;
@@ -45,10 +46,10 @@ use App\Http\Controllers\Admin\AdController;
 use App\Http\Controllers\Admin\GiftcardController;
 
 
-Route::get('/{any}', function () {
-    //   return view('waitlist');
-      return redirect('/index.html');
-})->where('any', '.*');
+// Route::get('/{any}', function () {
+//     //   return view('waitlist');
+//       return redirect('/index.html');
+// })->where('any', '.*');
  
 Route::get('queue-work', function () {
     return Illuminate\Support\Facades\Artisan::call('queue:work', ['--stop-when-empty' => true]);
@@ -69,7 +70,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
     /*== Authentication Routes ==*/
     Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');//;//->middleware('guest:admin');
-    Route::post('login', [LoginController::class, 'login'])->name('login.submit');//->middleware('guest:admin');
+    Route::post('/', [LoginController::class, 'login'])->name('login.submit');//->middleware('guest:admin');
     Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request')
         ;//->middleware('guest:admin');
     Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -131,8 +132,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         
         
         
-        /* ===== 9PSB Settings ===== */
-         Route::match(['get', 'post'], 'ninepsb.settings', [BasicControlController::class, 'ninepsbSettings'])->name('ninepsb.settings');
 
         /* ===== Payscribe Settings ===== */
         Route::match(['get', 'post'], 'payscribe.settings', [BasicControlController::class, 'payscribeSettings'])->name('payscribe.settings');
@@ -509,5 +508,3 @@ Route::post('ads', [AdController::class, 'store'])->name('ads.store');
     });
 
 });
-
-

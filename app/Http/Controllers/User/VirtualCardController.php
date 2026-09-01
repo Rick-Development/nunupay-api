@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\VirtualCardMethod;
 use App\Models\VirtualCardOrder;
 use App\Models\VirtualCardTransaction;
-use App\Services\VirtualCard\stripe\Card;
 use App\Traits\ManageWallet;
 use App\Traits\Notify;
 use App\Traits\Upload;
@@ -14,8 +13,6 @@ use App\Traits\VirtualCardTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Stevebauman\Purify\Facades\Purify;
-
-require_once(base_path('app/Services/stripe-php/init.php'));
 
 class VirtualCardController extends Controller
 {
@@ -189,10 +186,6 @@ class VirtualCardController extends Controller
             return back()->withErrors('Card Id not found');
         }
 
-        if ($this->isStripeCard($card_id)) {
-            Card::getTrx($card_id);
-        }
-
         $cardTransactions = VirtualCardTransaction::where('user_id', auth()->id())
             ->where('card_id', $card_id)
             ->latest()
@@ -204,12 +197,6 @@ class VirtualCardController extends Controller
         $cardTransactions->setCollection($groupedTransactions->flatten(1));
 
         return view($this->theme . 'user.virtual_card.transaction', compact('cardTransactions', 'groupedTransactions', 'card_id'));
-    }
-
-
-    protected function isStripeCard($card_id): bool
-    {
-        return str_starts_with($card_id, 'ic_');
     }
 
 }

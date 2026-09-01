@@ -37,13 +37,14 @@ class LoginController extends Controller
 
     public function __construct()
     {
-        // $this->middleware('guest:admin')->except('logout');
+        $this->middleware('guest:superadmin')->except('logout');
     }
 
     public function showLoginForm()
     {
         $data['basicControl'] = basicControl();
-        return view('admin.auth.login', $data);
+        $basicControl = basicControl();
+        return view('admin.auth.login', compact('basicControl','data'));
     }
 
     // protected function guard()
@@ -63,6 +64,8 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        
+        // return 'hell';
         $basicControl = basicControl();
         $input = $request->all();
 
@@ -105,8 +108,8 @@ class LoginController extends Controller
         }
 
 
-        //  $data['basicControl'] = basicControl();
-        // return view('admin.auth.login', $data);
+         $data['basicControl'] = basicControl();
+        return view('admin.auth.login', $data);
     }
 
     public function username()

@@ -5,22 +5,7 @@ namespace App\Services;
 class BasicCurl
 {
 
-    public static function stripeCurlRequest($url, $headers, $data, $method = 'POST') {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        if ($method == 'POST' || $method == 'PUT') {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        }
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        return $response;
-    }
 
     public function curlPostRequestWithHeaders($url, $headers, $postParam = [])
     {

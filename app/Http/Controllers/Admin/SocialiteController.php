@@ -47,7 +47,9 @@ class SocialiteController extends Controller
             fwrite($fp, implode($env));
             fclose($fp);
 
-            Artisan::call('optimize:clear');
+            try {
+                Artisan::call('optimize:clear');
+            } catch (\Throwable $e) {}
             return back()->with('success', 'Successfully Updated');
         }
     }
@@ -84,7 +86,9 @@ class SocialiteController extends Controller
             fwrite($fp, implode($env));
             fclose($fp);
 
-            Artisan::call('optimize:clear');
+            try {
+                Artisan::call('optimize:clear');
+            } catch (\Throwable $e) {}
             return back()->with('success', 'Successfully Updated');
         }
     }
@@ -122,7 +126,9 @@ class SocialiteController extends Controller
             fwrite($fp, implode($env));
             fclose($fp);
 
-            Artisan::call('optimize:clear');
+            try {
+                Artisan::call('optimize:clear');
+            } catch (\Throwable $e) {}
             return back()->with('success', 'Successfully Updated');
         }
     }

@@ -104,8 +104,12 @@ class PluginController extends Controller
             ];
 
             BasicService::setEnv($env);
-            Artisan::call('config:clear');
-            Artisan::call('cache:clear');
+            try {
+                Artisan::call('config:clear');
+            } catch (\Throwable $e) {}
+            try {
+                Artisan::call('cache:clear');
+            } catch (\Throwable $e) {}
             return back()->with('success', 'Google recaptcha has been configured successfully.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());

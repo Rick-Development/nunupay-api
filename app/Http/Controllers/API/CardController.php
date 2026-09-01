@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\VirtualCardMethod;
 use App\Models\VirtualCardOrder;
 use App\Models\VirtualCardTransaction;
-use App\Services\VirtualCard\stripe\Card;
 use App\Traits\ApiResponse;
 use App\Traits\ManageWallet;
 use App\Traits\Notify;
@@ -191,10 +190,6 @@ class CardController extends Controller
             }
             $data['card_id'] = $card_id;
 
-            if ($this->isStripeCard($card_id)) {
-                Card::getTrx($card_id);
-            }
-
             $trx = VirtualCardTransaction::with(['cardOrder.cardMethod:id,name'])->where('user_id', auth()->id())
                 ->where('card_id', $card_id);
 
@@ -214,10 +209,5 @@ class CardController extends Controller
         } catch (\Exception $e) {
             return response()->json($this->withError($e->getMessage()));
         }
-    }
-
-    protected function isStripeCard($card_id): bool
-    {
-        return str_starts_with($card_id, 'ic_');
     }
 }

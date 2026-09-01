@@ -18,17 +18,13 @@ use App\Http\Controllers\API\DepositController;
 use App\Http\Controllers\API\TwoFASecurityController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\CardController;
-use App\Http\Controllers\API\NinePaymentService;
 // use App\Http\Controllers\API\BillpaymentController;
 use App\Http\Controllers\API\TopUpController;
 use App\Http\Controllers\API\BillPaymentController;
-use App\Http\Controllers\API\WalletControllerCopy;
+
 use App\Http\Controllers\API\PayscribeUserCardController;
 use App\Http\Controllers\API\PayscribeCustomerController;
 use App\Http\Controllers\API\AdController;
-use App\Http\Controllers\API\BankListController;
-use App\Http\Controllers\API\NinepsbWebhookController;
-use App\Http\Controllers\API\NinePSBNotificationController;
 use App\Http\Controllers\API\GiftcardController;
 use App\Http\Controllers\API\KycLookupController;
 use App\Http\Controllers\API\PayscribeAirtimeController;
@@ -95,18 +91,10 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-Route::post('/ninepsbwebhook', [NinepsbWebhookController::class, 'handle']);
-
-Route::post('/ninepsbnotification', [NinePSBNotificationController::class, 'sendNotification']);
-Route::post('/ninepsbpaymentnotification', [NinePSBNotificationController::class, 'sendPaymentNotification']);
-
-
-
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('9sp', [NinePaymentService::class, 'index'])->name('sp');
 
 Route::post('virtual-card/ufitpay/callback', [VirtualCardController::class, 'ufitpayCallBack'])->name('ufitpay.Callback');
 Route::post('virtual-card/flutterwave/callback', [VirtualCardController::class, 'flutterwavedCallBack'])->name('flutterwave.Callback');

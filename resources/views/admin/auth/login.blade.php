@@ -64,7 +64,7 @@
                     </span>
                 </div>
 
-                @if($basicControl->google_recaptcha == 1 && $basicControl->google_recaptcha_admin_login == 1)
+               {{-- @if($basicControl->google_recaptcha == 1 && $basicControl->google_recaptcha_admin_login == 1)
                     <div class="row mt-4 mb-4">
                         <div class="g-recaptcha @error('g-recaptcha-response') is-invalid @enderror" data-sitekey="{{ env('GOOGLE_RECAPTCHA_SITE_KEY') }}"></div>
                         @error('g-recaptcha-response')
@@ -94,6 +94,7 @@
                         </div>
                     </div>
                 @endif
+                 --}}
 
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" name="remember_me" value="" id="termsCheckbox" {{ old('remember') ? 'checked' : '' }}>

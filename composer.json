@@ -66,6 +66,9 @@
             "Database\\Seeders\\": "database/seeders/",
             "Modules\\": "Modules/"
         },
+        "exclude-from-classmap": [
+            "app/Services/stripe-php"
+        ],
         "files": [
             "app/Helpers/helpers.php"
         ]

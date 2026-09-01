@@ -22,7 +22,6 @@ use App\Http\Helpers\Payscribe\Collections\NGNVirtualAccountsHelper;
 class UserAuthController extends Controller
 {
     use ApiResponse,Notify;
-    private $bearer = 'eyJ0eXAiOiJKV1QiLCJrZXlJZCI6InZhc19qd3QiLCJhbGciOiJIUzUxMiJ9.eyJjbGllbnRJZCI6IlBLX1RFU1RfMkF1Znc0OXdjaSIsImFjY291bnRObyI6IjEwMTgwMDA2IiwiYXV0aG9yaXRpZXMiOlsiQklMTFNfUEFZTUVOVCIsIlRPUF9VUCJdLCJzdWIiOiJWQVNfVEVTVCIsImlzcyI6Ijlwc2IuY29tLm5nIiwiaWF0IjoxNjgwMDEwNjIyLCJqdGkiOiIyMzMzZWQ2MS02OTEyLTRkMzItYjVjZi1jYTkzNjFhZGJjY2IiLCJleHAiOjE2ODAwMTc4MjJ9.h9kb-ii-RZ-p9TjCbfhna8hAMbAfFTufCOhsu9Peh6MrZ28a2UuTr3vuHCDNYu0FPxqPlhLP0kFOo-1rCYB4eQ';
 
     private function strongPassword()
     {
@@ -90,7 +89,6 @@ class UserAuthController extends Controller
             "account_type" => "static",
             "currency" => "NGN",
             "customer_id" => $customerId,
-            "bank" => ["9psb"]
         ];
         
         // [2025-01-13 00:33:29] local.INFO: {"status":true,"description":"Virtual account created successfully.",

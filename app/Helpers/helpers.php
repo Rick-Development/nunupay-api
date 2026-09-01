@@ -126,6 +126,7 @@ if (!function_exists('basicControl')) {
 
             return $configure;
         } catch (\Exception $e) {
+            \Log::error('basicControl Error: ' . $e->getMessage());
            // die("Unable to establish a connection to the database. Please check your connection settings and try again later");
         }
 

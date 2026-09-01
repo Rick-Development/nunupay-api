@@ -49,11 +49,21 @@ class Handler extends ExceptionHandler
 
         // Optional: Handle other HTTP exceptions
         if (method_exists($e, 'getStatusCode')) {
-            return response()->json($this->withError($e->getMessage()), $e->getStatusCode());
+            if ($request->expectsJson()) {
+                return response()->json($this->withError($e->getMessage()), $e->getStatusCode());
+            }
         }
 
-        // Fallback for other exceptions
-        return response()->json($this->withError('Server Error'), 500);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server Error',
+                'debug' => env('APP_DEBUG') ? $e->getMessage() : null
+            ], 500);
+        }
+
+        // Delegate to parent if not JSON request
+        return parent::render($request, $e);
     }
 
     public function register(): void

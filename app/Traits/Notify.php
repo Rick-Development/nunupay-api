@@ -67,7 +67,9 @@ trait Notify
             $email_from = $basic->sender_email;
 
             Mail::to($user)->queue(new SendMail($email_from, $subject, $message));
-            Artisan::call('queue:work', ['--stop-when-empty' => true]);
+            try {
+                Artisan::call('queue:work', ['--stop-when-empty' => true]);
+            } catch (\Throwable $e) {}
         } catch (\Exception $exception) {
             return true;
         }
@@ -217,8 +219,14 @@ trait Notify
         $subject = ($subject == null) ? $templateObj->subject : $subject;
         $email_from = ($templateObj) ? $templateObj->email_from : $basic->sender_email;
 
-        Mail::to($user)->queue(new SendMail($email_from, $subject, $message));
-        Artisan::call('queue:work', ['--stop-when-empty' => true]);
+        try {
+            Mail::to($user)->queue(new SendMail($email_from, $subject, $message));
+            try {
+                Artisan::call('queue:work', ['--stop-when-empty' => true]);
+            } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+            \Log::error('Verification Mail Queue Error: ' . $e->getMessage());
+        }
     }
 
     public function verifyToSms($user, $templateKey, $params = [], $requestMessage = null)
@@ -509,7 +517,9 @@ trait Notify
             $message = str_replace("[[name]]", $admin->firstname, $message);
             Mail::to($admin)->queue(new SendMail($email_from, $subject, $message));
         }
-        Artisan::call('queue:work', ['--stop-when-empty' => true]);
+        try {
+            Artisan::call('queue:work', ['--stop-when-empty' => true]);
+        } catch (\Throwable $e) {}
     }
 
 

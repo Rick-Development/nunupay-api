@@ -16,9 +16,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('inspire')->hourly();
         $schedule->command('model:prune')->days(2);
 
-        $schedule->call(function () {
-            DB::table('users')->update(['verify_otp' => null]);
-        })->everyFiveMinutes();
+        // $schedule->call(function () {
+        //     DB::table('users')->update(['verify_otp' => null]);
+        // })->everyFiveMinutes();
 
     }
 
