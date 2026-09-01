@@ -54,29 +54,89 @@ class SubscriberController extends Controller
 
     public function sendEmail(Request $request)
     {
+        // SECURITY: Rate limiting - 5 bulk emails per hour per admin
+        $executed = \Illuminate\Support\Facades\RateLimiter::attempt(
+            'send-subscriber-email:' . auth()->guard('admin')->id(),
+            5, // Max 5 attempts
+            function() use ($request) {
+                return true;
+            },
+            3600 // Per hour
+        );
+
+        if (!$executed) {
+            return back()->with('error', 'Rate limit exceeded. You can only send bulk emails 5 times per hour. Please try again later.');
+        }
+
         $rules = [
-            'subject' => 'required',
+            'subject' => 'required|max:255',
             'description' => 'required',
+            'confirm' => 'required|accepted', // Require confirmation checkbox
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules, [
+            'confirm.accepted' => 'You must confirm that you want to send this email to all subscribers.'
+        ]);
+        
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
+
         $basic = basicControl();
         $email_from = $basic->sender_email;
         $requestMessage = $request->message;
         $subject = $request->subject;
         $email_body = $basic->email_description;
-        if (!Subscriber::first()) return back()->withInput()->with('error', 'No subscribers to send email.');
-        $subscribers = Subscriber::all();
-        foreach ($subscribers as $subscriber) {
-            $name = explode('@', $subscriber->email)[0];
-            $message = str_replace("[[name]]", $name, $email_body);
-            $message = str_replace("[[message]]", $requestMessage, $message);
-            @Mail::to($subscriber->email)->queue(new SendMail($email_from, $subject, $message));
+        
+        if (!Subscriber::first()) {
+            return back()->withInput()->with('error', 'No subscribers to send email.');
         }
-        return back()->with('success', 'Email has been sent to subscribers.');
+
+        $subscribers = Subscriber::all();
+        
+        // SECURITY: Limit maximum emails per batch
+        $maxEmailsPerBatch = 100;
+        if ($subscribers->count() > $maxEmailsPerBatch) {
+            return back()->with('error', "Too many subscribers ({$subscribers->count()}). Maximum {$maxEmailsPerBatch} emails per batch. Please segment your subscriber list.");
+        }
+
+        // SECURITY: Log this bulk email send
+        \Illuminate\Support\Facades\Log::warning('Bulk email sent to subscribers', [
+            'admin_id' => auth()->guard('admin')->id(),
+            'admin_email' => auth()->guard('admin')->user()->email ?? 'unknown',
+            'recipient_count' => $subscribers->count(),
+            'subject' => $subject,
+            'ip_address' => request()->ip(),
+            'timestamp' => now(),
+        ]);
+
+        $sentCount = 0;
+        $failedCount = 0;
+
+        foreach ($subscribers as $subscriber) {
+            try {
+                $name = explode('@', $subscriber->email)[0];
+                $message = str_replace("[[name]]", $name, $email_body);
+                $message = str_replace("[[message]]", $requestMessage, $message);
+                
+                // SECURITY: Removed @ error suppression to catch failures
+                Mail::to($subscriber->email)->queue(new SendMail($email_from, $subject, $message));
+                $sentCount++;
+            } catch (\Exception $e) {
+                $failedCount++;
+                \Illuminate\Support\Facades\Log::error('Failed to queue email to subscriber', [
+                    'subscriber_email' => $subscriber->email,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        $message = "Email queued for {$sentCount} subscribers.";
+        if ($failedCount > 0) {
+            $message .= " {$failedCount} failed (check logs).";
+        }
+
+        return back()->with('success', $message);
     }
 
 }

@@ -28,6 +28,18 @@
 #     Deny from all
 # </Files>
 
+# SECURITY: Deny access to .env file
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# SECURITY: Deny access to sensitive configuration files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

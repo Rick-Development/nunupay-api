@@ -46,21 +46,61 @@ Route::post('/webhook/payscribe', [PayscribeWebhookController::class, 'handle'])
 Route::get('payment/view/{deposit_id}', [ApiPayment::class, 'paymentView'])->name('paymentView');
 
 Route::get('/clear', function () {
-    // auth()->guard('admin')->loginUsingId(1);
+    // SECURITY: Require admin authentication
+    if (!auth()->guard('admin')->check()) {
+        abort(403, 'Unauthorized access');
+    }
+    
     $output = new \Symfony\Component\Console\Output\BufferedOutput();
     Artisan::call('optimize:clear', array(), $output);
+    
+    // SECURITY: Log cache clear action
+    \Illuminate\Support\Facades\Log::warning('Cache cleared', [
+        'admin_id' => auth()->guard('admin')->id(),
+        'admin_email' => auth()->guard('admin')->user()->email ?? 'unknown',
+        'ip_address' => request()->ip(),
+        'timestamp' => now(),
+    ]);
+    
     return $output->fetch();
-})->name('/clear');
+})->name('/clear')->middleware('auth:admin');
 
 Route::get('queue-work', function () {
+    // SECURITY: Require admin authentication
+    if (!auth()->guard('admin')->check()) {
+        abort(403, 'Unauthorized access');
+    }
+    
+    // SECURITY: Log queue processing action
+    \Illuminate\Support\Facades\Log::warning('Manual queue processing triggered', [
+        'admin_id' => auth()->guard('admin')->id(),
+        'admin_email' => auth()->guard('admin')->user()->email ?? 'unknown',
+        'ip_address' => request()->ip(),
+        'timestamp' => now(),
+    ]);
+    
     return Artisan::call('queue:work', ['--stop-when-empty' => true]);
-})->name('queue.work');
+})->name('queue.work')->middleware('auth:admin');
 
 
 
 Route::get('/key', function(){
-     artisan::call('key:generate');
-});
+    // SECURITY: Require admin authentication
+    if (!auth()->guard('admin')->check()) {
+        abort(403, 'Unauthorized access');
+    }
+    
+    // SECURITY: Log key generation action (CRITICAL - invalidates all sessions)
+    \Illuminate\Support\Facades\Log::critical('Application key regenerated - ALL SESSIONS INVALIDATED', [
+        'admin_id' => auth()->guard('admin')->id(),
+        'admin_email' => auth()->guard('admin')->user()->email ?? 'unknown',
+        'ip_address' => request()->ip(),
+        'timestamp' => now(),
+    ]);
+    
+    artisan::call('key:generate');
+    return 'Application key generated successfully. All user sessions have been invalidated.';
+})->middleware('auth:admin');
 
 Route::get('maintenance-mode', function () {
     if (!basicControl()->is_maintenance_mode) {

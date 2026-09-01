@@ -25,8 +25,6 @@ class DashboardController extends Controller
     public function index()
     {
         
-        error_reporting(E_ALL);
-ini_set('display_errors', '1');
         
         $data['firebaseNotify'] = config('firebase');
         $data['latestUser'] = User::latest()->limit(5)->get();
@@ -51,7 +49,8 @@ ini_set('display_errors', '1');
             DB::raw('COUNT(*) as total_order'),
             DB::raw('SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as total_approved')
         )
-            ->whereRaw("DATE_FORMAT(created_at, '%Y-%m') = '$currentMonth'")
+            // SECURITY FIX: Use parameter binding to prevent SQL injection
+            ->whereRaw("DATE_FORMAT(created_at, '%Y-%m') = ?", [$currentMonth])
             ->groupBy('day')
             ->orderBy('day', 'asc')
             ->get();

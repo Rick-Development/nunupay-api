@@ -60,6 +60,11 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                // SECURITY: Enable SSL for remote database connections
+                // Uncomment and configure if you have SSL certificates:
+                // PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
+                // PDO::MYSQL_ATTR_SSL_KEY => env('MYSQL_ATTR_SSL_KEY'),
+                // PDO::MYSQL_ATTR_SSL_CERT => env('MYSQL_ATTR_SSL_CERT'),
             ]) : [],
         ],
 
