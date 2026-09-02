@@ -3,117 +3,178 @@
 namespace App\Http\Helpers\Payscribe\Collections;
 
 use App\Http\Helpers\ConnectionHelper;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
-
-class NGNVirtualAccountsHelper extends ConnectionHelper{
-    
-
-    public function __construct(){
+class NGNVirtualAccountsHelper extends ConnectionHelper
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function createVirtualAccount($data){
-        $url = '/collections/virtual-accounts/create';
-        // $data = [
-        //     "account_type" => "static",
-        //     "currency" => "NGN",
-        //     "customer_id" => "5f819910-f9ed-41f8-a0ae-b6a934b41014",
-        //     "bank" => ["9psb"]
-        // ];
-        $response  = $this->post($url,$data);
-        return json_decode($response,true);
+    /**
+     * Create Virtual Account (Static or Dynamic)
+     */
+    public function createVirtualAccount($data)
+    {
+        try {
+            $url = '/collections/virtual-accounts/create';
+            $response = $this->post($url, $data);
+            return json_decode($response, true);
+        } catch (Exception $e) {
+            Log::error('Payscribe createVirtualAccount Error: ' . $e->getMessage(), [
+                'data'  => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'status'      => false,
+                'description' => 'Failed to create virtual account',
+                'status_code' => 500
+            ];
+        }
     }
 
+    /**
+     * Get Virtual Account Details
+     */
+    public function getVirtualAccountDetails($data)
+    {
+        try {
+            $url = "/collections/virtual-accounts/{$data}";
+            $response = $this->get($url);
+            return json_decode($response, true);
+        } catch (Exception $e) {
+            Log::error('Payscribe getVirtualAccountDetails Error: ' . $e->getMessage(), [
+                'account' => $data,
+                'trace'   => $e->getTraceAsString()
+            ]);
 
-    public function getVirtualAccountDetails($data){
-         $url = "/collections/virtual-accounts/$data";
-         $response = $this->get($url);
-        return json_decode($response,true);
-        
+            return [
+                'status'      => false,
+                'description' => 'Failed to fetch virtual account details',
+                'status_code' => 500
+            ];
+        }
     }
 
-    public function deactivateVirtualAccount($data){
-        $url = '/collections/virtual-accounts/deactivate';
-          
-        //  $data = [
-        //      "account" => "5031240100"
-        //  ];
-        $response = $this->post($url,$data);
-        return json_decode($response,true);
+    /**
+     * Deactivate Virtual Account
+     */
+    public function deactivateVirtualAccount($data)
+    {
+        try {
+            $url = '/collections/virtual-accounts/deactivate';
+            $response = $this->post($url, $data);
+            return json_decode($response, true);
+        } catch (Exception $e) {
+            Log::error('Payscribe deactivateVirtualAccount Error: ' . $e->getMessage(), [
+                'data'  => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'status'      => false,
+                'description' => 'Failed to deactivate virtual account',
+                'status_code' => 500
+            ];
+        }
     }
 
-    public function activateVirtualAccount($data){
-        $url =  '/collections/virtual-accounts/activate';
-          
-        //  $data = [
-        //     "account" => "5031240100"
-        // ];
-       $response = $this->post($url,$data);
-        return json_decode($response,true);
-        
+    /**
+     * Activate Virtual Account
+     */
+    public function activateVirtualAccount($data)
+    {
+        try {
+            $url = '/collections/virtual-accounts/activate';
+            $response = $this->post($url, $data);
+            return json_decode($response, true);
+        } catch (Exception $e) {
+            Log::error('Payscribe activateVirtualAccount Error: ' . $e->getMessage(), [
+                'data'  => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'status'      => false,
+                'description' => 'Failed to activate virtual account',
+                'status_code' => 500
+            ];
+        }
     }
 
-    public function createDynamicTemporaryVirtualAccount($data){
-        $url =  '/collections/virtual-accounts/create';
-        // $data = [
-        //     "account_type" => "dynamic",
-        //     "ref" => "62ed253e-f6ba-44cb-84bb-ab0790c7bf88",
-        //     "currency" => "NGN",
-        //     "order" => [
-        //         "amount" => 250,
-        //         "amount_type" => "EXACT",
-        //         "description" => "A new payment for Sokoya Philip Order with #9713e031-37ad-44c4-b914-903dc2e6ab87",
-        //         "expiry" => [
-        //             "duration" => 1,
-        //             "duration_type" => "hours"
-        //         ]
-        //     ],
-        //     "customer" => [
-        //         "name" => "Sokoya Philip",
-        //         "email" => "hello@payscribe.ng",
-        //         "phone" => "07038067493"
-        //     ]
-        // ];
-        $response = $this->post($url,$data);    
-        return json_decode($response,true);
+    /**
+     * Create Dynamic (Temporary) Virtual Account
+     */
+    public function createDynamicTemporaryVirtualAccount($data)
+    {
+        try {
+            $url = '/collections/virtual-accounts/create';
 
+            $data['account_type'] = 'dynamic';
+            $data['currency']     = $data['currency'] ?? 'NGN';
+
+            $response = $this->post($url, $data);
+            return json_decode($response, true);
+        } catch (Exception $e) {
+            Log::error('Payscribe createDynamicTemporaryVirtualAccount Error: ' . $e->getMessage(), [
+                'data'  => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'status'      => false,
+                'description' => 'Failed to create dynamic virtual account',
+                'status_code' => 500
+            ];
+        }
     }
 
+    /**
+     * Confirm / Verify Payment
+     */
+    public function verifyPayment($data)
+    {
+        try {
+            $url = '/collections/virtual-accounts/confirm-payment';
+            $response = $this->post($url, $data);
+            return json_decode($response, true);
+        } catch (Exception $e) {
+            Log::error('Payscribe verifyPayment Error: ' . $e->getMessage(), [
+                'data'  => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
 
-    public function verifyPayment($data){
-        $url = '/collections/virtual-accounts/confirm-payment';
-        $data = [
-            "trans_id" => "",
-            "session_id" => "100004240805170152117622486170",
-            "amount" => 100,
-            "account_number" => "5300000011"
-        ];
-
-        $this->post($url,$data);
-        
+            return [
+                'status'      => false,
+                'description' => 'Failed to verify payment',
+                'status_code' => 500
+            ];
+        }
     }
 
+    /**
+     * Simulate a Transaction (Sandbox only)
+     */
+    public function simulateATransaction($data)
+    {
+        try {
+            $url = '/collections/virtual-accounts/simulate-transfer';
+            $response = $this->post($url, $data);
+            return json_decode($response, true);
+        } catch (Exception $e) {
+            Log::error('Payscribe simulateATransaction Error: ' . $e->getMessage(), [
+                'data'  => $data,
+                'trace' => $e->getTraceAsString()
+            ]);
 
-    public function simulateATransaction($data){
-        $url = '//collections/virtual-accounts/simulate-transfer';
-        $data = [
-            "ref" => "300a7a03-af2a-4f72-aea7-78bb6fb9bff9",
-            "amount" => "500.00",
-            "description" => "A test transfer",
-            "currency" => "NGN",
-            "account" => "5031230079",
-            "name" => "Sokoya Philip",
-            "bank" => "120001",
-            "sender_account_number" => "1100000309",
-            "sender_name" => "Ms. Salvatore Stoltenberg",
-            "hash" => ""
-        ];
-
-        $this->post($url,$data);
-        
+            return [
+                'status'      => false,
+                'description' => 'Failed to simulate transaction',
+                'status_code' => 500
+            ];
+        }
     }
-
-
-
-
 }
