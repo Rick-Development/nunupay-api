@@ -39,7 +39,7 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
 
     private const UTF8_BOM = "\xEF\xBB\xBF";
 
-    private const FORMULAS_START_CHARACTERS = ['=', '-', '+', '@', "\t", "\r"];
+    private const FORMULAS_START_CHARACTERS = ['=', '-', '+', '@', "\t", "\r", "\n"];
 
     private array $defaultContext = [
         self::DELIMITER_KEY => ',',
@@ -159,10 +159,17 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
                 $nbHeaders = $nbCols;
 
                 if ($context[self::NO_HEADERS_KEY] ?? $this->defaultContext[self::NO_HEADERS_KEY]) {
+                    $userHeaders = $context[self::HEADERS_KEY] ?? $this->defaultContext[self::HEADERS_KEY];
                     for ($i = 0; $i < $nbCols; ++$i) {
-                        $headers[] = [$i];
+                        if (isset($userHeaders[$i])) {
+                            $header = explode($keySeparator, $userHeaders[$i]);
+                            $headers[] = $header;
+                            $headerCount[] = \count($header);
+                        } else {
+                            $headers[] = [$i];
+                            $headerCount[] = 1;
+                        }
                     }
-                    $headerCount = array_fill(0, $nbCols, 1);
                 } else {
                     foreach ($cols as $col) {
                         $header = explode($keySeparator, $col ?? '');

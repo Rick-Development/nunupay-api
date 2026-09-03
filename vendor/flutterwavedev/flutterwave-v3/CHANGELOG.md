@@ -1,3 +1,17 @@
+# CHANGELOG
+## 1.2.1 | 2026-08-04
+Improve logging within the application.
+
+Changes include:
+- [ADDED] Distributed tracing for tracking traces, spans and logs.
+
+
+## 1.2.0 | 2026-06-15
+SIGNOZ implementation for service reliability
+
+Changes include:
+- [ADDED] Signoz integration to monitor integration errors.
+
 ## 1.1.0 | 2025-04-10
 Performance enhancements, feature updates and bugfixes.
 

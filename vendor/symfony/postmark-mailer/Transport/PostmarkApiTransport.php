@@ -81,14 +81,17 @@ class PostmarkApiTransport extends AbstractApiTransport
         }
 
         if (200 !== $statusCode) {
+            $errorCode = $result['ErrorCode'] ?? 0;
+            $errorMessage = $result['Message'] ?? $result['message'] ?? 'HTTP '.$statusCode;
+
             // Some delivery issues can be handled silently - route those through EventDispatcher
-            if (null !== $this->dispatcher && self::CODE_INACTIVE_RECIPIENT === $result['ErrorCode']) {
-                $this->dispatcher->dispatch(new PostmarkDeliveryEvent($result['Message'], $result['ErrorCode'], $email->getHeaders()));
+            if (null !== $this->dispatcher && self::CODE_INACTIVE_RECIPIENT === $errorCode) {
+                $this->dispatcher->dispatch(new PostmarkDeliveryEvent($errorMessage, $errorCode, $email->getHeaders()));
 
                 return $response;
             }
 
-            throw new HttpTransportException('Unable to send an email: '.$result['Message'].\sprintf(' (code %d).', $result['ErrorCode']), $response);
+            throw new HttpTransportException('Unable to send an email: '.$errorMessage.\sprintf(' (code %d).', $errorCode), $response);
         }
 
         $sentMessage->setMessageId($result['MessageID']);
@@ -110,9 +113,8 @@ class PostmarkApiTransport extends AbstractApiTransport
             'Attachments' => $this->getAttachments($email),
         ];
 
-        $headersToBypass = ['from', 'to', 'cc', 'bcc', 'subject', 'content-type', 'sender', 'reply-to', 'date'];
         foreach ($email->getHeaders()->all() as $name => $header) {
-            if (\in_array($name, $headersToBypass, true)) {
+            if (\in_array($name, ['from', 'to', 'cc', 'bcc', 'subject', 'content-type', 'sender', 'reply-to', 'date'], true)) {
                 continue;
             }
 

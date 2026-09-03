@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Intervention\Gif\Blocks;
 
-use Intervention\Gif\Exceptions\FormatException;
+use Intervention\Gif\Exceptions\DecoderException;
+use Intervention\Gif\Exceptions\InvalidArgumentException;
+use Intervention\Gif\Exceptions\StateException;
 
 class NetscapeApplicationExtension extends ApplicationExtension
 {
@@ -13,33 +15,45 @@ class NetscapeApplicationExtension extends ApplicationExtension
     public const SUB_BLOCK_PREFIX = "\x01";
 
     /**
-     * Create new instance
-     *
-     * @throws FormatException
-     * @return void
+     * Create new instance.
      */
     public function __construct()
     {
-        $this->setApplication(self::IDENTIFIER . self::AUTH_CODE);
-        $this->setBlocks([new DataSubBlock(self::SUB_BLOCK_PREFIX . "\x00\x00")]);
+        try {
+            $this->setApplication(self::IDENTIFIER . self::AUTH_CODE);
+            $this->setBlocks([new DataSubBlock(self::SUB_BLOCK_PREFIX . "\x00\x00")]);
+        } catch (InvalidArgumentException) {
+            // ignore exception because of hard coded input
+        }
     }
 
     /**
-     * Get number of loops
+     * Get number of loops.
      *
-     * @return int
+     * @throws DecoderException
      */
-    public function getLoops(): int
+    public function loops(): int
     {
-        return unpack('v*', substr($this->getBlocks()[0]->getValue(), 1))[1];
+        try {
+            $unpacked = unpack('v*', substr($this->firstBlock()->value(), 1));
+        } catch (StateException $e) {
+            throw new DecoderException(
+                'Failed to decode loop count of netscape extension',
+                previous: $e
+            );
+        }
+
+        if ($unpacked === false || !array_key_exists(1, $unpacked)) {
+            throw new DecoderException('Failed to calculate loop count');
+        }
+
+        return $unpacked[1];
     }
 
     /**
-     * Set number of loops
+     * Set number of loops.
      *
-     * @param int $loops
-     * @throws FormatException
-     * @return self
+     * @throws InvalidArgumentException
      */
     public function setLoops(int $loops): self
     {

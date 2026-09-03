@@ -7,18 +7,15 @@ namespace Intervention\Gif\Encoders;
 abstract class AbstractEncoder
 {
     /**
-     * Create new instance
-     *
-     * @param mixed $source
-     */
-    public function __construct(protected mixed $source)
-    {
-    }
-
-    /**
-     * Encode current source
-     *
-     * @return string
+     * Encode current entity.
      */
     abstract public function encode(): string;
+
+    /**
+     * Create new instance.
+     */
+    public function __construct(protected mixed $entity)
+    {
+        //
+    }
 }

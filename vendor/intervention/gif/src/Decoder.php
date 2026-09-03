@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Intervention\Gif;
 
 use Intervention\Gif\Exceptions\DecoderException;
+use Intervention\Gif\Exceptions\StreamException;
+use Intervention\Gif\Exceptions\InvalidArgumentException;
 use Intervention\Gif\Traits\CanHandleFiles;
 
 class Decoder
@@ -12,35 +14,36 @@ class Decoder
     use CanHandleFiles;
 
     /**
-     * Decode given input
+     * Decode given input.
      *
-     * @param string|resource $input
+     * @throws InvalidArgumentException
+     * @throws StreamException
      * @throws DecoderException
-     * @return GifDataStream
      */
     public static function decode(mixed $input): GifDataStream
     {
-        $handle = match (true) {
-            self::isFilePath($input) => self::getHandleFromFilePath($input),
-            is_string($input) => self::getHandleFromData($input),
-            self::isFileHandle($input) => $input,
-            default => throw new DecoderException(
-                'Decoder input must be either file path, file pointer resource or binary data.'
+        $stream = match (true) {
+            self::isFilePath($input) => self::streamFromFilePath($input),
+            is_string($input) => self::streamFromData($input),
+            self::isStream($input) => $input,
+            default => throw new InvalidArgumentException(
+                'Decoder input must be either file path, stream resource or binary data'
             )
         };
 
-        rewind($handle);
+        $result = rewind($stream);
 
-        return GifDataStream::decode($handle);
+        if ($result === false) {
+            throw new StreamException('Failed to rewind stream');
+        }
+
+        return GifDataStream::decode($stream);
     }
 
     /**
-     * Determine if input is file pointer resource
-     *
-     * @param mixed $input
-     * @return bool
+     * Determine if input is stream resource.
      */
-    private static function isFileHandle(mixed $input): bool
+    private static function isStream(mixed $input): bool
     {
         return is_resource($input) && get_resource_type($input) === 'stream';
     }

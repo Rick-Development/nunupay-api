@@ -15,14 +15,10 @@ use Intervention\Gif\Blocks\Trailer;
 class GifDataStream extends AbstractEntity
 {
     /**
-     * Create new instance
+     * Create new instance.
      *
-     * @param Header $header
-     * @param LogicalScreenDescriptor $logicalScreenDescriptor
-     * @param null|ColorTable $globalColorTable
      * @param array<FrameBlock> $frames
      * @param array<CommentExtension> $comments
-     * @return void
      */
     public function __construct(
         protected Header $header = new Header(),
@@ -31,22 +27,19 @@ class GifDataStream extends AbstractEntity
         protected array $frames = [],
         protected array $comments = []
     ) {
+        //
     }
 
     /**
-     * Get header
-     *
-     * @return Header
+     * Get header.
      */
-    public function getHeader(): Header
+    public function header(): Header
     {
         return $this->header;
     }
 
     /**
-     * Set header
-     *
-     * @param Header $header
+     * Set header.
      */
     public function setHeader(Header $header): self
     {
@@ -56,20 +49,15 @@ class GifDataStream extends AbstractEntity
     }
 
     /**
-     * Get logical screen descriptor
-     *
-     * @return LogicalScreenDescriptor
+     * Get logical screen descriptor.
      */
-    public function getLogicalScreenDescriptor(): LogicalScreenDescriptor
+    public function logicalScreenDescriptor(): LogicalScreenDescriptor
     {
         return $this->logicalScreenDescriptor;
     }
 
     /**
-     * Set logical screen descriptor
-     *
-     * @param LogicalScreenDescriptor $descriptor
-     * @return GifDataStream
+     * Set logical screen descriptor.
      */
     public function setLogicalScreenDescriptor(LogicalScreenDescriptor $descriptor): self
     {
@@ -79,41 +67,35 @@ class GifDataStream extends AbstractEntity
     }
 
     /**
-     * Return global color table if available else null
-     *
-     * @return null|ColorTable
+     * Return global color table if available else null.
      */
-    public function getGlobalColorTable(): ?ColorTable
+    public function globalColorTable(): ?ColorTable
     {
         return $this->globalColorTable;
     }
 
     /**
-     * Set global color table
-     *
-     * @param ColorTable $table
-     * @return GifDataStream
+     * Set global color table.
      */
     public function setGlobalColorTable(ColorTable $table): self
     {
         $this->globalColorTable = $table;
         $this->logicalScreenDescriptor->setGlobalColorTableExistance(true);
         $this->logicalScreenDescriptor->setGlobalColorTableSize(
-            $table->getLogicalSize()
+            $table->logicalSize()
         );
 
         return $this;
     }
 
     /**
-     * Get main graphic control extension
-     *
-     * @return NetscapeApplicationExtension
+     * Get main graphic control extension.
      */
-    public function getMainApplicationExtension(): ?NetscapeApplicationExtension
+    public function mainApplicationExtension(): ?NetscapeApplicationExtension
     {
         foreach ($this->frames as $frame) {
-            if ($extension = $frame->getNetscapeExtension()) {
+            $extension = $frame->netscapeExtension();
+            if ($extension !== null) {
                 return $extension;
             }
         }
@@ -122,32 +104,34 @@ class GifDataStream extends AbstractEntity
     }
 
     /**
-     * Get array of frames
+     * Get array of frames.
      *
      * @return array<FrameBlock>
      */
-    public function getFrames(): array
+    public function frames(): array
     {
         return $this->frames;
     }
 
     /**
-     * Return array of "global" comments
+     * Return array of "global" comments.
      *
      * @return array<CommentExtension>
      */
-    public function getComments(): array
+    public function comments(): array
     {
         return $this->comments;
     }
 
     /**
-     * Return first frame
-     *
-     * @return null|FrameBlock
+     * Return first frame.
      */
-    public function getFirstFrame(): ?FrameBlock
+    public function firstFrame(): ?FrameBlock
     {
+        if ($this->frames === []) {
+            return null;
+        }
+
         if (!array_key_exists(0, $this->frames)) {
             return null;
         }
@@ -156,10 +140,7 @@ class GifDataStream extends AbstractEntity
     }
 
     /**
-     * Add frame
-     *
-     * @param FrameBlock $frame
-     * @return GifDataStream
+     * Add frame.
      */
     public function addFrame(FrameBlock $frame): self
     {
@@ -169,10 +150,7 @@ class GifDataStream extends AbstractEntity
     }
 
     /**
-     * Add comment extension
-     *
-     * @param CommentExtension $comment
-     * @return GifDataStream
+     * Add comment extension.
      */
     public function addComment(CommentExtension $comment): self
     {
@@ -182,7 +160,7 @@ class GifDataStream extends AbstractEntity
     }
 
     /**
-     * Set the current data
+     * Set the current data.
      *
      * @param array<FrameBlock> $frames
      */
@@ -194,29 +172,23 @@ class GifDataStream extends AbstractEntity
     }
 
     /**
-     * Get trailer
-     *
-     * @return Trailer
+     * Get trailer.
      */
-    public function getTrailer(): Trailer
+    public function trailer(): Trailer
     {
         return new Trailer();
     }
 
     /**
-     * Determine if gif is animated
-     *
-     * @return bool
+     * Determine if gif is animated.
      */
     public function isAnimated(): bool
     {
-        return count($this->getFrames()) > 1;
+        return count($this->frames()) > 1;
     }
 
     /**
-     * Determine if global color table is set
-     *
-     * @return bool
+     * Determine if global color table is set.
      */
     public function hasGlobalColorTable(): bool
     {

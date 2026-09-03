@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Yajra\DataTables\Contracts\DataTable;
 use Yajra\DataTables\Contracts\Formatter;
@@ -146,7 +147,7 @@ abstract class DataTableAbstract implements DataTable
 
     /**
      * @param  string|array  $columns
-     * @param  string|callable|\Yajra\DataTables\Contracts\Formatter  $formatter
+     * @param  string|callable|Formatter  $formatter
      * @return $this
      */
     public function formatColumn($columns, $formatter): static
@@ -433,7 +434,9 @@ abstract class DataTableAbstract implements DataTable
         if (is_array($key)) {
             $this->appends = $key;
         } else {
-            $this->appends[$key] = value($value);
+            /** @var int|string $arrayKey */
+            $arrayKey = is_int($key) || is_string($key) ? $key : (string) $key;
+            $this->appends[$arrayKey] = value($value);
         }
 
         return $this;
@@ -662,7 +665,7 @@ abstract class DataTableAbstract implements DataTable
      * Convert the object to its JSON representation.
      *
      * @param  int  $options
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function toJson($options = 0)
     {
@@ -890,7 +893,7 @@ abstract class DataTableAbstract implements DataTable
     /**
      * Return an error json response.
      *
-     * @throws \Yajra\DataTables\Exceptions\Exception|\Exception
+     * @throws Exceptions\Exception|\Exception
      */
     protected function errorResponse(\Exception $exception): JsonResponse
     {
@@ -916,7 +919,7 @@ abstract class DataTableAbstract implements DataTable
     /**
      * Get monolog/logger instance.
      *
-     * @return \Psr\Log\LoggerInterface
+     * @return LoggerInterface
      */
     public function getLogger()
     {
@@ -964,6 +967,14 @@ abstract class DataTableAbstract implements DataTable
 
         if (is_null($column)) {
             return null;
+        }
+
+        // Validate column name using an allowlist to prevent SQL injection.
+        // Only allow characters valid in unquoted SQL identifiers: alphanumeric, underscore, dot, dash, and space.
+        // Also allows `>` for JSON path operators (e.g. column->path) which are handled by the query grammar.
+        // This is a defense-in-depth measure to prevent SQL injection via columns[N][data] or columns[N][name].
+        if (! preg_match('/^[a-zA-Z0-9_.\-> ]+$/', $column)) {
+            throw new InvalidArgumentException("Invalid column name: \"$column\".");
         }
 
         // DataTables is using make(false)

@@ -6,32 +6,36 @@ namespace Intervention\Gif\Decoders;
 
 use Intervention\Gif\Blocks\ImageDescriptor;
 use Intervention\Gif\Exceptions\DecoderException;
+use Intervention\Gif\Exceptions\InvalidArgumentException;
 
 class ImageDescriptorDecoder extends AbstractPackedBitDecoder
 {
     /**
-     * Decode given string to current instance
+     * Decode given string to current instance.
      *
      * @throws DecoderException
-     * @return ImageDescriptor
      */
     public function decode(): ImageDescriptor
     {
         $descriptor = new ImageDescriptor();
 
-        $this->getNextByteOrFail(); // skip separator
+        $this->nextByteOrFail(); // skip separator
 
         $descriptor->setPosition(
-            $this->decodeMultiByte($this->getNextBytesOrFail(2)),
-            $this->decodeMultiByte($this->getNextBytesOrFail(2))
+            $this->decodeMultiByte($this->nextBytesOrFail(2)),
+            $this->decodeMultiByte($this->nextBytesOrFail(2))
         );
 
-        $descriptor->setSize(
-            $this->decodeMultiByte($this->getNextBytesOrFail(2)),
-            $this->decodeMultiByte($this->getNextBytesOrFail(2))
-        );
+        try {
+            $descriptor->setSize(
+                $this->decodeMultiByte($this->nextBytesOrFail(2)),
+                $this->decodeMultiByte($this->nextBytesOrFail(2))
+            );
+        } catch (InvalidArgumentException $e) {
+            throw new DecoderException('Failed to decode image size of image descriptor', previous: $e);
+        }
 
-        $packedField = $this->getNextByteOrFail();
+        $packedField = $this->nextByteOrFail();
 
         $descriptor->setLocalColorTableExistance(
             $this->decodeLocalColorTableExistance($packedField)
@@ -53,41 +57,41 @@ class ImageDescriptorDecoder extends AbstractPackedBitDecoder
     }
 
     /**
-     * Decode local color table existance
+     * Decode local color table existance.
      *
-     * @return bool
+     * @throws DecoderException
      */
-    protected function decodeLocalColorTableExistance(string $byte): bool
+    private function decodeLocalColorTableExistance(string $byte): bool
     {
         return $this->hasPackedBit($byte, 0);
     }
 
     /**
-     * Decode local color table sort method
+     * Decode local color table sort method.
      *
-     * @return bool
+     * @throws DecoderException
      */
-    protected function decodeLocalColorTableSorted(string $byte): bool
+    private function decodeLocalColorTableSorted(string $byte): bool
     {
         return $this->hasPackedBit($byte, 2);
     }
 
     /**
-     * Decode local color table size
+     * Decode local color table size.
      *
-     * @return int
+     * @throws DecoderException
      */
-    protected function decodeLocalColorTableSize(string $byte): int
+    private function decodeLocalColorTableSize(string $byte): int
     {
-        return bindec($this->getPackedBits($byte, 5, 3));
+        return (int) bindec($this->packedBits($byte, 5, 3));
     }
 
     /**
-     * Decode interlaced flag
+     * Decode interlaced flag.
      *
-     * @return bool
+     * @throws DecoderException
      */
-    protected function decodeInterlaced(string $byte): bool
+    private function decodeInterlaced(string $byte): bool
     {
         return $this->hasPackedBit($byte, 1);
     }

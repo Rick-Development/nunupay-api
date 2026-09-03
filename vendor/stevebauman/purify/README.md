@@ -184,9 +184,18 @@ use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
 
 class Post extends Model
 {
+    // Laravel <= 10.x
     protected $casts = [
         'content' => PurifyHtmlOnGet::class,
     ];
+
+    // Laravel >= 11.x
+    protected function casts()
+    {
+        return [
+            'content' => PurifyHtmlOnGet::class,
+        ];
+    }
 }
 ```
 
@@ -219,9 +228,18 @@ You can even configure the configuration that is used when casting by appending 
 ```
 
 ```php
+// Laravel <= 10.x
 protected $casts = [
     'content' => PurifyHtmlOnGet::class.':other',
 ];
+
+// Laravel >= 11.x
+protected function casts()
+{
+    return [
+        'content' => PurifyHtmlOnGet::class.':other',
+    ];
+}
 ```
 
 This helps tremendously if you change your sanization requirements later down
@@ -446,7 +464,7 @@ You're all set!
 
 ### Upgrading from v5 to v6
 
-In v6, the HTMLPurifier Serializer storage mechanism was updated for Laravel Vapour support, allowing 
+In v6, the HTMLPurifier Serializer storage mechanism was updated for Laravel Vapor support, allowing 
 you to store the serialized HTMLPurifier definitions in a Redis cache, or an external filesystem.
 
 To upgrade from v5, install the latest version by running the below command in the root of your project:

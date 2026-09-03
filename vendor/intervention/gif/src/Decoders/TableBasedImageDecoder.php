@@ -13,28 +13,27 @@ use Intervention\Gif\Exceptions\DecoderException;
 class TableBasedImageDecoder extends AbstractDecoder
 {
     /**
-     * Decode TableBasedImage
+     * Decode TableBasedImage.
      *
      * @throws DecoderException
-     * @return TableBasedImage
      */
     public function decode(): TableBasedImage
     {
         $block = new TableBasedImage();
 
-        $block->setImageDescriptor(ImageDescriptor::decode($this->handle));
+        $block->setImageDescriptor(ImageDescriptor::decode($this->stream));
 
-        if ($block->getImageDescriptor()->hasLocalColorTable()) {
+        if ($block->imageDescriptor()->hasLocalColorTable()) {
             $block->setColorTable(
                 ColorTable::decode(
-                    $this->handle,
-                    $block->getImageDescriptor()->getLocalColorTableByteSize()
+                    $this->stream,
+                    $block->imageDescriptor()->localColorTableByteSize()
                 )
             );
         }
 
         $block->setImageData(
-            ImageData::decode($this->handle)
+            ImageData::decode($this->stream)
         );
 
         return $block;

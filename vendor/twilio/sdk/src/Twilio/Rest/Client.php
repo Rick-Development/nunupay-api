@@ -20,7 +20,6 @@ use Twilio\Base\BaseClient as BaseClient;
  *
  * @property Accounts $accounts
  * @property Api $api
- * @property Assistants $assistants
  * @property Bulkexports $bulkexports
  * @property Chat $chat
  * @property Content $content
@@ -36,6 +35,7 @@ use Twilio\Base\BaseClient as BaseClient;
  * @property Knowledge $knowledge
  * @property Lookups $lookups
  * @property Marketplace $marketplace
+ * @property Memory $memory
  * @property Messaging $messaging
  * @property Monitor $monitor
  * @property Notify $notify
@@ -102,7 +102,6 @@ use Twilio\Base\BaseClient as BaseClient;
 class Client extends BaseClient {
     protected $_accounts;
     protected $_api;
-    protected $_assistants;
     protected $_bulkexports;
     protected $_chat;
     protected $_content;
@@ -118,6 +117,7 @@ class Client extends BaseClient {
     protected $_knowledge;
     protected $_lookups;
     protected $_marketplace;
+    protected $_memory;
     protected $_messaging;
     protected $_monitor;
     protected $_notify;
@@ -160,17 +160,6 @@ class Client extends BaseClient {
             $this->_api = new Api($this);
         }
         return $this->_api;
-    }
-    /**
-     * Access the Assistants Twilio Domain
-     *
-     * @return Assistants Assistants Twilio Domain
-     */
-    protected function getAssistants(): Assistants {
-        if (!$this->_assistants) {
-            $this->_assistants = new Assistants($this);
-        }
-        return $this->_assistants;
     }
     /**
      * Access the Bulkexports Twilio Domain
@@ -336,6 +325,17 @@ class Client extends BaseClient {
             $this->_marketplace = new Marketplace($this);
         }
         return $this->_marketplace;
+    }
+    /**
+     * Access the Memory Twilio Domain
+     *
+     * @return Memory Memory Twilio Domain
+     */
+    protected function getMemory(): Memory {
+        if (!$this->_memory) {
+            $this->_memory = new Memory($this);
+        }
+        return $this->_memory;
     }
     /**
      * Access the Messaging Twilio Domain

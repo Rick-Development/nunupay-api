@@ -124,7 +124,6 @@ class UrlGenerator implements UrlGeneratorContract
      * @param  \Illuminate\Routing\RouteCollectionInterface  $routes
      * @param  \Illuminate\Http\Request  $request
      * @param  string|null  $assetRoot
-     * @return void
      */
     public function __construct(RouteCollectionInterface $routes, Request $request, $assetRoot = null)
     {
@@ -384,6 +383,8 @@ class UrlGenerator implements UrlGeneratorContract
      *
      * @param  mixed  $parameters
      * @return void
+     *
+     * @throws \InvalidArgumentException
      */
     protected function ensureSignedRouteParametersAreNotReserved($parameters)
     {
@@ -450,7 +451,9 @@ class UrlGenerator implements UrlGeneratorContract
      */
     public function hasCorrectSignature(Request $request, $absolute = true, Closure|array $ignoreQuery = [])
     {
-        $url = $absolute ? $request->url() : '/'.$request->path();
+        $url = $absolute
+            ? rtrim($request->getSchemeAndHttpHost().$request->getBaseUrl().$request->getPathInfo(), '/')
+            : '/'.$request->path();
 
         $queryString = (new Collection(explode('&', (string) $request->server->get('QUERY_STRING'))))
             ->reject(function ($parameter) use ($ignoreQuery) {
@@ -474,10 +477,16 @@ class UrlGenerator implements UrlGeneratorContract
 
         $keys = is_array($keys) ? $keys : [$keys];
 
+        $signature = $request->query('signature');
+
+        if (! is_string($signature)) {
+            return false;
+        }
+
         foreach ($keys as $key) {
             if (hash_equals(
                 hash_hmac('sha256', $original, $key),
-                (string) $request->query('signature', '')
+                $signature
             )) {
                 return true;
             }
@@ -539,20 +548,8 @@ class UrlGenerator implements UrlGeneratorContract
      */
     public function toRoute($route, $parameters, $absolute)
     {
-        $parameters = Collection::wrap($parameters)->map(function ($value, $key) use ($route) {
-            return $value instanceof UrlRoutable && $route->bindingFieldFor($key)
-                    ? $value->{$route->bindingFieldFor($key)}
-                    : $value;
-        })->all();
-
-        array_walk_recursive($parameters, function (&$item) {
-            if ($item instanceof BackedEnum) {
-                $item = $item->value;
-            }
-        });
-
         return $this->routeUrl()->to(
-            $route, $this->formatParameters($parameters), $absolute
+            $route, $parameters, $absolute
         );
     }
 
@@ -850,7 +847,7 @@ class UrlGenerator implements UrlGeneratorContract
         $this->cachedRoot = null;
         $this->cachedScheme = null;
 
-        tap(optional($this->routeGenerator)->defaultParameters ?: [], function ($defaults) {
+        tap($this->routeGenerator?->defaultParameters ?: [], function ($defaults) {
             $this->routeGenerator = null;
 
             if (! empty($defaults)) {

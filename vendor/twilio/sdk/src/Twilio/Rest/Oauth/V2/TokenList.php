@@ -21,6 +21,8 @@ use Twilio\ListResource;
 use Twilio\Options;
 use Twilio\Values;
 use Twilio\Version;
+use Twilio\Http\Response;
+use Twilio\Metadata\ResourceMetadata;
 
 
 class TokenList extends ListResource
@@ -38,21 +40,25 @@ class TokenList extends ListResource
         // Path Solution
         $this->solution = [
         ];
-
         $this->uri = '/token';
     }
 
     /**
-     * Create the TokenInstance
+     * Helper function for Create
      *
      * @param array|Options $options Optional Arguments
-     * @return TokenInstance Created TokenInstance
+     * @return Response Created Response
      * @throws TwilioException When an HTTP error occurs.
      */
-    public function create(array $options = []): TokenInstance
+    private function _create(array $options = []): Response
     {
-
+        
         $options = new Values($options);
+
+        $params = Values::of([
+            'account_sid' =>
+                $options['accountSid'],
+        ]);
 
         $data = Values::of([
             'grant_type' =>
@@ -71,14 +77,50 @@ class TokenList extends ListResource
                 $options['refreshToken'],
             'scope' =>
                 $options['scope'],
+            'code_verifier' =>
+                $options['codeVerifier'],
         ]);
 
         $headers = Values::of(['Content-Type' => 'application/x-www-form-urlencoded', 'Accept' => 'application/json' ]);
-        $payload = $this->version->create('POST', $this->uri, [], $data, $headers);
+        return $this->version->handleRequest('POST', $this->uri, $params, $data, $headers, "create");
+    }
 
+    /**
+     * Create the TokenInstance
+     *
+     * @param array|Options $options Optional Arguments
+     * @return TokenInstance Created TokenInstance
+     * @throws TwilioException When an HTTP error occurs.
+     */
+    public function create(array $options = []): TokenInstance
+    {
+        $response = $this->_create($options);
         return new TokenInstance(
             $this->version,
-            $payload
+            $response->getContent()
+        );
+        
+    }
+
+    /**
+     * Create the TokenInstance with Metadata
+     *
+     * @param array|Options $options Optional Arguments
+     * @return ResourceMetadata The Created Resource with Metadata
+     * @throws TwilioException When an HTTP error occurs.
+     */
+    public function createWithMetadata(array $options = []): ResourceMetadata
+    {
+        $response = $this->_create($options);
+        $resource = new TokenInstance(
+                        $this->version,
+                        $response->getContent()
+                    );
+        
+        return new ResourceMetadata(
+            $resource,
+            $response->getStatusCode(),
+            $response->getHeaders()
         );
     }
 

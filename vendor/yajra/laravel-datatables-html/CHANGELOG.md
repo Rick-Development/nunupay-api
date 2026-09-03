@@ -1,3 +1,10 @@
+# [12.7.0](https://github.com/yajra/laravel-datatables-html/compare/v12.6.0...v12.7.0) (2026-01-23)
+
+
+### Features
+
+* livewire 4 ([3247123](https://github.com/yajra/laravel-datatables-html/commit/3247123fd7ed58e9a2e48e66d72b3ae7b107eb78))
+
 # [12.5.0](https://github.com/yajra/laravel-datatables-html/compare/v12.4.0...v12.5.0) (2025-10-07)
 
 

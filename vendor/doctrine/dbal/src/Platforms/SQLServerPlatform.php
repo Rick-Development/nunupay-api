@@ -10,6 +10,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\Keywords\KeywordList;
 use Doctrine\DBAL\Platforms\Keywords\SQLServerKeywords;
 use Doctrine\DBAL\Platforms\SQLServer\SQL\Builder\SQLServerSelectSQLBuilder;
+use Doctrine\DBAL\Platforms\SQLServer\SQLServerMetadataProvider;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ColumnDiff;
 use Doctrine\DBAL\Schema\Identifier;
@@ -207,11 +208,9 @@ class SQLServerPlatform extends AbstractPlatform
                     ' ADD' . $this->getDefaultConstraintDeclarationSQL($column);
             }
 
-            if (empty($column['comment']) && ! is_numeric($column['comment'])) {
-                continue;
+            if (! empty($column['comment']) || is_numeric($column['comment'])) {
+                $commentsSql[] = $this->getCreateColumnCommentSQL($name, $column['name'], $column['comment']);
             }
-
-            $commentsSql[] = $this->getCreateColumnCommentSQL($name, $column['name'], $column['comment']);
         }
 
         $columnListSql = $this->getColumnDeclarationListSQL($columns);
@@ -1079,11 +1078,9 @@ class SQLServerPlatform extends AbstractPlatform
     {
         if (is_array($item)) {
             foreach ($item as $key => $value) {
-                if (! is_bool($value) && ! is_numeric($value)) {
-                    continue;
+                if (is_bool($value) || is_numeric($value)) {
+                    $item[$key] = (int) (bool) $value;
                 }
-
-                $item[$key] = (int) (bool) $value;
             }
         } elseif (is_bool($item) || is_numeric($item)) {
             $item = (int) (bool) $item;
@@ -1330,6 +1327,11 @@ class SQLServerPlatform extends AbstractPlatform
         }
 
         return true;
+    }
+
+    public function createMetadataProvider(Connection $connection): SQLServerMetadataProvider
+    {
+        return new SQLServerMetadataProvider($connection, $this);
     }
 
     public function createSchemaManager(Connection $connection): SQLServerSchemaManager

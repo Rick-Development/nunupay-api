@@ -53,6 +53,10 @@ abstract class Composite extends Constraint
     #[HasNamedArguments]
     public function __construct(mixed $options = null, ?array $groups = null, mixed $payload = null)
     {
+        if (null !== $options) {
+            trigger_deprecation('symfony/validator', '7.4', 'Passing an array of options to configure the "%s" constraint is deprecated, use named arguments instead.', static::class);
+        }
+
         parent::__construct($options, $groups, $payload);
 
         $this->initializeNestedConstraints();
@@ -99,7 +103,7 @@ abstract class Composite extends Constraint
                 if (isset(((array) $constraint)['groups'])) {
                     $excessGroups = array_diff($constraint->groups, $this->groups);
 
-                    if (\count($excessGroups) > 0) {
+                    if ($excessGroups) {
                         throw new ConstraintDefinitionException(\sprintf('The group(s) "%s" passed to the constraint "%s" should also be passed to its containing constraint "%s".', implode('", "', $excessGroups), get_debug_type($constraint), get_debug_type($this)));
                     }
                 } else {

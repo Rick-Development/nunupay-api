@@ -10,40 +10,34 @@ use Intervention\Gif\Exceptions\EncoderException;
 trait CanEncode
 {
     /**
-     * Encode current entity
+     * Encode current entity.
      *
      * @throws EncoderException
-     * @return string
      */
     public function encode(): string
     {
-        return $this->getEncoder()->encode();
+        return $this->encoder()->encode();
     }
 
     /**
-     * Get encoder object for current entity
+     * Get encoder object for current entity.
      *
      * @throws EncoderException
-     * @return AbstractEncoder
      */
-    protected function getEncoder(): AbstractEncoder
+    protected function encoder(): AbstractEncoder
     {
-        $classname = $this->getEncoderClassname();
+        $classname = sprintf('Intervention\Gif\Encoders\%sEncoder', self::shortClassname());
 
         if (!class_exists($classname)) {
-            throw new EncoderException("Encoder for '" . $this::class . "' not found.");
+            throw new EncoderException('Encoder for "' . $this::class . '" not found');
         }
 
-        return new $classname($this);
-    }
+        $encoder = new $classname($this);
 
-    /**
-     * Get encoder classname for current entity
-     *
-     * @return string
-     */
-    protected function getEncoderClassname(): string
-    {
-        return sprintf('Intervention\Gif\Encoders\%sEncoder', $this->getShortClassname());
+        if (!($encoder instanceof AbstractEncoder)) {
+            throw new EncoderException('Encoder for "' . $this::class . '" not found');
+        }
+
+        return $encoder;
     }
 }

@@ -93,6 +93,10 @@ class MandrillApiTransport extends AbstractApiTransport
             ],
         ];
 
+        if ($email->getHeaders()->get('X-MC-Subaccount')) {
+            $payload['message']['subaccount'] = $email->getHeaders()->get('X-MC-Subaccount')->getBodyAsString();
+        }
+
         if ('' !== $envelope->getSender()->getName()) {
             $payload['message']['from_name'] = $envelope->getSender()->getName();
         }
@@ -111,15 +115,17 @@ class MandrillApiTransport extends AbstractApiTransport
             }
 
             if ('inline' === $disposition) {
+                if ($attachment->hasContentId()) {
+                    $att['name'] = $attachment->getContentId();
+                }
                 $payload['message']['images'][] = $att;
             } else {
                 $payload['message']['attachments'][] = $att;
             }
         }
 
-        $headersToBypass = ['from', 'to', 'cc', 'bcc', 'subject', 'content-type'];
         foreach ($email->getHeaders()->all() as $name => $header) {
-            if (\in_array($name, $headersToBypass, true)) {
+            if (\in_array($name, ['from', 'to', 'cc', 'bcc', 'subject', 'content-type', 'x-mc-subaccount'], true)) {
                 continue;
             }
 

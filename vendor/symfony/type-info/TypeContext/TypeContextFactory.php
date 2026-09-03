@@ -33,6 +33,7 @@ use Symfony\Component\TypeInfo\TypeResolver\StringTypeResolver;
  *
  * @author Mathias Arlaud <mathias.arlaud@gmail.com>
  * @author Baptiste Leduc <baptiste.leduc@gmail.com>
+ * @author Pierre-Yves Landuré <landure@gmail.com>
  */
 final class TypeContextFactory
 {
@@ -41,11 +42,30 @@ final class TypeContextFactory
      */
     private static array $reflectionClassCache = [];
 
+    /**
+     * @var array<string, array<string, TypeContext>>
+     */
+    private array $baseTypeContextCache = [];
+
+    /**
+     * @var array<string, array<string, TypeContext>>
+     */
+    private array $typeContextCache = [];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
+    private array $usesCache = [];
+
     private ?Lexer $phpstanLexer = null;
     private ?PhpDocParser $phpstanParser = null;
 
+    /**
+     * @param array<string, string> $extraTypeAliases
+     */
     public function __construct(
         private readonly ?StringTypeResolver $stringTypeResolver = null,
+        private readonly array $extraTypeAliases = [],
     ) {
     }
 
@@ -53,25 +73,57 @@ final class TypeContextFactory
     {
         $declaringClassName ??= $calledClassName;
 
-        $calledClassPath = explode('\\', $calledClassName);
-        $declaringClassPath = explode('\\', $declaringClassName);
+        return $this->typeContextCache[$declaringClassName][$calledClassName] ??= $this->createNewInstanceFromClassName($calledClassName, $declaringClassName);
+    }
 
+    public function createFromReflection(\Reflector $reflection): ?TypeContext
+    {
+        $classReflection = match (true) {
+            $reflection instanceof \ReflectionClass => $reflection,
+            $reflection instanceof \ReflectionMethod => $reflection->getDeclaringClass(),
+            $reflection instanceof \ReflectionProperty => $reflection->getDeclaringClass(),
+            $reflection instanceof \ReflectionParameter => $reflection->getDeclaringClass(),
+            $reflection instanceof \ReflectionFunctionAbstract => $reflection->getClosureScopeClass(),
+            default => null,
+        };
+
+        if (null === $classReflection) {
+            return null;
+        }
+
+        $typeContext = $this->createBaseTypeContext($classReflection->getName(), $classReflection);
+
+        $templates = match (true) {
+            $reflection instanceof \ReflectionFunctionAbstract => $this->collectTemplates($reflection, $typeContext) + $this->collectTemplates($classReflection, $typeContext),
+            $reflection instanceof \ReflectionParameter => $this->collectTemplates($reflection->getDeclaringFunction(), $typeContext) + $this->collectTemplates($classReflection, $typeContext),
+            default => $this->collectTemplates($classReflection, $typeContext),
+        };
+
+        $typeContext = new TypeContext(
+            $typeContext->calledClassName,
+            $typeContext->declaringClassName,
+            $typeContext->namespace,
+            $typeContext->uses,
+            $templates,
+        );
+
+        return new TypeContext(
+            $typeContext->calledClassName,
+            $typeContext->declaringClassName,
+            $typeContext->namespace,
+            $typeContext->uses,
+            $typeContext->templates,
+            $this->collectTypeAliases($classReflection, $typeContext),
+        );
+    }
+
+    private function createNewInstanceFromClassName(string $calledClassName, string $declaringClassName): TypeContext
+    {
         $calledClassNameReflection = self::$reflectionClassCache[$calledClassName] ??= new \ReflectionClass($calledClassName);
         $declaringClassReflection = self::$reflectionClassCache[$declaringClassName] ??= new \ReflectionClass($declaringClassName);
 
-        $calledClassTypeContext = new TypeContext(
-            end($calledClassPath),
-            end($declaringClassPath),
-            trim($calledClassNameReflection->getNamespaceName(), '\\'),
-            $this->collectUses($calledClassNameReflection),
-        );
-
-        $typeContext = new TypeContext(
-            end($calledClassPath),
-            end($declaringClassPath),
-            trim($declaringClassReflection->getNamespaceName(), '\\'),
-            $this->collectUses($declaringClassReflection),
-        );
+        $calledClassTypeContext = $this->createBaseTypeContext($calledClassNameReflection->getName(), $calledClassNameReflection);
+        $typeContext = $this->createBaseTypeContext($calledClassNameReflection->getName(), $declaringClassReflection);
 
         $typeContext = new TypeContext(
             $typeContext->calledClassName,
@@ -91,49 +143,15 @@ final class TypeContextFactory
         );
     }
 
-    public function createFromReflection(\Reflector $reflection): ?TypeContext
+    private function createBaseTypeContext(string $calledClassName, \ReflectionClass $declaringClassReflection): TypeContext
     {
-        $declaringClassReflection = match (true) {
-            $reflection instanceof \ReflectionClass => $reflection,
-            $reflection instanceof \ReflectionMethod => $reflection->getDeclaringClass(),
-            $reflection instanceof \ReflectionProperty => $reflection->getDeclaringClass(),
-            $reflection instanceof \ReflectionParameter => $reflection->getDeclaringClass(),
-            $reflection instanceof \ReflectionFunctionAbstract => $reflection->getClosureScopeClass(),
-            default => null,
-        };
+        $declaringClassName = $declaringClassReflection->getName();
 
-        if (null === $declaringClassReflection) {
-            return null;
-        }
-
-        $typeContext = new TypeContext(
-            $declaringClassReflection->getShortName(),
-            $declaringClassReflection->getShortName(),
-            $declaringClassReflection->getNamespaceName(),
+        return $this->baseTypeContextCache[$declaringClassName][$calledClassName] ??= new TypeContext(
+            $calledClassName,
+            $declaringClassReflection->getName(),
+            trim($declaringClassReflection->getNamespaceName(), '\\'),
             $this->collectUses($declaringClassReflection),
-        );
-
-        $templates = match (true) {
-            $reflection instanceof \ReflectionFunctionAbstract => $this->collectTemplates($reflection, $typeContext) + $this->collectTemplates($declaringClassReflection, $typeContext),
-            $reflection instanceof \ReflectionParameter => $this->collectTemplates($reflection->getDeclaringFunction(), $typeContext) + $this->collectTemplates($declaringClassReflection, $typeContext),
-            default => $this->collectTemplates($declaringClassReflection, $typeContext),
-        };
-
-        $typeContext = new TypeContext(
-            $typeContext->calledClassName,
-            $typeContext->declaringClassName,
-            $typeContext->namespace,
-            $typeContext->uses,
-            $templates,
-        );
-
-        return new TypeContext(
-            $typeContext->calledClassName,
-            $typeContext->declaringClassName,
-            $typeContext->namespace,
-            $typeContext->uses,
-            $typeContext->templates,
-            $this->collectTypeAliases($declaringClassReflection, $typeContext),
         );
     }
 
@@ -142,6 +160,10 @@ final class TypeContextFactory
      */
     private function collectUses(\ReflectionClass $reflection): array
     {
+        if (isset($this->usesCache[$reflection->getName()])) {
+            return $this->usesCache[$reflection->getName()];
+        }
+
         $fileName = $reflection->getFileName();
         if (!\is_string($fileName) || !is_file($fileName)) {
             return [];
@@ -153,14 +175,37 @@ final class TypeContextFactory
 
         $uses = [];
         $inUseSection = false;
+        $inGroupedUse = false;
+        $groupPrefix = '';
 
         foreach ($lines as $line) {
+            $trimmed = trim($line, " \t");
+
+            if ($inGroupedUse) {
+                $this->parseGroupedUseMembers($trimmed, $groupPrefix, $uses);
+
+                if (str_contains($trimmed, '}')) {
+                    $inGroupedUse = false;
+                }
+
+                continue;
+            }
+
             if (str_starts_with($line, 'use ')) {
                 $inUseSection = true;
-                $use = explode(' as ', substr($line, 4, -1), 2);
+                $body = substr($trimmed, 4);
 
-                $alias = 1 === \count($use) ? substr($use[0], false !== ($p = strrpos($use[0], '\\')) ? 1 + $p : 0) : $use[1];
-                $uses[$alias] = $use[0];
+                if (str_contains($body, '{')) {
+                    $groupPrefix = substr($body, 0, strpos($body, '{'));
+                    $inGroupedUse = !str_contains($body, '}');
+                    $segment = trim(substr($body, strpos($body, '{')), " \t\r\n{};");
+                    $this->parseGroupedUseMembers($segment, $groupPrefix, $uses);
+                } else {
+                    $use = preg_split('/\s+as\s+/', rtrim($body, ';'), 2);
+                    $fqcn = ltrim($use[0], '\\');
+                    $alias = $use[1] ?? (false !== ($p = strrpos($fqcn, '\\')) ? substr($fqcn, 1 + $p) : $fqcn);
+                    $uses[$alias] = $fqcn;
+                }
             } elseif ($inUseSection) {
                 break;
             }
@@ -171,7 +216,24 @@ final class TypeContextFactory
             $traitUses[] = $this->collectUses($traitReflection);
         }
 
-        return array_merge($uses, ...$traitUses);
+        return $this->usesCache[$reflection->getName()] = array_merge($uses, ...$traitUses);
+    }
+
+    /**
+     * @param array<string, string> $uses
+     */
+    private function parseGroupedUseMembers(string $segment, string $prefix, array &$uses): void
+    {
+        foreach (explode(',', $segment) as $member) {
+            if ('' === $member = trim($member, " \t\r\n};")) {
+                continue;
+            }
+
+            $parts = preg_split('/\s+as\s+/', $member, 2);
+            $fqcn = ltrim($prefix.$parts[0], '\\');
+            $alias = $parts[1] ?? (false !== ($p = strrpos($fqcn, '\\')) ? substr($fqcn, 1 + $p) : $fqcn);
+            $uses[$alias] = $fqcn;
+        }
     }
 
     /**
@@ -188,7 +250,7 @@ final class TypeContextFactory
         }
 
         $templates = [];
-        foreach ($this->getPhpDocNode($rawDocNode)->getTagsByName('@template') as $tag) {
+        foreach ($this->getPhpDocNode($rawDocNode)->getTagsByName('@template') + $this->getPhpDocNode($rawDocNode)->getTagsByName('@phpstan-template') + $this->getPhpDocNode($rawDocNode)->getTagsByName('@psalm-template') as $tag) {
             if (!$tag->value instanceof TemplateTagValueNode) {
                 continue;
             }
@@ -218,8 +280,10 @@ final class TypeContextFactory
             return [];
         }
 
+        $extraAliases = array_map($this->stringTypeResolver->resolve(...), $this->extraTypeAliases);
+
         if (!$rawDocNode = $reflection->getDocComment()) {
-            return [];
+            return $extraAliases;
         }
 
         $aliases = [];
@@ -253,7 +317,7 @@ final class TypeContextFactory
             $aliases[$tag->value->alias] = (string) $tag->value->type;
         }
 
-        return $this->resolveTypeAliases($aliases, $resolvedAliases, $typeContext);
+        return $this->resolveTypeAliases($aliases, $resolvedAliases, $typeContext) + $extraAliases;
     }
 
     /**

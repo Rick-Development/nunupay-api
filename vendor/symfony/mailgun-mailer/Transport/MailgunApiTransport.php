@@ -116,9 +116,8 @@ class MailgunApiTransport extends AbstractApiTransport
             $payload['html'] = $html;
         }
 
-        $headersToBypass = ['from', 'to', 'cc', 'bcc', 'subject', 'content-type'];
         foreach ($headers->all() as $name => $header) {
-            if (\in_array($name, $headersToBypass, true)) {
+            if (\in_array($name, ['from', 'to', 'cc', 'bcc', 'subject', 'content-type'], true)) {
                 continue;
             }
 
@@ -136,7 +135,7 @@ class MailgunApiTransport extends AbstractApiTransport
 
             // Check if it is a valid prefix or header name according to Mailgun API
             $prefix = substr($name, 0, 2);
-            if (\in_array($prefix, ['h:', 't:', 'o:', 'v:']) || \in_array($name, ['recipient-variables', 'template', 'amp-html'])) {
+            if (\in_array($prefix, ['h:', 't:', 'o:', 'v:']) || \in_array($name, ['recipient-variables', 'template', 'amp-html'], true)) {
                 $headerName = $header->getName();
             } else {
                 $headerName = 'h:'.$header->getName();
@@ -150,7 +149,7 @@ class MailgunApiTransport extends AbstractApiTransport
 
     private function prepareAttachments(Email $email, ?string $html): array
     {
-        $attachments = $inlines = [];
+        $attachments = $inlines = $replacements = [];
         foreach ($email->getAttachments() as $attachment) {
             $headers = $attachment->getPreparedHeaders();
             if ('inline' === $headers->getHeaderBody('Content-Disposition')) {
@@ -158,7 +157,7 @@ class MailgunApiTransport extends AbstractApiTransport
                 if ($html) {
                     $filename = $headers->getHeaderParameter('Content-Disposition', 'filename');
                     $new = basename($filename);
-                    $html = str_replace('cid:'.$filename, 'cid:'.$new, $html);
+                    $replacements['cid:'.$filename] = 'cid:'.$new;
                     $p = new \ReflectionProperty($attachment, 'filename');
                     $p->setValue($attachment, $new);
                 }
@@ -168,7 +167,8 @@ class MailgunApiTransport extends AbstractApiTransport
             }
         }
 
-        return [$attachments, $inlines, $html];
+        // strtr() replaces the longest match first and never rewrites what it already replaced
+        return [$attachments, $inlines, $replacements ? strtr($html, $replacements) : $html];
     }
 
     private function getEndpoint(): ?string

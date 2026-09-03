@@ -22,11 +22,11 @@ use Symfony\Component\TypeInfo\TypeContext\TypeContextFactory;
  * @author Mathias Arlaud <mathias.arlaud@gmail.com>
  * @author Baptiste Leduc <baptiste.leduc@gmail.com>
  */
-final readonly class ReflectionReturnTypeResolver implements TypeResolverInterface
+final class ReflectionReturnTypeResolver implements TypeResolverInterface
 {
     public function __construct(
-        private ReflectionTypeResolver $reflectionTypeResolver,
-        private TypeContextFactory $typeContextFactory,
+        private readonly ReflectionTypeResolver $reflectionTypeResolver,
+        private readonly TypeContextFactory $typeContextFactory,
     ) {
     }
 
@@ -39,7 +39,7 @@ final readonly class ReflectionReturnTypeResolver implements TypeResolverInterfa
         $typeContext ??= $this->typeContextFactory->createFromReflection($subject);
 
         try {
-            return $this->reflectionTypeResolver->resolve($subject->getReturnType(), $typeContext);
+            return $this->reflectionTypeResolver->resolve($subject->getReturnType() ?? $subject->getTentativeReturnType(), $typeContext);
         } catch (UnsupportedException $e) {
             $path = null !== $typeContext
                 ? \sprintf('%s::%s()', $typeContext->calledClassName, $subject->getName())

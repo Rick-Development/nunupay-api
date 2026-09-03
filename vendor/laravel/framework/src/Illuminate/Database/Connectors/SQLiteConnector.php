@@ -20,6 +20,7 @@ class SQLiteConnector extends Connector implements ConnectorInterface
 
         $connection = $this->createConnection("sqlite:{$path}", $config, $options);
 
+        $this->configurePragmas($connection, $config);
         $this->configureForeignKeyConstraints($connection, $config);
         $this->configureBusyTimeout($connection, $config);
         $this->configureJournalMode($connection, $config);
@@ -38,6 +39,8 @@ class SQLiteConnector extends Connector implements ConnectorInterface
      */
     protected function parseDatabasePath(string $path): string
     {
+        $database = $path;
+
         // SQLite supports "in-memory" databases that only last as long as the owning
         // connection does. These are useful for tests or for short lifetime store
         // querying. In-memory databases shall be anonymous (:memory:) or named.
@@ -54,10 +57,28 @@ class SQLiteConnector extends Connector implements ConnectorInterface
         // as the developer probably wants to know if the database exists and this
         // SQLite driver will not throw any exception if it does not by default.
         if ($path === false) {
-            throw new SQLiteDatabaseDoesNotExistException($path);
+            throw new SQLiteDatabaseDoesNotExistException($database);
         }
 
         return $path;
+    }
+
+    /**
+     * Set miscellaneous user-configured pragmas.
+     *
+     * @param  \PDO  $connection
+     * @param  array  $config
+     * @return void
+     */
+    protected function configurePragmas($connection, array $config): void
+    {
+        if (! isset($config['pragmas'])) {
+            return;
+        }
+
+        foreach ($config['pragmas'] as $pragma => $value) {
+            $connection->prepare("pragma {$pragma} = {$value}")->execute();
+        }
     }
 
     /**

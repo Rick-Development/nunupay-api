@@ -20,26 +20,38 @@ use Twilio\Exceptions\TwilioException;
 use Twilio\InstanceContext;
 use Twilio\Rest\Numbers\V1\BulkEligibilityList;
 use Twilio\Rest\Numbers\V1\EligibilityList;
+use Twilio\Rest\Numbers\V1\EmbeddedSessionList;
 use Twilio\Rest\Numbers\V1\PortingAllPortInList;
 use Twilio\Rest\Numbers\V1\PortingPortInList;
 use Twilio\Rest\Numbers\V1\PortingPortInPhoneNumberList;
 use Twilio\Rest\Numbers\V1\PortingPortabilityList;
 use Twilio\Rest\Numbers\V1\PortingWebhookConfigurationList;
 use Twilio\Rest\Numbers\V1\PortingWebhookConfigurationDeleteList;
+use Twilio\Rest\Numbers\V1\SenderIdRegistrationList;
 use Twilio\Rest\Numbers\V1\SigningRequestConfigurationList;
+use Twilio\Rest\Numbers\V1\SmsVerificationList;
+use Twilio\Rest\Numbers\V1\SmsVerificationCheckList;
+use Twilio\Rest\Numbers\V1\VoiceVerificationList;
+use Twilio\Rest\Numbers\V1\VoiceVerificationCheckList;
 use Twilio\Rest\Numbers\V1\WebhookList;
 use Twilio\Version;
 
 /**
  * @property BulkEligibilityList $bulkEligibilities
  * @property EligibilityList $eligibilities
+ * @property EmbeddedSessionList $embeddedSessions
  * @property PortingAllPortInList $portingAllPortIns
  * @property PortingPortInList $portingPortIns
  * @property PortingPortInPhoneNumberList $portingPortInPhoneNumber
  * @property PortingPortabilityList $portingPortabilities
  * @property PortingWebhookConfigurationList $portingWebhookConfigurations
  * @property PortingWebhookConfigurationDeleteList $portingWebhookConfigurationsDelete
+ * @property SenderIdRegistrationList $senderIdRegistrations
  * @property SigningRequestConfigurationList $signingRequestConfigurations
+ * @property SmsVerificationList $smsVerifications
+ * @property SmsVerificationCheckList $smsVerificationChecks
+ * @property VoiceVerificationList $voiceVerifications
+ * @property VoiceVerificationCheckList $voiceVerificationChecks
  * @property WebhookList $webhook
  * @method \Twilio\Rest\Numbers\V1\BulkEligibilityContext bulkEligibilities(string $requestId)
  * @method \Twilio\Rest\Numbers\V1\PortingPortInContext portingPortIns(string $portInRequestSid)
@@ -51,13 +63,19 @@ class V1 extends Version
 {
     protected $_bulkEligibilities;
     protected $_eligibilities;
+    protected $_embeddedSessions;
     protected $_portingAllPortIns;
     protected $_portingPortIns;
     protected $_portingPortInPhoneNumber;
     protected $_portingPortabilities;
     protected $_portingWebhookConfigurations;
     protected $_portingWebhookConfigurationsDelete;
+    protected $_senderIdRegistrations;
     protected $_signingRequestConfigurations;
+    protected $_smsVerifications;
+    protected $_smsVerificationChecks;
+    protected $_voiceVerifications;
+    protected $_voiceVerificationChecks;
     protected $_webhook;
 
     /**
@@ -85,6 +103,14 @@ class V1 extends Version
             $this->_eligibilities = new EligibilityList($this);
         }
         return $this->_eligibilities;
+    }
+
+    protected function getEmbeddedSessions(): EmbeddedSessionList
+    {
+        if (!$this->_embeddedSessions) {
+            $this->_embeddedSessions = new EmbeddedSessionList($this);
+        }
+        return $this->_embeddedSessions;
     }
 
     protected function getPortingAllPortIns(): PortingAllPortInList
@@ -135,12 +161,52 @@ class V1 extends Version
         return $this->_portingWebhookConfigurationsDelete;
     }
 
+    protected function getSenderIdRegistrations(): SenderIdRegistrationList
+    {
+        if (!$this->_senderIdRegistrations) {
+            $this->_senderIdRegistrations = new SenderIdRegistrationList($this);
+        }
+        return $this->_senderIdRegistrations;
+    }
+
     protected function getSigningRequestConfigurations(): SigningRequestConfigurationList
     {
         if (!$this->_signingRequestConfigurations) {
             $this->_signingRequestConfigurations = new SigningRequestConfigurationList($this);
         }
         return $this->_signingRequestConfigurations;
+    }
+
+    protected function getSmsVerifications(): SmsVerificationList
+    {
+        if (!$this->_smsVerifications) {
+            $this->_smsVerifications = new SmsVerificationList($this);
+        }
+        return $this->_smsVerifications;
+    }
+
+    protected function getSmsVerificationChecks(): SmsVerificationCheckList
+    {
+        if (!$this->_smsVerificationChecks) {
+            $this->_smsVerificationChecks = new SmsVerificationCheckList($this);
+        }
+        return $this->_smsVerificationChecks;
+    }
+
+    protected function getVoiceVerifications(): VoiceVerificationList
+    {
+        if (!$this->_voiceVerifications) {
+            $this->_voiceVerifications = new VoiceVerificationList($this);
+        }
+        return $this->_voiceVerifications;
+    }
+
+    protected function getVoiceVerificationChecks(): VoiceVerificationCheckList
+    {
+        if (!$this->_voiceVerificationChecks) {
+            $this->_voiceVerificationChecks = new VoiceVerificationCheckList($this);
+        }
+        return $this->_voiceVerificationChecks;
     }
 
     protected function getWebhook(): WebhookList

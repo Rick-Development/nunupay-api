@@ -41,9 +41,16 @@ $type->isIdentifiedBy(Foo::class, Bar::class);
 $type->isIdentifiedBy(TypeIdentifier::OBJECT);
 $type->isIdentifiedBy('float');
 
-// You can also check that a type satifies specific conditions
+// You can also check that a type satisfies specific conditions
 $type->isSatisfiedBy(fn (Type $type): bool => !$type->isNullable() && $type->isIdentifiedBy(TypeIdentifier::INT));
 ```
+
+Sponsor
+-------
+
+This package is looking for a [backer][1].
+
+Help Symfony by [sponsoring][3] its development!
 
 Resources
 ---------
@@ -52,3 +59,6 @@ Resources
  * [Report issues](https://github.com/symfony/symfony/issues) and
    [send Pull Requests](https://github.com/symfony/symfony/pulls)
    in the [main Symfony repository](https://github.com/symfony/symfony)
+
+[1]: https://symfony.com/backers
+[3]: https://symfony.com/sponsor

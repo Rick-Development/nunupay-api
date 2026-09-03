@@ -11,26 +11,24 @@ class PlainTextExtension extends AbstractExtension
     public const LABEL = "\x01";
 
     /**
-     * Array of text
+     * Array of text.
      *
      * @var array<string>
      */
     protected array $text = [];
 
     /**
-     * Get current text
+     * Get current text.
      *
      * @return array<string>
      */
-    public function getText(): array
+    public function text(): array
     {
         return $this->text;
     }
 
     /**
-     * Add text
-     *
-     * @param string $text
+     * Add text.
      */
     public function addText(string $text): self
     {
@@ -40,7 +38,7 @@ class PlainTextExtension extends AbstractExtension
     }
 
     /**
-     * Set text array of extension
+     * Set text array of extension.
      *
      * @param array<string> $text
      */
@@ -52,9 +50,7 @@ class PlainTextExtension extends AbstractExtension
     }
 
     /**
-     * Determine if any text is present
-     *
-     * @return bool
+     * Determine if any text is present.
      */
     public function hasText(): bool
     {

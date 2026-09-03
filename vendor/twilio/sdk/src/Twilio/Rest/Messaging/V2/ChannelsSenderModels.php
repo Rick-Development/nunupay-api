@@ -23,6 +23,7 @@ abstract class ChannelsSenderModels
      * @property string|null $verificationMethod The verification method.
      * @property string|null $verificationCode The verification code.
      * @property string|null $voiceApplicationSid The SID of the Twilio Voice application.
+     * @property string|null $accountType The account type for ISV Account Type Migration. Set to 'ISV' or 'ISVSubAccount' to configure, empty string to clear, or omit to preserve the existing value.
     */
     public static function createMessagingV2ChannelsSenderConfiguration(array $payload = []): MessagingV2ChannelsSenderConfiguration
     {
@@ -52,7 +53,8 @@ abstract class ChannelsSenderModels
      * @property string|null $privacyUrl The privacy URL of the sender. Must be a publicly accessible HTTP or HTTPS URI associated with the sender.
      * @property string|null $termsOfServiceUrl The terms of service URL of the sender.
      * @property string|null $accentColor The color theme of the sender. Must be in hex format and have at least a 4:5:1 contrast ratio against white.
-     * @property string|null $vertical The vertical of the sender. Allowed values are: - `Automotive` - `Beauty, Spa and Salon` - `Clothing and Apparel` - `Education` - `Entertainment` - `Event Planning and Service` - `Finance and Banking` - `Food and Grocery` - `Public Service` - `Hotel and Lodging` - `Medical and Health` - `Non-profit` - `Professional Services` - `Shopping and Retail` - `Travel and Transportation` - `Restaurant` - `Other`
+     * @property string|null $useCase The messaging use case type for the RCS sender. Allowed values are `PROMOTIONAL`, `TRANSACTIONAL`, `OTP`, `MULTI_USE`. Defaults to `MULTI_USE` if not provided. Cannot be modified after launch.
+     * @property string|null $vertical The vertical of the sender. Allowed values are: - `Alcohol` - `Automotive` - `Beauty, Spa and Salon` - `Clothing and Apparel` - `Education` - `Entertainment` - `Event Planning and Service` - `Finance and Banking` - `Food and Grocery` - `Hotel and Lodging` - `Matrimony Service` - `Medical and Health` - `Non-profit` - `Online Gambling` - `OTC Drugs` - `Other` - `Physical Gambling` - `Professional Services` - `Public Service` - `Restaurant` - `Shopping and Retail` - `Travel and Transportation`
      * @property array|null $websites The websites of the sender.
      * @property array|null $emails The emails of the sender.
      * @property array|null $phoneNumbers The phone numbers of the sender.
@@ -64,6 +66,7 @@ abstract class ChannelsSenderModels
 
     /**
      * @property string $senderId The ID of the sender in `whatsapp:<E.164_PHONE_NUMBER>` format.
+     * @property string|null $friendlyName Optional display label for the sender in the Twilio Console.
      * @property MessagingV2ChannelsSenderConfiguration $configuration
      * @property MessagingV2ChannelsSenderWebhook $webhook
      * @property MessagingV2ChannelsSenderProfile $profile
@@ -74,6 +77,7 @@ abstract class ChannelsSenderModels
     }
 
     /**
+     * @property string|null $friendlyName Optional display label for the sender in the Twilio Console.
      * @property MessagingV2ChannelsSenderConfiguration $configuration
      * @property MessagingV2ChannelsSenderWebhook $webhook
      * @property MessagingV2ChannelsSenderProfile $profile
@@ -92,16 +96,19 @@ class MessagingV2ChannelsSenderConfiguration implements \JsonSerializable
      * @property string|null $verificationMethod The verification method.
      * @property string|null $verificationCode The verification code.
      * @property string|null $voiceApplicationSid The SID of the Twilio Voice application.
+     * @property string|null $accountType The account type for ISV Account Type Migration. Set to 'ISV' or 'ISVSubAccount' to configure, empty string to clear, or omit to preserve the existing value.
     */
         protected $wabaId;
         protected $verificationMethod;
         protected $verificationCode;
         protected $voiceApplicationSid;
+        protected $accountType;
     public function __construct(array $payload = []) {
         $this->wabaId = Values::array_get($payload, 'waba_id');
         $this->verificationMethod = Values::array_get($payload, 'verification_method');
         $this->verificationCode = Values::array_get($payload, 'verification_code');
         $this->voiceApplicationSid = Values::array_get($payload, 'voice_application_sid');
+        $this->accountType = Values::array_get($payload, 'account_type');
     }
 
     public function toArray(): array
@@ -124,6 +131,9 @@ class MessagingV2ChannelsSenderConfiguration implements \JsonSerializable
         }
         if (isset($this->voiceApplicationSid)) {
             $jsonString['voice_application_sid'] = $this->voiceApplicationSid;
+        }
+        if (isset($this->accountType)) {
+            $jsonString['account_type'] = $this->accountType;
         }
         return $jsonString;
     }
@@ -197,7 +207,8 @@ class MessagingV2ChannelsSenderProfile implements \JsonSerializable
      * @property string|null $privacyUrl The privacy URL of the sender. Must be a publicly accessible HTTP or HTTPS URI associated with the sender.
      * @property string|null $termsOfServiceUrl The terms of service URL of the sender.
      * @property string|null $accentColor The color theme of the sender. Must be in hex format and have at least a 4:5:1 contrast ratio against white.
-     * @property string|null $vertical The vertical of the sender. Allowed values are: - `Automotive` - `Beauty, Spa and Salon` - `Clothing and Apparel` - `Education` - `Entertainment` - `Event Planning and Service` - `Finance and Banking` - `Food and Grocery` - `Public Service` - `Hotel and Lodging` - `Medical and Health` - `Non-profit` - `Professional Services` - `Shopping and Retail` - `Travel and Transportation` - `Restaurant` - `Other`
+     * @property string|null $useCase The messaging use case type for the RCS sender. Allowed values are `PROMOTIONAL`, `TRANSACTIONAL`, `OTP`, `MULTI_USE`. Defaults to `MULTI_USE` if not provided. Cannot be modified after launch.
+     * @property string|null $vertical The vertical of the sender. Allowed values are: - `Alcohol` - `Automotive` - `Beauty, Spa and Salon` - `Clothing and Apparel` - `Education` - `Entertainment` - `Event Planning and Service` - `Finance and Banking` - `Food and Grocery` - `Hotel and Lodging` - `Matrimony Service` - `Medical and Health` - `Non-profit` - `Online Gambling` - `OTC Drugs` - `Other` - `Physical Gambling` - `Professional Services` - `Public Service` - `Restaurant` - `Shopping and Retail` - `Travel and Transportation`
      * @property array|null $websites The websites of the sender.
      * @property array|null $emails The emails of the sender.
      * @property array|null $phoneNumbers The phone numbers of the sender.
@@ -211,6 +222,7 @@ class MessagingV2ChannelsSenderProfile implements \JsonSerializable
         protected $privacyUrl;
         protected $termsOfServiceUrl;
         protected $accentColor;
+        protected $useCase;
         protected $vertical;
         protected $websites;
         protected $emails;
@@ -225,6 +237,7 @@ class MessagingV2ChannelsSenderProfile implements \JsonSerializable
         $this->privacyUrl = Values::array_get($payload, 'privacy_url');
         $this->termsOfServiceUrl = Values::array_get($payload, 'terms_of_service_url');
         $this->accentColor = Values::array_get($payload, 'accent_color');
+        $this->useCase = Values::array_get($payload, 'use_case');
         $this->vertical = Values::array_get($payload, 'vertical');
         $this->websites = Values::array_get($payload, 'websites');
         $this->emails = Values::array_get($payload, 'emails');
@@ -267,6 +280,9 @@ class MessagingV2ChannelsSenderProfile implements \JsonSerializable
         if (isset($this->accentColor)) {
             $jsonString['accent_color'] = $this->accentColor;
         }
+        if (isset($this->useCase)) {
+            $jsonString['use_case'] = $this->useCase;
+        }
         if (isset($this->vertical)) {
             $jsonString['vertical'] = $this->vertical;
         }
@@ -287,16 +303,19 @@ class MessagingV2ChannelsSenderRequestsCreate implements \JsonSerializable
 {
     /**
      * @property string $senderId The ID of the sender in `whatsapp:<E.164_PHONE_NUMBER>` format.
+     * @property string|null $friendlyName Optional display label for the sender in the Twilio Console.
      * @property MessagingV2ChannelsSenderConfiguration $configuration
      * @property MessagingV2ChannelsSenderWebhook $webhook
      * @property MessagingV2ChannelsSenderProfile $profile
     */
         protected $senderId;
+        protected $friendlyName;
         protected $configuration;
         protected $webhook;
         protected $profile;
     public function __construct(array $payload = []) {
         $this->senderId = Values::array_get($payload, 'sender_id');
+        $this->friendlyName = Values::array_get($payload, 'friendly_name');
         $this->configuration = Values::array_get($payload, 'configuration');
         $this->webhook = Values::array_get($payload, 'webhook');
         $this->profile = Values::array_get($payload, 'profile');
@@ -312,6 +331,9 @@ class MessagingV2ChannelsSenderRequestsCreate implements \JsonSerializable
         $jsonString = [
             'sender_id' => $this->senderId
         ];
+        if (isset($this->friendlyName)) {
+            $jsonString['friendly_name'] = $this->friendlyName;
+        }
         if (isset($this->configuration)) {
             $jsonString['configuration'] = $this->configuration;
         }
@@ -328,14 +350,17 @@ class MessagingV2ChannelsSenderRequestsCreate implements \JsonSerializable
 class MessagingV2ChannelsSenderRequestsUpdate implements \JsonSerializable
 {
     /**
+     * @property string|null $friendlyName Optional display label for the sender in the Twilio Console.
      * @property MessagingV2ChannelsSenderConfiguration $configuration
      * @property MessagingV2ChannelsSenderWebhook $webhook
      * @property MessagingV2ChannelsSenderProfile $profile
     */
+        protected $friendlyName;
         protected $configuration;
         protected $webhook;
         protected $profile;
     public function __construct(array $payload = []) {
+        $this->friendlyName = Values::array_get($payload, 'friendly_name');
         $this->configuration = Values::array_get($payload, 'configuration');
         $this->webhook = Values::array_get($payload, 'webhook');
         $this->profile = Values::array_get($payload, 'profile');
@@ -350,6 +375,9 @@ class MessagingV2ChannelsSenderRequestsUpdate implements \JsonSerializable
     {
         $jsonString = [
         ];
+        if (isset($this->friendlyName)) {
+            $jsonString['friendly_name'] = $this->friendlyName;
+        }
         if (isset($this->configuration)) {
             $jsonString['configuration'] = $this->configuration;
         }

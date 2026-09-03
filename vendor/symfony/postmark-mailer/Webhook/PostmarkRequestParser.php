@@ -25,12 +25,12 @@ use Symfony\Component\Webhook\Exception\RejectWebhookException;
 
 final class PostmarkRequestParser extends AbstractRequestParser
 {
+    // https://postmarkapp.com/support/article/800-ips-for-firewalls#webhooks
+    public const PROVIDER_IPS = ['3.134.147.250', '50.31.156.6', '50.31.156.77', '18.217.206.57'];
+
     public function __construct(
         private readonly PostmarkPayloadConverter $converter,
-
-        // https://postmarkapp.com/support/article/800-ips-for-firewalls#webhooks
-        // localhost is added for testing
-        private readonly array $allowedIPs = ['3.134.147.250', '50.31.156.6', '50.31.156.77', '18.217.206.57', '127.0.0.1'],
+        private readonly array $allowedIPs = self::PROVIDER_IPS,
     ) {
     }
 
@@ -45,6 +45,10 @@ final class PostmarkRequestParser extends AbstractRequestParser
 
     protected function doParse(Request $request, #[\SensitiveParameter] string $secret): ?AbstractMailerEvent
     {
+        if ($secret && !hash_equals('Basic '.base64_encode($secret), $request->headers->get('Authorization', ''))) {
+            throw new RejectWebhookException(403, 'Invalid credentials.');
+        }
+
         $payload = $request->toArray();
         if (
             !isset($payload['RecordType'])

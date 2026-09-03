@@ -9,22 +9,18 @@ use Intervention\Gif\Blocks\DataSubBlock;
 class DataSubBlockEncoder extends AbstractEncoder
 {
     /**
-     * Create new instance
-     *
-     * @param DataSubBlock $source
+     * Create new instance.
      */
-    public function __construct(DataSubBlock $source)
+    public function __construct(DataSubBlock $entity)
     {
-        $this->source = $source;
+        parent::__construct($entity);
     }
 
     /**
-     * Encode current source
-     *
-     * @return string
+     * Encode current entity.
      */
     public function encode(): string
     {
-        return pack('C', $this->source->getSize()) . $this->source->getValue();
+        return pack('C', $this->entity->size()) . $this->entity->value();
     }
 }

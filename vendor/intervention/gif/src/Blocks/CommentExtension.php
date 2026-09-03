@@ -11,37 +11,32 @@ class CommentExtension extends AbstractExtension
     public const LABEL = "\xFE";
 
     /**
-     * Comment blocks
+     * Comment blocks.
      *
      * @var array<string>
      */
     protected array $comments = [];
 
     /**
-     * Get all or one comment
+     * Get all or one comment.
      *
      * @return array<string>
      */
-    public function getComments(): array
+    public function comments(): array
     {
         return $this->comments;
     }
 
     /**
-     * Get one comment by key
-     *
-     * @param int $key
-     * @return mixed
+     * Get one comment by key.
      */
-    public function getComment(int $key): mixed
+    public function comment(int $key): mixed
     {
-        return array_key_exists($key, $this->comments) ? $this->comments[$key] : null;
+        return $this->comments[$key] ?? null;
     }
 
     /**
-     * Set comment text
-     *
-     * @param string $value
+     * Set comment text.
      */
     public function addComment(string $value): self
     {

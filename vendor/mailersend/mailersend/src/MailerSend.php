@@ -8,7 +8,9 @@ use MailerSend\Endpoints\Activity;
 use MailerSend\Endpoints\Analytics;
 use MailerSend\Endpoints\ApiQuota;
 use MailerSend\Endpoints\Blocklist;
+use MailerSend\Endpoints\BlocklistMonitoring;
 use MailerSend\Endpoints\BulkEmail;
+use MailerSend\Endpoints\DmarcMonitoring;
 use MailerSend\Endpoints\Domain;
 use MailerSend\Endpoints\Email;
 use MailerSend\Endpoints\EmailVerification;
@@ -85,6 +87,8 @@ class MailerSend
     public SmtpUser $smtpUser;
     public User $user;
     public Invite $invite;
+    public DmarcMonitoring $dmarcMonitoring;
+    public BlocklistMonitoring $blocklistMonitoring;
 
     /**
      * @param  array  $options  Additional options for the SDK
@@ -130,6 +134,8 @@ class MailerSend
         $this->smtpUser = new SmtpUser($this->httpLayer, $this->options);
         $this->user = new User($this->httpLayer, $this->options);
         $this->invite = new Invite($this->httpLayer, $this->options);
+        $this->dmarcMonitoring = new DmarcMonitoring($this->httpLayer, $this->options);
+        $this->blocklistMonitoring = new BlocklistMonitoring($this->httpLayer, $this->options);
     }
 
     protected function setHttpLayer(?HttpLayer $httpLayer = null): void

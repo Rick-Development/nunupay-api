@@ -198,7 +198,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             Storage::disk($this->getS3Disk())->putFileAs('', (new File($path)), $filename);
         }
 
-        $emailTo = request('emailTo');
+        $emailTo = request()->emailTo;
         if ($emailTo && is_string($emailTo)) {
             $data = ['email' => urldecode($emailTo), 'path' => $path];
             $this->sendResults($data);
@@ -225,7 +225,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
         return $columns->filter(fn (Column $column) => $column->exportable);
     }
 
-    protected function getValue(array|Model $row, string $property): mixed
+    protected function getValue(array|Model|\stdClass $row, string $property): mixed
     {
         [$currentProperty, $glue, $childProperty] = array_pad(preg_split('/\[(.*?)\]\.?/', $property, 2, PREG_SPLIT_DELIM_CAPTURE), 3, null);
 
@@ -240,7 +240,7 @@ class DataTableExportJob implements ShouldBeUnique, ShouldQueue
             $value = Arr::map($value, fn ($v) => $this->getValue($v, $childProperty));
         }
 
-        return $glue ? Arr::join($value, $glue) : $value;
+        return isset($glue) ? Arr::join($value, $glue) : $value;
     }
 
     protected function usesLazyMethod(): bool

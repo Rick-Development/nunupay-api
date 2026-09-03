@@ -1,5 +1,52 @@
 # Change Log
 
+## [4.71.0](https://github.com/plivo/plivo-php/tree/v4.71.0) (2026-07-28)
+**Feature - Toll-free verification terms, privacy, opt-in and help fields**
+- Added optional `terms_and_conditions_link`, `privacy_policy_link`, `optin_message` and `help_message` parameters to the toll-free verification create and update methods
+
+## [4.70.0](https://github.com/plivo/plivo-php/tree/v4.70.0) (2026-06-11)
+**Feature - PhoneNumber Buy compliance application support**
+- Added optional `complianceApplicationId` parameter to the `phoneNumbers->buy` method, serialized as `compliance_application_id` on the request. This allows linking a regulatory compliance application to a number at purchase time (required for regulated numbers, e.g. India).
+
+## [4.69.2](https://github.com/plivo/plivo-php/tree/v4.69.2) (2026-05-26)
+**Feature - Profile API DBA field support**
+- Added Doing Business As (DBA) field support to Profile API
+
+**Feature - Expose sub_account_name on Number resource**
+- Added `subAccountName` property to the `Number` resource, surfacing the subaccount's name alongside the existing `subAccount` (auth_id) on rented number listing and get APIs
+
+## [4.69.1](https://github.com/plivo/plivo-php/tree/v4.69.1) (2026-04-17)
+**Bug Fix - PhoneNumber Compliance API**
+- Fixed Link response to return `total_count`, `updated_count`, and `report` fields instead of generic `ResponseUpdate`
+- Fixed Requirements params and multipart handling for create/update
+- Fixed multipart file upload field names from `file_N` to `documents[N].file` to match the API's expected format
+
+## [4.69.0](https://github.com/plivo/plivo-php/tree/v4.69.0) (2026-04-08)
+**Feature - PhoneNumber Compliance API support**
+- Added `phoneNumberComplianceRequirement` resource for discovering compliance requirements by country, number type, and user type
+- Added `phoneNumberCompliance` resource with full CRUD support (create, get, getList, update, delete) for compliance applications
+- Added `phoneNumberComplianceLink` resource for bulk linking phone numbers to accepted compliance applications
+- Added PATCH HTTP method support to `PlivoRequest` and `BaseClient`
+- Create and update operations support multipart file uploads for compliance documents
+
+## [4.68.4](https://github.com/plivo/plivo-php/tree/v4.68.4) (2026-04-06)
+**Bug fix - Handle missing api_id in 401 error responses**
+- Fixed handling of missing `api_id` field in 401 error responses for message create API
+
+## [4.68.3](https://github.com/plivo/plivo-php/tree/v4.68.3) (2026-02-18)
+**Feature - Campaign API optional fields support**
+- Added `sample3`, `sample4`, `sample5` optional sample message fields to Campaign `create` and `update` methods
+- Added `terms_and_conditions_link` and `privacy_policy_link` optional fields to Campaign `create` and `update` methods
+
+## [4.68.2](https://github.com/plivo/plivo-php/tree/v4.68.2) (2026-01-21)
+**Feature - HA Number support**
+- Added `ha_enable` parameter to PhoneNumber `buy` method
+- Added `fallback_number` field in PhoneNumber buy response
+
+## [4.68.1](https://github.com/plivo/plivo-php/tree/v4.68.1) (2026-01-14)
+**Feature - Profile API business_contact_email support**
+- Added `business_contact_email` parameter support to Profile `create` and `update` methods for PUBLIC entity types
+
 ## [4.68.0](https://github.com/plivo/plivo-php/tree/v4.68.0) (2025-10-24)
 **Feature - Added rejection_reason field to Regulatory Compliance APIs**
 - Added `rejection_reason` field to ComplianceApplication

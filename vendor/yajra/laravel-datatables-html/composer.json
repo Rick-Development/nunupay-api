@@ -26,7 +26,7 @@
         "orchestra/testbench": "^10",
         "laravel/pint": "^1.21",
         "rector/rector": "^2.0",
-        "livewire/livewire": "^3.4"
+        "livewire/livewire": "^3.4|^4.0"
     },
     "suggest": {
         "laravel/livewire": "Required for Livewire layout support."

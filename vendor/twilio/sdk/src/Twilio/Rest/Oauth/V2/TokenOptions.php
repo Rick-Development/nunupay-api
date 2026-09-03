@@ -21,6 +21,7 @@ use Twilio\Values;
 abstract class TokenOptions
 {
     /**
+     * @param string $accountSid Optional Account SID to perform on behalf of requests.
      * @param string $grantType Grant type is a credential representing resource owner's authorization which can be used by client to obtain access token.
      * @param string $clientId A 34 character string that uniquely identifies this OAuth App.
      * @param string $clientSecret The credential for confidential OAuth App.
@@ -29,10 +30,12 @@ abstract class TokenOptions
      * @param string $audience The targeted audience uri
      * @param string $refreshToken JWT token related to refresh access token.
      * @param string $scope The scope of token
+     * @param string $codeVerifier The PKCE code verifier used to generate the code_challenge in the authorization request.
      * @return CreateTokenOptions Options builder
      */
     public static function create(
         
+        string $accountSid = Values::NONE,
         string $grantType = Values::NONE,
         string $clientId = Values::NONE,
         string $clientSecret = Values::NONE,
@@ -40,11 +43,13 @@ abstract class TokenOptions
         string $redirectUri = Values::NONE,
         string $audience = Values::NONE,
         string $refreshToken = Values::NONE,
-        string $scope = Values::NONE
+        string $scope = Values::NONE,
+        string $codeVerifier = Values::NONE
 
     ): CreateTokenOptions
     {
         return new CreateTokenOptions(
+            $accountSid,
             $grantType,
             $clientId,
             $clientSecret,
@@ -52,7 +57,8 @@ abstract class TokenOptions
             $redirectUri,
             $audience,
             $refreshToken,
-            $scope
+            $scope,
+            $codeVerifier
         );
     }
 
@@ -61,6 +67,7 @@ abstract class TokenOptions
 class CreateTokenOptions extends Options
     {
     /**
+     * @param string $accountSid Optional Account SID to perform on behalf of requests.
      * @param string $grantType Grant type is a credential representing resource owner's authorization which can be used by client to obtain access token.
      * @param string $clientId A 34 character string that uniquely identifies this OAuth App.
      * @param string $clientSecret The credential for confidential OAuth App.
@@ -69,9 +76,11 @@ class CreateTokenOptions extends Options
      * @param string $audience The targeted audience uri
      * @param string $refreshToken JWT token related to refresh access token.
      * @param string $scope The scope of token
+     * @param string $codeVerifier The PKCE code verifier used to generate the code_challenge in the authorization request.
      */
     public function __construct(
         
+        string $accountSid = Values::NONE,
         string $grantType = Values::NONE,
         string $clientId = Values::NONE,
         string $clientSecret = Values::NONE,
@@ -79,9 +88,11 @@ class CreateTokenOptions extends Options
         string $redirectUri = Values::NONE,
         string $audience = Values::NONE,
         string $refreshToken = Values::NONE,
-        string $scope = Values::NONE
+        string $scope = Values::NONE,
+        string $codeVerifier = Values::NONE
 
     ) {
+        $this->options['accountSid'] = $accountSid;
         $this->options['grantType'] = $grantType;
         $this->options['clientId'] = $clientId;
         $this->options['clientSecret'] = $clientSecret;
@@ -90,6 +101,19 @@ class CreateTokenOptions extends Options
         $this->options['audience'] = $audience;
         $this->options['refreshToken'] = $refreshToken;
         $this->options['scope'] = $scope;
+        $this->options['codeVerifier'] = $codeVerifier;
+    }
+
+    /**
+     * Optional Account SID to perform on behalf of requests.
+     *
+     * @param string $accountSid Optional Account SID to perform on behalf of requests.
+     * @return $this Fluent Builder
+     */
+    public function setAccountSid(string $accountSid): self
+    {
+        $this->options['accountSid'] = $accountSid;
+        return $this;
     }
 
     /**
@@ -185,6 +209,18 @@ class CreateTokenOptions extends Options
     public function setScope(string $scope): self
     {
         $this->options['scope'] = $scope;
+        return $this;
+    }
+
+    /**
+     * The PKCE code verifier used to generate the code_challenge in the authorization request.
+     *
+     * @param string $codeVerifier The PKCE code verifier used to generate the code_challenge in the authorization request.
+     * @return $this Fluent Builder
+     */
+    public function setCodeVerifier(string $codeVerifier): self
+    {
+        $this->options['codeVerifier'] = $codeVerifier;
         return $this;
     }
 

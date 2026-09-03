@@ -548,11 +548,35 @@
             </trans-unit>
             <trans-unit id="141">
                 <source>The image has too many pixels ({{ pixels }} pixels). Maximum amount expected is {{ max_pixels }} pixels.</source>
-                <target state="needs-review-translation">Малюнак мае занадта шмат пікселяў ({{ pixels }}). Максімальная дапушчальная колькасць {{ max_pixels }}.</target>
+                <target>Малюнак мае занадта шмат пікселяў ({{ pixels }}). Максімальная дапушчальная колькасць {{ max_pixels }}.</target>
             </trans-unit>
             <trans-unit id="142">
                 <source>This filename does not match the expected charset.</source>
-                <target state="needs-review-translation">Гэта назва файла не адпавядае чаканаму набору знакаў.</target>
+                <target>Гэта назва файла не адпавядае чаканаму набору знакаў.</target>
+            </trans-unit>
+            <trans-unit id="143">
+                <source>This value is not valid XML.</source>
+                <target state="needs-review-translation">Гэта значэнне не з'яўляецца сапраўдным XML.</target>
+            </trans-unit>
+            <trans-unit id="144">
+                <source>This value does not conform to the expected XSD schema.</source>
+                <target state="needs-review-translation">Гэта значэнне не адпавядае чаканай схеме XSD.</target>
+            </trans-unit>
+            <trans-unit id="145">
+                <source>This XML payload is too large ({{ size }} bytes): it exceeds the limit of {{ limit }} bytes.</source>
+                <target state="needs-review-translation">Гэтая XML-нагрузка занадта вялікая ({{ size }} байт): яна перавышае ліміт у {{ limit }} байт.</target>
+            </trans-unit>
+            <trans-unit id="146">
+                <source>This value is not a valid cron expression.</source>
+                <target state="needs-review-translation">Гэта значэнне не з'яўляецца сапраўдным выразам cron.</target>
+            </trans-unit>
+            <trans-unit id="147">
+                <source>The referenced entity does not exist.</source>
+                <target state="needs-review-translation">Сутнасць, на якую спасылаюцца, не існуе.</target>
+            </trans-unit>
+            <trans-unit id="148" resname="This is not a valid ULID.">
+                <source>This value is not a valid ULID.</source>
+                <target state="needs-review-translation">Гэта значэнне не з'яўляецца сапраўдным ULID.</target>
             </trans-unit>
         </body>
     </file>
